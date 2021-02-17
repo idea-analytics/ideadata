@@ -1,0 +1,120 @@
+#' Connect to `Schools` table on \code{PROD1} in `Schools` schema
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#' schools <- get_schools()
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' schools <- get_schools() %>%
+#'   collect() %>%
+#'   clean_names()
+get_schools <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+                                           dplyr::sql("Schools")))
+
+  out
+
+}
+
+
+#' Connect to `Students` table on \code{PROD1} in `Schools` schema
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#' stus <- get_students()
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' schools <- get_schools() %>%
+#'   collect() %>%
+#'   clean_names()
+get_students <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+                                           dplyr::sql("Students")))
+
+  out
+
+}
+
+
+
+#' Connect to `Regions` table on \code{PROD1} in `Schools` schema
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#' stus <- get_students()
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' regions <- get_regions() %>%
+#'   collect() %>%
+#'   clean_names()
+get_regions <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+                                           dplyr::sql("Regions")))
+
+  out
+
+}
+
+
+#' Connect to `Students` table on \code{PROD1} in `Schools` schema only pull
+#' currently enrolled students
+#'
+#' Specifically, pull students data where `EnrollmentStatus == 0`,
+#' `RowIsCurrent = TRUE` and `SchoolTermID = max(SchoolTermID)`
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#' current <- get_currently_enrolled_students()
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snake case) using [janitor::clean_names()]
+#' regions <- get_regions() %>%
+#'   collect() %>%
+#'   clean_names()
+get_currently_enrolled_students <- function(){
+
+  check_get_connection("PROD1")
+
+  stus <- get_students()
+
+  out <- stus %>%
+    dplyr::filter(
+           EnrollmentStatus == 0,
+           SchoolTermID == max(SchoolTermID,na.rm = TRUE),
+           RowIsCurrent == 'TRUE')
+
+  out
+
+}
