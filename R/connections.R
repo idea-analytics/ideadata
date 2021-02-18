@@ -16,8 +16,9 @@ get_creds <- function(){
 
   uid <- Sys.getenv("IDEA_RNA_DB_UID")
   pwd <- Sys.getenv("IDEA_RNA_DB_PWD")
+  driver <- Sys.getenv("IDEA_RNA_ODBC_DRIVER")
 
-  list(uid = uid, pwd = pwd)
+  list(uid = uid, pwd = pwd, driver = driver)
 }
 
 
@@ -66,7 +67,7 @@ create_connection <- function(.database_name){
   server <- get_db_url(.database_name) %>% pull(url)
 
   connection_string <- glue::glue(
-    "Driver={driver};",
+    "Driver={creds$driver};",
     "Server={server};",
     "UID={creds$uid};",
     "PWD={creds$pwd};",
