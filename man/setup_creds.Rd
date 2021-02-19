@@ -14,10 +14,10 @@ its side-effects
 Adds entries to your `.Renviron` file for uid, password, and driver.
 }
 \details{
-Running `setup_creds()` will check for for your .Revniron file, create it if
-is missing, and add then environment files necessary for [ideadata] to function.
-Not that if (if the file is empty, it will delete it and create a new `.Renviron`
-file).
+Running `setup_creds()` will check for  your .Revniron file, create it if
+is missing, and add the environment files necessary for {ideadata} to function.
+Not that if the `.Renviron` file is empty, the script will delete it and create a new `.Renviron`
+file before populating with the uid, pwd, and driver variables.
 }
 \examples{
 

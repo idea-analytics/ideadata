@@ -19,7 +19,11 @@ schools <- get_schools()
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+\dontrun{
+library(dplyr)
+library(janitor)
 schools <- get_schools() \%>\%
   collect() \%>\%
   clean_names()
+  }
 }

@@ -37,7 +37,7 @@ get_creds <- function(){
 
 get_db_url <- function(.database_name){
   db_locations %>%
-    filter(database_name == .database_name)
+    dplyr::filter(database_name == .database_name)
 }
 
 
@@ -64,7 +64,7 @@ create_connection <- function(.database_name){
   kinit(creds$uid, creds$pwd)
 
   driver <- "{ODBC Driver 17 for SQL Server}"
-  server <- get_db_url(.database_name) %>% pull(url)
+  server <- get_db_url(.database_name) %>% dplyr::pull(url)
 
   connection_string <- glue::glue(
     "Driver={creds$driver};",

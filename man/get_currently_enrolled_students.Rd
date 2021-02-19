@@ -19,9 +19,4 @@ Specifically, pull students data where `EnrollmentStatus == 0`,
 # This attaches to the school db with \code{conn_PROD1} connection
 current <- get_currently_enrolled_students()
 
-# This pulls down schools data form the DB and onto your computer
-# and then cleans the names (lower snake case) using [janitor::clean_names()]
-regions <- get_regions() \%>\%
-  collect() \%>\%
-  clean_names()
 }

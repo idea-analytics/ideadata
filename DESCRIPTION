@@ -16,10 +16,13 @@ Imports:
     dplyr,
     dbplyr,
     DBI,
-    odbc
+    odbc,
+    cli,
+    usethis,
+    stringr,
+    fs
 RoxygenNote: 7.1.1
 Suggests: 
-    usethis,
     here
 Depends: 
     R (>= 2.10)

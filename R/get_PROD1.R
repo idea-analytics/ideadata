@@ -11,14 +11,18 @@
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' \dontrun{
+#' library(dplyr)
+#' library(janitor)
 #' schools <- get_schools() %>%
 #'   collect() %>%
 #'   clean_names()
+#'   }
 get_schools <- function(){
 
   check_get_connection("PROD1")
 
-  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
                                            dplyr::sql("Schools")))
 
   out
@@ -39,14 +43,17 @@ get_schools <- function(){
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#'
+#' \dontrun{
 #' schools <- get_schools() %>%
 #'   collect() %>%
 #'   clean_names()
+#'   }
 get_students <- function(){
 
   check_get_connection("PROD1")
 
-  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
                                            dplyr::sql("Students")))
 
   out
@@ -68,14 +75,17 @@ get_students <- function(){
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#'
+#' \dontrun{
 #' regions <- get_regions() %>%
 #'   collect() %>%
 #'   clean_names()
+#'   }
 get_regions <- function(){
 
   check_get_connection("PROD1")
 
-  out <- tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
                                            dplyr::sql("Regions")))
 
   out
@@ -89,6 +99,7 @@ get_regions <- function(){
 #' Specifically, pull students data where `EnrollmentStatus == 0`,
 #' `RowIsCurrent = TRUE` and `SchoolTermID = max(SchoolTermID)`
 #'
+#' @importFrom dplyr `%>%`
 #'
 #' @return
 #' @export
@@ -98,11 +109,7 @@ get_regions <- function(){
 #' # This attaches to the school db with \code{conn_PROD1} connection
 #' current <- get_currently_enrolled_students()
 #'
-#' # This pulls down schools data form the DB and onto your computer
-#' # and then cleans the names (lower snake case) using [janitor::clean_names()]
-#' regions <- get_regions() %>%
-#'   collect() %>%
-#'   clean_names()
+
 get_currently_enrolled_students <- function(){
 
   check_get_connection("PROD1")
@@ -118,3 +125,30 @@ get_currently_enrolled_students <- function(){
   out
 
 }
+
+#' Connect to `Students` table on \code{PROD1} in `Attendance` schema which has
+#' membership (i.e., enrollment) and attendance data
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' stu_attend <- get_student_daily_attendance()
+#'
+get_student_daily_attendance <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Attendance"),
+                                           dplyr::sql("Students")))
+
+  out
+
+}
+

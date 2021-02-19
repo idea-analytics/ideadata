@@ -19,7 +19,10 @@ stus <- get_students()
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+
+\dontrun{
 regions <- get_regions() \%>\%
   collect() \%>\%
   clean_names()
+  }
 }
