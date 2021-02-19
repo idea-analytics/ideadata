@@ -1,13 +1,22 @@
 globalVariables("conn_SRC_AR")
 
-get_renstar_math <- function(){
 
 
-    check_get_connection("SRC_AR")
 
-    out <- dplyr::tbl(conn_SRC_AR, dbplyr::in_schema(dplyr::sql("SRC_AR"),
-                                             dplyr::sql("StarMathV2")))
+get_renstar <- function(){
 
-    out
 
-  }
+}
+
+rs_math <- tbl(conn, dbplyr::in_schema("[964592-SQLDS].[SRC_AR].[dbo]", "StarMathV2")) %>%
+  select(StudentNumber = StudentIdentifier,
+         ScaledScore:TotalCorrect,
+         LaunchDate,CompletedDate, TotalTimeInSeconds,
+         StudentGrowthPercentileFallFall,
+         StudentGrowthPercentileSpringFall,
+         AcademicYear,
+         ScreeningPeriodWindowName) %>%
+  filter(AcademicYear == "2020-2021",
+         ScreeningPeriodWindowName == 'BOY Administration')  %>%
+  mutate(subject = "Mathematics") %>%
+  collect()
