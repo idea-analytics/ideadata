@@ -1,7 +1,10 @@
+globalVariables("conn_PROD2")
+
 #' Connect to `IABWA` table on \code{PROD2} in `Assessments` schema
 #'
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples
@@ -27,8 +30,8 @@ get_iabwa <- function(){
   ia_bwa_col_names <- colnames(out)
 
   out <- out %>%
-    # must reorder columns to move Blob to end (thier prbably a better way to
-    # suss out automagically which columns are blobs and more to the end)
-    select(ia_bwa_col_names[c(1,3:13,15:31, 2, 14)])
+    # must reorder columns to move Blob to end (there's probably a better way to
+    # suss out auto-magically which columns are blobs and more to the end)
+    dplyr::select(ia_bwa_col_names[c(1,3:13,15:31, 2, 14)])
 
 }

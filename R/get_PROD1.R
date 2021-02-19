@@ -1,7 +1,10 @@
+globalVariables("conn_PROD1")
+
 #' Connect to `Schools` table on \code{PROD1} in `Schools` schema
 #'
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples
@@ -33,7 +36,8 @@ get_schools <- function(){
 #' Connect to `Students` table on \code{PROD1} in `Schools` schema
 #'
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples
@@ -65,7 +69,8 @@ get_students <- function(){
 #' Connect to `Regions` table on \code{PROD1} in `Schools` schema
 #'
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples
@@ -101,7 +106,8 @@ get_regions <- function(){
 #'
 #' @importFrom dplyr `%>%`
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples
@@ -118,9 +124,9 @@ get_currently_enrolled_students <- function(){
 
   out <- stus %>%
     dplyr::filter(
-           EnrollmentStatus == 0,
-           SchoolTermID == max(SchoolTermID,na.rm = TRUE),
-           RowIsCurrent == 'TRUE')
+           .data$EnrollmentStatus == 0,
+           .data$SchoolTermID == max(.data$SchoolTermID,na.rm = TRUE),
+           .data$RowIsCurrent == 'TRUE')
 
   out
 
@@ -130,7 +136,8 @@ get_currently_enrolled_students <- function(){
 #' membership (i.e., enrollment) and attendance data
 #'
 #'
-#' @return
+#' @return a `tbl_sql SQL Server` object.
+#'
 #' @export
 #'
 #' @examples

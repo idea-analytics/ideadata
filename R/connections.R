@@ -1,8 +1,17 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("db_locations",
+                                                        "server_name",
+                                                        "database_name",
+                                                        "url"))
+
+
 #' Get's creds from environment variable
 #'
-#' @description
+#' @description Looks up user credentials (and local ODBC driver to SQL Server)
+#' from environmental variables imported from the user's `.Renviron` file.
+#' Use [setup_creds] if this function fails; doing so will get the right entries
+#' into your `.Renviron` file.
 #'
-#' @return a names list iwht uid (userid) and pwd (passord)
+#' @return a named list with uid (userid), pwd (password), and driver
 #'
 get_creds <- function(){
 
@@ -25,10 +34,13 @@ get_creds <- function(){
 
 #' retrieves database URL and server name
 #'
-#' @param .database_name
+#' @param .database_name name of the database you are hoping to connect to.
+#' You can view databases by tying `View(`
 #'
 #' @return a data frame, with on road providing the `server_name`, `database_name`
 #' and `url` of the database given by `.database_name`
+#'
+#' @importFrom rlang .data
 #'
 #' @export
 #'
@@ -37,7 +49,7 @@ get_creds <- function(){
 
 get_db_url <- function(.database_name){
   db_locations %>%
-    dplyr::filter(database_name == .database_name)
+    dplyr::filter(.data$database_name == .database_name)
 }
 
 

@@ -7,7 +7,7 @@
 get_regions()
 }
 \value{
-
+a `tbl_sql SQL Server` object.
 }
 \description{
 Connect to `Regions` table on \code{PROD1} in `Schools` schema

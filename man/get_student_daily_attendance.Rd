@@ -8,7 +8,7 @@ membership (i.e., enrollment) and attendance data}
 get_student_daily_attendance()
 }
 \value{
-
+a `tbl_sql SQL Server` object.
 }
 \description{
 Connect to `Students` table on \code{PROD1} in `Attendance` schema which has

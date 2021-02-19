@@ -7,7 +7,7 @@
 get_schools()
 }
 \value{
-
+a `tbl_sql SQL Server` object.
 }
 \description{
 Connect to `Schools` table on \code{PROD1} in `Schools` schema

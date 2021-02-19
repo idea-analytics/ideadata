@@ -1,3 +1,5 @@
+globalVariables("conn_SRC_AR")
+
 get_renstar_math <- function(){
 
 

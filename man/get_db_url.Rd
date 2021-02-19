@@ -7,7 +7,8 @@
 get_db_url(.database_name)
 }
 \arguments{
-\item{.database_name}{}
+\item{.database_name}{name of the database you are hoping to connect to.
+You can view databases by tying `View(`}
 }
 \value{
 a data frame, with on road providing the `server_name`, `database_name`

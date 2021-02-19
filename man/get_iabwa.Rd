@@ -7,7 +7,7 @@
 get_iabwa()
 }
 \value{
-
+a `tbl_sql SQL Server` object.
 }
 \description{
 Connect to `IABWA` table on \code{PROD2} in `Assessments` schema

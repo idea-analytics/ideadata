@@ -8,7 +8,7 @@ currently enrolled students}
 get_currently_enrolled_students()
 }
 \value{
-
+a `tbl_sql SQL Server` object.
 }
 \description{
 Specifically, pull students data where `EnrollmentStatus == 0`,
