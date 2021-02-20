@@ -159,3 +159,32 @@ get_student_daily_attendance <- function(){
 
 }
 
+
+#' Connect to `StudentAcademicSummary` table on \code{PROD1} in `Schools` schema which has
+#'
+#'
+#' @return a `tbl_sql SQL Server` object.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the school db with \code{conn_PROD1} connection
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' stus_academ_summary <- get_students_academic_summary()
+#'
+get_students_academic_summary <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+                                                  dplyr::sql("StudentAcademicSummary")))
+
+  out
+
+
+
+}
+

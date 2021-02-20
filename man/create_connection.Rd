@@ -4,10 +4,12 @@
 \alias{create_connection}
 \title{Create connection to database}
 \usage{
-create_connection(.database_name)
+create_connection(.database_name, r_and_a_server = FALSE)
 }
 \arguments{
 \item{.database_name}{name of the database you want to connect to}
+
+\item{r_and_a_server}{switch for attaching to R&A server. Default is `FALSE`}
 }
 \value{
 returns an S4 object that inherits from DBIConnection.
