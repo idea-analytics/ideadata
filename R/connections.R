@@ -77,12 +77,13 @@ create_connection <- function(.database_name,
 
   kinit(creds$uid, creds$pwd)
 
-  #driver <- "{ODBC Driver 17 for SQL Server}"
+  db_details <- get_db_url(.database_name)
+
   if(r_and_a_server){
-    server <- get_db_url(.database_name) %>% dplyr::pull(server_name)
+    server <- db_details$server_name
     server <- glue::glue("{server}.IPS.ORG")
   } else {
-    server <- get_db_url(.database_name) %>% dplyr::pull(url)
+    server <- db_details$url
   }
 
 
@@ -101,13 +102,20 @@ create_connection <- function(.database_name,
 
 
 
-  conn <- DBI::dbConnect(odbc::odbc(),
-                         .connection_string = connection_string
-                         )
+  conn <- odbc::dbConnect(odbc::odbc(), .connection_string = connection_string)
+
 
   # Using a call to global so that this connection object is only made once
   # and is available for all get_* functions
-  do.call("<<-", list(connection_name, conn))
+  do.call("<-", list(connection_name, conn),
+          envir = globalenv())
+
+  do.call("on_connection_opened", list(get(connection_name,
+                                           envir = globalenv()), "TEST"),
+          envir = globalenv())
+
+
+
 }
 
 #' Check if DB connections available and valid or create new one
@@ -129,7 +137,8 @@ check_get_connection <- function(.database_name,
 
   if (!exists(connection_name)) {
     create_connection(.database_name, r_and_a_server) # if not, create connection
-  } else { # Check if esixint connection is still open
+
+  } else { # Check if existing connection is still open
     if (!DBI::dbIsValid(get(connection_name))) {
       create_connection(.database_name, r_and_a_server) # if not, create connection
     }
