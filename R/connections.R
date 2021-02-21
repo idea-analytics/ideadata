@@ -110,7 +110,7 @@ create_connection <- function(.database_name,
   do.call("<-", list(connection_name, conn),
           envir = globalenv())
 
-  do.call("on_connection_opened", list(get(connection_name,
+  do.call("on_connection_open", list(get(connection_name,
                                            envir = globalenv()), "TEST"),
           envir = globalenv())
 
