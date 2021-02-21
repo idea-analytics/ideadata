@@ -19,10 +19,10 @@ Imports:
     usethis,
     stringr,
     fs,
-    rlang
+    rlang,
+    odbc
 RoxygenNote: 7.1.1
 Suggests: 
     here
 Depends: 
     R (>= 2.10),
-    odbc
