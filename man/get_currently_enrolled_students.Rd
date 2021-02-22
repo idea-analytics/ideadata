@@ -2,17 +2,17 @@
 % Please edit documentation in R/get_PROD1.R
 \name{get_currently_enrolled_students}
 \alias{get_currently_enrolled_students}
-\title{Connect to `Students` table on \code{PROD1} in `Schools` schema only pull
+\title{Connect to \code{Students} table on \code{PROD1} in \code{Schools} schema only pull
 currently enrolled students}
 \usage{
 get_currently_enrolled_students()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Specifically, pull students data where `EnrollmentStatus == 0`,
-`RowIsCurrent = TRUE` and `SchoolTermID = max(SchoolTermID)`
+Specifically, pull students data where \code{EnrollmentStatus == 0},
+\code{RowIsCurrent = TRUE} and \code{SchoolTermID = max(SchoolTermID)}
 }
 \examples{
 

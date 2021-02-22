@@ -2,16 +2,16 @@
 % Please edit documentation in R/get_PROD1.R
 \name{get_student_daily_attendance}
 \alias{get_student_daily_attendance}
-\title{Connect to `Students` table on \code{PROD1} in `Attendance` schema which has
+\title{Connect to \code{Students} table on \code{PROD1} in \code{Attendance} schema which has
 membership (i.e., enrollment) and attendance data}
 \usage{
 get_student_daily_attendance()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to `Students` table on \code{PROD1} in `Attendance` schema which has
+Connect to \code{Students} table on \code{PROD1} in \code{Attendance} schema which has
 membership (i.e., enrollment) and attendance data
 }
 \examples{

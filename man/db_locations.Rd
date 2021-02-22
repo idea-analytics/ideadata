@@ -7,10 +7,10 @@
 \format{
 A data frame with 132 rows and 3 variables:
 \describe{
-  \item{server_name}{the server name that hosts the data base in `database_name`}
-  \item{database_name}{the name of a database, natch}
-  \item{url}{the IP Address of the server for the data base in `database_name`}
-  ...
+\item{server_name}{the server name that hosts the data base in \code{database_name}}
+\item{database_name}{the name of a database, natch}
+\item{url}{the IP Address of the server for the data base in \code{database_name}}
+...
 }
 }
 \usage{

@@ -2,15 +2,15 @@
 % Please edit documentation in R/get_PROD2.R
 \name{get_iabwa}
 \alias{get_iabwa}
-\title{Connect to `IABWA` table on \code{PROD2} in `Assessments` schema}
+\title{Connect to \code{IABWA} table on \code{PROD2} in \code{Assessments} schema}
 \usage{
 get_iabwa()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to `IABWA` table on \code{PROD2} in `Assessments` schema
+Connect to \code{IABWA} table on \code{PROD2} in \code{Assessments} schema
 }
 \examples{
 

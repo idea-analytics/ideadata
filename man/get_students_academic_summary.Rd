@@ -2,15 +2,15 @@
 % Please edit documentation in R/get_PROD1.R
 \name{get_students_academic_summary}
 \alias{get_students_academic_summary}
-\title{Connect to `StudentAcademicSummary` table on \code{PROD1} in `Schools` schema which has}
+\title{Connect to \code{StudentAcademicSummary} table on \code{PROD1} in \code{Schools} schema which has}
 \usage{
 get_students_academic_summary()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to `StudentAcademicSummary` table on \code{PROD1} in `Schools` schema which has
+Connect to \code{StudentAcademicSummary} table on \code{PROD1} in \code{Schools} schema which has
 }
 \examples{
 

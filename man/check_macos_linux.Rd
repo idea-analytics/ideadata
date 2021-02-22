@@ -7,7 +7,7 @@
 check_macos_linux()
 }
 \value{
-a single entry boolean (i.e., `TRUE` or `FALSE`)
+a single entry boolean (i.e., \code{TRUE} or \code{FALSE})
 }
 \description{
 Check if OS is *Nix flavored

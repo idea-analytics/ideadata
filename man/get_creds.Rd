@@ -11,7 +11,7 @@ a named list with uid (userid), pwd (password), and driver
 }
 \description{
 Looks up user credentials (and local ODBC driver to SQL Server)
-from environmental variables imported from the user's `.Renviron` file.
-Use [setup_creds] if this function fails; doing so will get the right entries
-into your `.Renviron` file.
+from environmental variables imported from the user's \code{.Renviron} file.
+Use \link{setup_creds} if this function fails; doing so will get the right entries
+into your \code{.Renviron} file.
 }

@@ -8,11 +8,11 @@ get_db_url(.database_name)
 }
 \arguments{
 \item{.database_name}{name of the database you are hoping to connect to.
-You can view databases by tying `View(`}
+You can view databases by tying \verb{View(}}
 }
 \value{
-a data frame, with on road providing the `server_name`, `database_name`
-and `url` of the database given by `.database_name`
+a data frame, with on road providing the \code{server_name}, \code{database_name}
+and \code{url} of the database given by \code{.database_name}
 }
 \description{
 retrieves database URL and server name
