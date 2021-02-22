@@ -2,6 +2,7 @@
 
 export(check_get_connection)
 export(create_connection)
+export(disconnect)
 export(get_currently_enrolled_students)
 export(get_db_url)
 export(get_iabwa)

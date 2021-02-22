@@ -5,7 +5,7 @@ on_connection_open <- function(con, code) {
   # RStudio v1.1 generic connection interface --------------------------------
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
-      host <- con@info$servername
+      #host <- con@info$servername
 
       observer$connectionOpened(
         # connection type
@@ -15,7 +15,7 @@ on_connection_open <- function(con, code) {
         displayName = con@info$dbname,
 
         # host key
-        host = host,
+        host =  odbc:::computeHostName(con),
 
         # icon for connection
         icon = odbc::odbcConnectionIcon(con),
@@ -25,7 +25,7 @@ on_connection_open <- function(con, code) {
 
         # disconnection code
         disconnect = function() {
-          odbc::dbDisconnect(con)
+          disconnect(con)
         },
 
         listObjectTypes = function () {

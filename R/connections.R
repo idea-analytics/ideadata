@@ -110,12 +110,6 @@ create_connection <- function(.database_name,
   do.call("<-", list(connection_name, conn),
           envir = globalenv())
 
-  do.call("on_connection_open", list(get(connection_name,
-                                           envir = globalenv()), "TEST"),
-          envir = globalenv())
-
-
-
 }
 
 #' Check if DB connections available and valid or create new one
@@ -137,11 +131,13 @@ check_get_connection <- function(.database_name,
 
   if (!exists(connection_name)) {
     create_connection(.database_name, r_and_a_server) # if not, create connection
+    on_connection_open(get(connection_name, envir = globalenv()), "TEST")
 
   } else { # Check if existing connection is still open
     if (!DBI::dbIsValid(get(connection_name))) {
       create_connection(.database_name, r_and_a_server) # if not, create connection
-    }
+      on_connection_open(get(connection_name, envir = globalenv()), "TEST")
+      }
   }
 }
 
@@ -159,4 +155,27 @@ generate_schema <- function(.database_name){
   schema <- glue::glue("[{db_info$server_name}].[{.database_name}].[dbo]")
 
   schema
+}
+
+
+#' Disconnect (close) a connection from IDEA's data warehouse
+#'
+#'
+#' @details This is a thing wrapper around [DBI::dbDisconnect()], which closes
+#' the connection, discards all pending work, and frees resources (e.g., memory, sockets).
+#'
+#' @param con a [DBI::DBIConnection-class] object
+#'
+#' @return nothing, as it's called for its side-effects
+#' @export
+#'
+#' @examples
+#' # The following creats a connect call conn_PROD1 in global environment
+#' regions <- get_regions()
+#' disconnect(conn_PROD1)
+disconnect <- function(con){
+  on_connection_closed(con)
+  odbc::dbDisconnect(con)
+  rm(con, envir = globalenv())
+  cli::cli_alert_success()
 }

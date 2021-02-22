@@ -2,15 +2,15 @@
 % Please edit documentation in R/get_PROD1.R
 \name{get_schools}
 \alias{get_schools}
-\title{Connect to `Schools` table on \code{PROD1} in `Schools` schema}
+\title{Connect to \code{Schools} table on \code{PROD1} in \code{Schools} schema}
 \usage{
 get_schools()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to `Schools` table on \code{PROD1} in `Schools` schema
+Connect to \code{Schools} table on \code{PROD1} in \code{Schools} schema
 }
 \examples{
 

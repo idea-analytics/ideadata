@@ -3,28 +3,28 @@
 \name{get_renstar_math}
 \alias{get_renstar_math}
 \alias{get_renstar_reading}
-\title{Connect to `StarMathV2` table in `SRC_AR` on `964592-SQLDS`}
+\title{Connect to \code{StarMathV2} table in \code{SRC_AR} on \code{964592-SQLDS}}
 \usage{
 get_renstar_math()
 
 get_renstar_reading()
 }
 \value{
-a `tbl_sql SQL Server` object.
+a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to `StarMathV2` table in `SRC_AR` on `964592-SQLDS`
+Connect to \code{StarMathV2} table in \code{SRC_AR} on \code{964592-SQLDS}
 }
 \details{
-Not that this is a linked server connection from  `791150-HQVRA`
-(i.e., R&A's SQL Server instance) to `964592-SQLDS`.  Since we need to connect
-to a database when making a connection we donncet to the `Dashboard` database
-on `964592-SQLDS`.  Doing so results in the conn_Dashboard connection object,
+Not that this is a linked server connection from  \code{791150-HQVRA}
+(i.e., R&A's SQL Server instance) to \code{964592-SQLDS}.  Since we need to connect
+to a database when making a connection we donncet to the \code{Dashboard} database
+on \code{964592-SQLDS}.  Doing so results in the conn_Dashboard connection object,
 which is fine, but a bit of a hack.
 }
 \section{Functions}{
 \itemize{
-\item \code{get_renstar_reading}: Connect to `StarReadingV2` table in `SRC_AR` on `964592-SQLDS`
+\item \code{get_renstar_reading}: Connect to \code{StarReadingV2} table in \code{SRC_AR} on \code{964592-SQLDS}
 }}
 
 \examples{

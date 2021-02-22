@@ -7,7 +7,7 @@
 kinit(uid, pwd)
 }
 \arguments{
-\item{uid}{your IDEA user id (just the `firstname.lastname` part)}
+\item{uid}{your IDEA user id (just the \code{firstname.lastname} part)}
 
 \item{pwd}{your IDEA pass word}
 }
