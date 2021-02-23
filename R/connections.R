@@ -173,9 +173,14 @@ generate_schema <- function(.database_name){
 #' # The following creats a connect call conn_PROD1 in global environment
 #' regions <- get_regions()
 #' disconnect(conn_PROD1)
-disconnect <- function(con){
+disconnect <- function(connection_name){
+
+  con <- get(connection_name, envir = globalenv())
   on_connection_closed(con)
   odbc::dbDisconnect(con)
-  rm(con, envir = globalenv())
-  cli::cli_alert_success()
+
+  #con_name <- as_label(enquo(con))
+
+  rm(list = connection_name, envir = globalenv())
+  cli::cli_alert_success("Connection {connection_name} removed")
 }

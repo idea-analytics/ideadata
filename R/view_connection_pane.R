@@ -1,7 +1,7 @@
 
 
 on_connection_open <- function(con, code) {
-  library(odbc)
+  #library(odbc)
   # RStudio v1.1 generic connection interface --------------------------------
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
@@ -18,7 +18,7 @@ on_connection_open <- function(con, code) {
         host =  odbc:::computeHostName(con),
 
         # icon for connection
-        icon = odbc::odbcConnectionIcon(con),
+        icon = odbcConnectionIcon(con),
 
         # connection code
         connectCode = code,
@@ -29,26 +29,26 @@ on_connection_open <- function(con, code) {
         },
 
         listObjectTypes = function () {
-          odbc::odbcListObjectTypes(con)
+          odbcListObjectTypes(con)
         },
 
         # table enumeration code
         listObjects = function(...) {
-          odbc::odbcListObjects(con, ...)
+          odbcListObjects(con, ...)
         },
 
         # column enumeration code
         listColumns = function(...) {
-          odbc::odbcListColumns(con, ...)
+          odbcListColumns(con, ...)
         },
 
         # table preview code
         previewObject = function(rowLimit, ...) {
-          odbc::odbcPreviewObject(con, rowLimit, ...)
+          odbcPreviewObject(con, rowLimit, ...)
         },
 
         # other actions that can be executed on this connection
-        actions = odbc::odbcConnectionActions(con),
+        actions = odbcConnectionActions(con),
 
         # raw connection object
         connectionObject = con
