@@ -25,7 +25,10 @@ Imports:
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: 
-    here
+    here,
+    knitr,
+    rmarkdown
 Depends: 
     R (>= 2.10)
 URL: https://idea-analytics.github.io/ideadata
+VignetteBuilder: knitr
