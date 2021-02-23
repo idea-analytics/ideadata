@@ -129,20 +129,26 @@ check_get_connection <- function(.database_name,
 
   connection_name <- glue::glue("conn_{.database_name}")
 
+  code <- paste('library(ideadata)',
+                glue::glue('create_connection("{.database_name}", r_and_a_server={r_and_a_server})'),
+                sep = '\n'     )
+
   if (!exists(connection_name)) {
     create_connection(.database_name, r_and_a_server) # if not, create connection
-    on_connection_open(get(connection_name, envir = globalenv()), "TEST")
+
+
+    on_connection_open(get(connection_name, envir = globalenv()), code)
 
   } else { # Check if existing connection is still open
     if (!DBI::dbIsValid(get(connection_name))) {
       create_connection(.database_name, r_and_a_server) # if not, create connection
-      on_connection_open(get(connection_name, envir = globalenv()), "TEST")
+      on_connection_open(get(connection_name, envir = globalenv()), code)
       }
   }
 }
 
 
-#' Genrates server.database.dbo schema string
+#' Generates server.database.dbo schema string
 #'
 #' @param .database_name Name of the database your want to connect to
 #'
@@ -170,19 +176,18 @@ generate_schema <- function(.database_name){
 #' @export
 #'
 #' @examples
-#' # The following creats a connect call conn_PROD1 in global environment
+#' # The following creates a connect call `conn_PROD1` in global environment
 #' regions <- get_regions()
 #'
-#' #notice the name is a character string and not the bare object name
-#' disconnect("conn_PROD1")
-disconnect <- function(connection_name){
+#' disconnect(conn_PROD1)
+disconnect <- function(con){
 
-  con <- get(connection_name, envir = globalenv())
+  con_name <- glue::glue("conn_{con@info$dbname}")
   on_connection_closed(con)
   odbc::dbDisconnect(con)
 
   #con_name <- as_label(enquo(con))
 
-  rm(list = connection_name, envir = globalenv())
-  cli::cli_alert_success("Connection {connection_name} removed")
+  rm(list = con_name, envir = globalenv())
+  cli::cli_alert_success("Connection {con_name} removed")
 }
