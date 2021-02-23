@@ -4,10 +4,10 @@
 \alias{disconnect}
 \title{Disconnect (close) a connection from IDEA's data warehouse}
 \usage{
-disconnect(con)
+disconnect(connection_name)
 }
 \arguments{
-\item{con}{a \link[DBI:DBIConnection-class]{DBI::DBIConnection} object}
+\item{con}{the name  \link[DBI:DBIConnection-class]{DBI::DBIConnection} object \strong{as a string}}
 }
 \value{
 nothing, as it's called for its side-effects
@@ -22,5 +22,7 @@ the connection, discards all pending work, and frees resources (e.g., memory, so
 \examples{
 # The following creats a connect call conn_PROD1 in global environment
 regions <- get_regions()
-disconnect(conn_PROD1)
+
+#notice the name is a character string and not the bare object name
+disconnect("conn_PROD1")
 }
