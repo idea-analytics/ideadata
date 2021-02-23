@@ -2,7 +2,7 @@
 % Please edit documentation in R/connections.R
 \name{generate_schema}
 \alias{generate_schema}
-\title{Genrates server.database.dbo schema string}
+\title{Generates server.database.dbo schema string}
 \usage{
 generate_schema(.database_name)
 }
@@ -13,5 +13,5 @@ generate_schema(.database_name)
 a string
 }
 \description{
-Genrates server.database.dbo schema string
+Generates server.database.dbo schema string
 }

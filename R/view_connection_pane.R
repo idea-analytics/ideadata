@@ -1,7 +1,7 @@
 
 
 on_connection_open <- function(con, code) {
-  #library(odbc)
+
   # RStudio v1.1 generic connection interface --------------------------------
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
@@ -15,10 +15,10 @@ on_connection_open <- function(con, code) {
         displayName = con@info$dbname,
 
         # host key
-        host =  odbc:::computeHostName(con),
+        host =  compute_host_name(con),
 
         # icon for connection
-        icon = odbcConnectionIcon(con),
+        icon = odbc::odbcConnectionIcon(con),
 
         # connection code
         connectCode = code,
@@ -29,26 +29,26 @@ on_connection_open <- function(con, code) {
         },
 
         listObjectTypes = function () {
-          odbcListObjectTypes(con)
+          odbc::odbcListObjectTypes(con)
         },
 
         # table enumeration code
         listObjects = function(...) {
-          odbcListObjects(con, ...)
+          odbc::odbcListObjects(con, ...)
         },
 
         # column enumeration code
         listColumns = function(...) {
-          odbcListColumns(con, ...)
+          odbc::odbcListColumns(con, ...)
         },
 
         # table preview code
         previewObject = function(rowLimit, ...) {
-          odbcPreviewObject(con, rowLimit, ...)
+          odbc::odbcPreviewObject(con, rowLimit, ...)
         },
 
         # other actions that can be executed on this connection
-        actions = odbcConnectionActions(con),
+        actions = odbc::odbcConnectionActions(con),
 
         # raw connection object
         connectionObject = con
@@ -64,7 +64,7 @@ on_connection_closed <- function(con) {
     return(invisible(NULL))
 
   type <- con@info$dbms.name
-  host <- odbc:::computeHostName(con)
+  host <- compute_host_name(con)
   observer$connectionClosed(type, host)
 }
 
@@ -75,6 +75,19 @@ on_connection_updated <- function(con, hint) {
     return(invisible(NULL))
 
   type <- con@info$dbms.name
-  host <- odbc:::computeHostName(con)
+  host <- compute_host_name(con)
   observer$connectionUpdated(type, host, hint = hint)
+}
+
+
+compute_host_name <- function(connection) {
+
+  string_values <- function(x) {
+    x <- tryCatch(x, error = function(x) "")
+    unique(x[nzchar(x)])
+  }
+
+  paste(collapse = "_", string_values(c(connection@info$username,
+                                        connection@info$dbname, if (!identical(connection@info$servername,
+                                                                               connection@info$dbname)) connection@info$servername)))
 }
