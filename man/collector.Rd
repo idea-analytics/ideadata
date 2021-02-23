@@ -7,7 +7,7 @@
 collector(.data, .split_column)
 }
 \arguments{
-\item{.data}{remote \code{\link[dbplyr:tbl]{dbplyr::tbl()}} table that needs to be collected}
+\item{.data}{remote \code{\link[dplyr:tbl]{dplyr::tbl()}} table that needs to be collected}
 
 \item{.split_column}{column used to break \code{.data} into peices to be downloaded}
 }

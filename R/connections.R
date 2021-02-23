@@ -164,7 +164,7 @@ generate_schema <- function(.database_name){
 #' @details This is a thing wrapper around [DBI::dbDisconnect()], which closes
 #' the connection, discards all pending work, and frees resources (e.g., memory, sockets).
 #'
-#' @param con a [DBI::DBIConnection-class] object
+#' @param con the name  [DBI::DBIConnection-class] object **as a string**
 #'
 #' @return nothing, as it's called for its side-effects
 #' @export
@@ -172,7 +172,9 @@ generate_schema <- function(.database_name){
 #' @examples
 #' # The following creats a connect call conn_PROD1 in global environment
 #' regions <- get_regions()
-#' disconnect(conn_PROD1)
+#'
+#' #notice the name is a character string and not the bare object name
+#' disconnect("conn_PROD1")
 disconnect <- function(connection_name){
 
   con <- get(connection_name, envir = globalenv())
