@@ -1,3 +1,5 @@
+# ideadata 0.1.4
+
 # ideadata 0.1.3
 
 * Connection pane disconnections weren't working, but now they are. 
