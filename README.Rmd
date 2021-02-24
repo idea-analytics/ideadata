@@ -34,13 +34,14 @@ Since `ideadata` is an internal IDEA package there is only a development version
 #install.pacakges("remotes")
 remotes::install_github("idea-analytics/ideadata")
 
-#renv::install("idea-analytics/ideadata@main") as works
+#renv::install("idea-analytics/ideadata@main") also works
 ```
 ## Example
 
 Here's how you connect to a table in the warehouse.
 
-```{r example, eval=FALSE}
+```{r example, eval=TRUE}
+library(dplyr)
 library(ideadata)
 
 schools <- get_schools()
@@ -48,28 +49,31 @@ schools <- get_schools()
 head(schools)
 ```
 
-The `schools` object above is `tbl` object.  That means it works with `dplyr` verbs and functions, but that what  happens in the background is that `dplyr` and `dbplyr` generate slq that is sent to the databvase you are connected and all computation (e.g., filtering, selecting, joining, calculations) are on the remote SQL Server instance and **not** on your computer.  
+The `schools` object above is `tbl` object.  That means it works with `dplyr` verbs and functions, but  what  happens in the background is that `dplyr` and `dbplyr` generate SQL that is sent to the database you are connected to and that all computation (e.g., filtering, selecting, joining, calculations, aggregation) are completed on the remote SQL Server instance and **not** on your computer.  
 
-You will eventually want to pull that data down onto your machine, when you want to use R or Python do what they can do (like modeling or graphics) that the database can't do. Pulling that data down is easy with [dplyr::collect()]
+Nevertheless, you will eventually want to pull that data down onto your machine when you want to use R or Python do what they can do (like modeling or graphics) that the database can't do. 
 
-```r
+Pulling that data down is easy with [dplyr::collect()]
+
+```{r collect}
+library(dplyr)
+
 schools_df <- schools %>% 
   collect() %>% 
-  janitor::clean_namnes()
+  janitor::clean_names()
 ```
+
 (Here `janitor::clean_names()` snake_cases all the column names). 
 
 ### What if I am pulling down lots fo data (say, millions of rows)?
-In this isntance the database connection may fail.  It's not ideal, but it happens.  One way to deal with this is to pull down the data peicemeal.  The `collector()` function in `ideadata` makes this task trivial. It takes one argument, which is a column name form the table you want to pull down, which is used to break up the data into smaller sets of data that are pulled down from the database onto your computer and then recomined into a single table. 
+In this instance the database connection may fail.  It's not ideal, but it happens.  One way to deal with this is to pull down the data piecemeal.  The `collector()` function in `ideadata` makes this task trivial. It takes one argument, which is a column name form the table you want to pull down, which is used to break up the data into smaller sets of data that are pulled down from the database onto your computer and then recombined into a single table. 
 
-```r
-Stu_att_conn <- get_student_daily_attendance()
+```{r collector}
 
-stu_att <- Stu_att_conn %>% 
-  filter(AcademicYear == "2020-2021) %>% 
-  select(StudentNumber, AttDate)
-  collector(AttDate) %>% 
+schools_df <- schools %>% 
+  collector(CountyName) %>% 
   janitor::clean_names()
+
 ```
 
 

@@ -23,8 +23,9 @@ collector <- function(.data,
   splitter <- .data %>%
     dplyr::select({{.split_column}}) %>%
     dplyr::distinct() %>%
-    dplyr::arrange({{.split_column}}) %>%
-    dplyr::pull({{.split_column}})
+    #dplyr::arrange({{.split_column}}) %>%
+    dplyr::pull({{.split_column}}) %>%
+    sort()
 
   data_collector_fn <- function(.split_value) {
 

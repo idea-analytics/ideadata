@@ -92,7 +92,7 @@ create_connection <- function(.database_name,
     "Driver={creds$driver};",
     "Server={server};",
     "UID={creds$uid};",
-    "PWD={creds$pwd};",
+    "PWD={utils::URLencode(creds$pwd)};",
     "Trusted_Connection=yes;",
     "database={.database_name}"
   )
@@ -164,8 +164,7 @@ generate_schema <- function(.database_name){
 }
 
 
-#' Disconnect (close) a connection from IDEA's data warehouse
-#'
+#' Disconnect from a database in the IDEA data warehouse
 #'
 #' @details This is a thing wrapper around [DBI::dbDisconnect()], which closes
 #' the connection, discards all pending work, and frees resources (e.g., memory, sockets).
