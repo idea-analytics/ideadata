@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Connect to Schools table on PROD1 in Schools schema — get_schools • ideadata</title>
+<title>Connect to ResultsView View in GPTW on 791150-hqvra which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey — get_gptw • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +47,10 @@
 
 
 
-<meta property="og:title" content="Connect to Schools table on PROD1 in Schools schema — get_schools" />
-<meta property="og:description" content="Connect to Schools table on PROD1 in Schools schema" />
+<meta property="og:title" content="Connect to ResultsView View in GPTW on 791150-hqvra which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey — get_gptw" />
+<meta property="og:description" content="Connect to ResultsView View in GPTW on 791150-hqvra which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -126,38 +129,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Connect to <code>Schools</code> table on <code>PROD1</code> in <code>Schools</code> schema</h1>
+    <h1>Connect to <code>ResultsView</code> View in <code>GPTW</code> on <code>791150-hqvra</code> which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey</h1>
     
-    <div class="hidden name"><code>get_schools.Rd</code></div>
+    <div class="hidden name"><code>get_gptw.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Connect to <code>Schools</code> table on <code>PROD1</code> in <code>Schools</code> schema</p>
+    <p>Connect to <code>ResultsView</code> View in <code>GPTW</code> on <code>791150-hqvra</code> which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_schools</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_gptw</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_oe_questions</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_oe_region_responses</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_oe_responses</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_questions</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_results</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>get_gptw_sections</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a <code>tbl_sql SQL Server</code> object.</p>
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+<ul>
+<li><p><code>get_gptw_oe_questions</code>: <code>OEQuestions</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+<li><p><code>get_gptw_oe_region_responses</code>: <code>OERegionResponses</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+<li><p><code>get_gptw_oe_responses</code>: <code>OEResponses</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+<li><p><code>get_gptw_questions</code>: <code>Questions</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+<li><p><code>get_gptw_results</code>: <code>Results</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+<li><p><code>get_gptw_sections</code>: <code>Sections</code> table in <code>GPTW</code> on <code>791150-hqvra</code></p></li>
+</ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># This attaches to the school db with \code{conn_PROD1} connection</span>
-<span class='va'>schools</span> <span class='op'>&lt;-</span> <span class='fu'>get_schools</span><span class='op'>(</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='co'># This attaches to the school db with \code{conn_Dashboard} connection</span>
+<span class='va'>gptw</span> <span class='op'>&lt;-</span> <span class='fu'>get_gptw</span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in get_creds(): <span style='color: #BB0000;'>DB_USER or DB_PASS environment variables are missing.</span><span></span>
-#&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div><div class='input'>
-<span class='co'># This pulls down schools data form the DB and onto your computer</span>
-<span class='co'># and then cleans the names (lower snakecase) using [janitor::clean_names()]</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>janitor</span><span class='op'>)</span>
-<span class='va'>schools</span> <span class='op'>&lt;-</span> <span class='fu'>get_schools</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>clean_names</span><span class='op'>(</span><span class='op'>)</span>
-  <span class='op'>}</span>
-</div></span></pre>
+#&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
