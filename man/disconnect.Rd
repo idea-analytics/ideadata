@@ -2,7 +2,7 @@
 % Please edit documentation in R/connections.R
 \name{disconnect}
 \alias{disconnect}
-\title{Disconnect (close) a connection from IDEA's data warehouse}
+\title{Disconnect from a database in the IDEA data warehouse}
 \usage{
 disconnect(con)
 }
@@ -13,7 +13,7 @@ disconnect(con)
 nothing, as it's called for its side-effects
 }
 \description{
-Disconnect (close) a connection from IDEA's data warehouse
+Disconnect from a database in the IDEA data warehouse
 }
 \details{
 This is a thing wrapper around \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}}, which closes
