@@ -1,10 +1,12 @@
 # ideadata 0.1.4
 
+* Added GPTW `get_*` functions 
+
 # ideadata 0.1.3
 
 * Connection pane disconnections weren't working, but now they are. 
 * added `disconnect()` function to close conenctions in scripts and from the console. 
-* Added GPTW `get_*` functions
+
 
 * Created `pkgdown` site for hosting documentation on github. 
 
