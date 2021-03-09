@@ -22,7 +22,10 @@ Imports:
     rlang,
     purrr,
     odbc,
-    utils
+    utils,
+    devtools,
+    janitor,
+    openssl
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: 

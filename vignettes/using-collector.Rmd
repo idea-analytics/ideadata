@@ -1,0 +1,67 @@
+---
+title: "Using collector() for large data sets"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using collector() for large data sets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+Some of our datasets are large and moving them from that database to your computer can take a fare amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a log of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
+
+For this reason, `ideadata` has a `collector` function.  It's used the same way as `collect`, but requires you to pass a paramater---`.split_column` that is used to break your data into pieces based on the set of values with in the column you identify. 
+
+Consider the `StudentDailyAttendance` table on `PROD1`
+```{r setup}
+devtools::load_all(".")
+#library(ideadata)
+library(dplyr)
+
+stu_attendance  <- get_student_daily_attendance()
+
+glimpse(stu_attendance)
+```
+```{r counts}
+
+#school years are stored as characters, which is inefficient for filtering
+# termids are doubles (thought they really shoudl be integers), but are 
+# much faster for filtering. 
+term_id <- calc_ps_termid(2020)
+
+
+stu_attend_2021 <-stu_attendance %>% 
+  filter(SchoolTermID == term_id)
+
+stu_attend_2021 %>% 
+  count()
+
+```
+So as of the February 26th, 2021 there 7,907,580 student attendance records. That will be a tall order for `collect` so instead lets use `collector`
+
+```{r}
+
+stu_attend_2021_feb <- stu_attendance %>% 
+  select(StudentNumber, AttDate, Membership, Absences) %>% 
+  filter(AttDate >= '2021-02-15 00:00') %>%  
+  collector(AttDate) %>% 
+  janitor::clean_names()
+
+
+
+```
+```{r}
+stu_attend_2021_feb %>% 
+  head(20) %>% 
+  mutate(student_number = openssl::sha1(as.character(student_number))) %>% #crypto hash
+  knitr::kable()
+```
+
+Notice that the table `stu_attendance` (i.e, `STudentDailyAttendance` on `PROD1`) has `r length(colnames(stu_attendance))` columns.  A trick used above is to reduce  the columns to only those you need to use later with a `select` statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database. 
