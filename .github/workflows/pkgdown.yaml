@@ -11,6 +11,9 @@ jobs:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      IDEA_RNA_ODBC_DRIVER: '{ODBC Driver 17 for SQL Server}'
+      IDEA_RNA_DB_UID: ${{ secrects.IDEA_RNA_DB_UID }}
+      IDEA_RNA_DB_PWD: ${{ secrects.IDEA_RNA_DB_PWD }}
     steps:
       - uses: actions/checkout@v2
 
