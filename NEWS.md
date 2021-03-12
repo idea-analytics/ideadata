@@ -1,3 +1,5 @@
+# ideadata 0.1.5
+
 # ideadata 0.1.4
 
 * Added GPTW `get_*` functions 
