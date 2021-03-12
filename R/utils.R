@@ -21,6 +21,7 @@ setup_creds <- function(){
   renviron_file_path <- glue::glue("{r_home}/.Renviron")
 
   manual_update <- FALSE
+  resource_r_environ <- FALSE
   # Check existence and create if .Renviron doesn't exist
   if(!file.exists(renviron_file_path)) {
     cli::cli_alert_info(".Renviron file not found")
@@ -35,7 +36,7 @@ setup_creds <- function(){
     update_driver(renviron_file_path)
   } else { # file exists
 
-    r_environ <- readLines(renviron_file_path, )
+    r_environ <- readLines(renviron_file_path)
     if(length(r_environ) ==0) {
       cli::cli_alert_warning("{renviron_file_path} is empty ... deleting")
       file.remove(renviron_file_path)
@@ -43,11 +44,13 @@ setup_creds <- function(){
       update_uid(renviron_file_path)
       update_pwd(renviron_file_path)
       update_driver(renviron_file_path)
+      resource_r_environ <- TRUE
     } else {
       # update UID
       if(!any(stringr::str_detect(r_environ, "IDEA_RNA_DB_UID"))){
         update_uid(renviron_file_path)
         manual_update <- FALSE
+        resource_r_environ <- TRUE
       } else {
           cli::cli_alert_warning("{.field IDEA_RNA_DB_UID} already exists")
           manual_update <- TRUE
@@ -57,6 +60,7 @@ setup_creds <- function(){
       if(!any(stringr::str_detect(r_environ, "IDEA_RNA_DB_PWD"))){
         update_pwd(renviron_file_path)
         manual_update <- FALSE
+        resource_r_environ <- TRUE
       } else{
         cli::cli_alert_warning("{.field IDEA_RNA_DB_PWD} already exists")
         manual_update <- TRUE
@@ -67,8 +71,9 @@ setup_creds <- function(){
       if(!any(stringr::str_detect(r_environ, "IDEA_RNA_ODBC_DRIVER"))){
         update_driver(renviron_file_path)
         manual_update <- FALSE
+        resource_r_environ <- TRUE
       } else{
-        cli::cli_alert_warning("{.field IDEA_RNA_DB_DRIVER} already exists")
+        cli::cli_alert_warning("{.field IDEA_RNA_ODBC_DRIVER} already exists")
         manual_update <- TRUE
 
       }
@@ -83,8 +88,14 @@ setup_creds <- function(){
     cli::cli_alert_info("Use {.pkg usethis::edit_r_environ()} to edit manually")
   } else {
     cli::cli_alert_success("Modified {renviron_file_path}")
-    usethis::ui_todo("Restart R for changes to take effect")
   }
+
+  if(resource_r_environ) {
+    cli::cli_alert("Re-sourcing updated .Renviron file")
+    readRenviron(renviron_file_path)
+    cli::cli_alert_success("Environment variables updated")
+  }
+
 
   invisible(renviron_file_path)
 

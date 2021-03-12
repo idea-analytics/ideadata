@@ -32,7 +32,7 @@ glimpse(stu_attendance)
 ```{r counts}
 
 #school years are stored as characters, which is inefficient for filtering
-# termids are doubles (thought they really shoudl be integers), but are 
+# TermIDs are doubles (thought they really ought be integers), but are 
 # much faster for filtering. 
 term_id <- calc_ps_termid(2020)
 
