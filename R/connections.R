@@ -25,7 +25,7 @@ get_creds <- function(){
 
   uid <- Sys.getenv("IDEA_RNA_DB_UID")
   pwd <- Sys.getenv("IDEA_RNA_DB_PWD")
-  driver <- Sys.getenv("IDEA_RNA_DB_DRIVER")
+  driver <- Sys.getenv("IDEA_RNA_ODBC_DRIVER")
 
   list(uid = uid, pwd = pwd, driver = driver)
 }
