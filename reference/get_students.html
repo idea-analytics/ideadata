@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -104,6 +104,9 @@
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="../articles/setting-up-your-credentials.html">Setting up your credentials</a>
+    </li>
+    <li>
+      <a href="../articles/using-collector.html">Using collector() for large data sets</a>
     </li>
   </ul>
 </li>
@@ -154,7 +157,7 @@
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='va'>schools</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_schools.html'>get_schools</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>clean_names</span><span class='op'>(</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='op'>(</span><span class='op'>)</span>
   <span class='op'>}</span>
 </div></span></pre>
   </div>

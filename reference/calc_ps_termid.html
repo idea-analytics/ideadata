@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Connect to Students table on PROD1 in Attendance schema which has
-membership (i.e., enrollment) and attendance data — get_student_daily_attendance • ideadata</title>
+<title>Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,10 +46,8 @@ membership (i.e., enrollment) and attendance data — get_student_daily_attendan
 
 
 
-<meta property="og:title" content="Connect to Students table on PROD1 in Attendance schema which has
-membership (i.e., enrollment) and attendance data — get_student_daily_attendance" />
-<meta property="og:description" content="Connect to Students table on PROD1 in Attendance schema which has
-membership (i.e., enrollment) and attendance data" />
+<meta property="og:title" content="Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid" />
+<meta property="og:description" content="Calculate 4 digit PowerSchool TermID given first year of a school year" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -132,34 +129,38 @@ membership (i.e., enrollment) and attendance data" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Connect to <code>Students</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
-membership (i.e., enrollment) and attendance data</h1>
+    <h1>Calculate 4 digit PowerSchool TermID given first year of a school year</h1>
     
-    <div class="hidden name"><code>get_student_daily_attendance.Rd</code></div>
+    <div class="hidden name"><code>calc_ps_termid.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Connect to <code>Students</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
-membership (i.e., enrollment) and attendance data</p>
+    <p>Calculate 4 digit PowerSchool TermID given first year of a school year</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_student_daily_attendance</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='va'>sy</span>, quarter <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>sy</th>
+      <td><p>First year in a school year (e.g. 2015 for SY 2015-2016)</p></td>
+    </tr>
+    <tr>
+      <th>quarter</th>
+      <td><p>quarter the quarter as integer in a year. The default is 0,
+which returns the school year's termid.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>tbl_sql SQL Server</code> object.</p>
+    <p>a character or integer vector</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># This attaches to the school db with \code{conn_PROD1} connection</span>
-
-<span class='co'># This pulls down schools data form the DB and onto your computer</span>
-<span class='co'># and then cleans the names (lower snakecase) using [janitor::clean_names()]</span>
-<span class='va'>stu_attend</span> <span class='op'>&lt;-</span> <span class='fu'>get_student_daily_attendance</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in get_creds(): <span style='color: #BB0000;'>DB_USER or DB_PASS environment variables are missing.</span><span></span>
-#&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div><div class='input'>
-</div></span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='fl'>2015</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 2500</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
