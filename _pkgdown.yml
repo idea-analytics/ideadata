@@ -1,1 +1,37 @@
 url: https://idea-analytics.github.io/ideadata
+reference:
+- title: Get connection functions
+  desc: >
+    Get connections to tables in IDEA's warehouse.  These functions return
+    direct connections to as `tbl` objects and are ready to use with `dplyr` verbs
+- contents:
+  - starts_with("get_currently")
+  - starts_with("get_student")
+  - starts_with("get_schools")
+  - starts_with("get_regions")
+  - starts_with("get_iabwa")
+  - starts_with("get_renstar")
+  - starts_with("get_gptw")
+- title: Useful utilities
+- contents:
+  - setup_creds
+  - collector
+  - disconnect
+  - calc_ps_termid
+  - get_db_url
+  - generate_schema
+- title: Data about databases
+- contents:
+  - db_locations
+  - data_warehouse_details
+- title: Not very useful functions
+  desc: >
+    These are useful functions for the package internals, but are not
+    very interesting for regular, intreractive use. **Use these with caution!**
+- contents:
+  - get_creds
+  - starts_with("update")
+  - kinit
+  - contains("connection")
+
+  - check_macos_linux

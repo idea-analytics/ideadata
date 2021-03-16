@@ -3,8 +3,8 @@ globalVariables("conn_GPTW")
 
 
 
-#' Connect to `ResultsView` View in `GPTW` on `791150-hqvra` which provides
-#' a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey
+#' Connect to `ResultsView` View or other tables  in `GPTW` on `791150-hqvra` which provides
+#' a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey
 #'
 #'
 #'

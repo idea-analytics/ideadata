@@ -3,7 +3,7 @@
 \docType{data}
 \name{data_warehouse_details}
 \alias{data_warehouse_details}
-\title{File level details of all non-R&A databases in IDEA's data warehouse}
+\title{Field level details of all non-R&A databases in IDEA's data warehouse}
 \format{
 A data frame with 69,591 rows and 7 variables:
 \describe{

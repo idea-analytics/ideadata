@@ -3,7 +3,7 @@ globalVariables("conn_Dashboard")
 
 
 
-#' Connect to `StarMathV2` table in `SRC_AR` on `964592-SQLDS`
+#' Connect to `StarMathV2` or `StarReadingV2` tables in `SRC_AR` on `964592-SQLDS`
 #'
 #' @details Not that this is a linked server connection from  `791150-HQVRA`
 #' (i.e., R&A's SQL Server instance) to `964592-SQLDS`.  Since we need to connect
