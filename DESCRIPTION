@@ -1,6 +1,6 @@
 Package: ideadata
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Tools and Utilities for accessing IDEA's Data Warehouse
 Version: 0.1.5
 Author: Chris Haid
 Maintainer: Chris Haid <christopher.haid@ideapublicschools.org>
