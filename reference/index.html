@@ -142,8 +142,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-get-connection-functions" class="hasAnchor"><a href="#section-get-connection-functions" class="anchor"></a>Get connection functions</h2>
+          <p class="section-desc"><p>Get connections to tables in IDEA’s warehouse. These functions return direct connections to as <code>tbl</code> objects and are ready to use with <code>dplyr</code> verbs</p></p>
         </th>
       </tr>
       
@@ -154,107 +154,10 @@
       <tr>
         
         <td>
-          <p><code><a href="calc_ps_termid.html">calc_ps_termid()</a></code> </p>
-        </td>
-        <td><p>Calculate 4 digit PowerSchool TermID given first year of a school year</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="check_get_connection.html">check_get_connection()</a></code> </p>
-        </td>
-        <td><p>Check if DB connections available and valid or create new one</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="check_macos_linux.html">check_macos_linux()</a></code> </p>
-        </td>
-        <td><p>Check if OS is *Nix flavored</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="collector.html">collector()</a></code> </p>
-        </td>
-        <td><p>Collect data from database to local environment piecemeal</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="create_connection.html">create_connection()</a></code> </p>
-        </td>
-        <td><p>Create connection to database</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="data_warehouse_details.html">data_warehouse_details</a></code> </p>
-        </td>
-        <td><p>File level details of all non-R&amp;A databases in IDEA's data warehouse</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="db_locations.html">db_locations</a></code> </p>
-        </td>
-        <td><p>Locations of databases in IDEA's data warehouse</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="disconnect.html">disconnect()</a></code> </p>
-        </td>
-        <td><p>Disconnect from a database in the IDEA data warehouse</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="generate_schema.html">generate_schema()</a></code> </p>
-        </td>
-        <td><p>Generates server.database.dbo schema string</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_creds.html">get_creds()</a></code> </p>
-        </td>
-        <td><p>Get's creds from environment variable</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="get_currently_enrolled_students.html">get_currently_enrolled_students()</a></code> </p>
         </td>
         <td><p>Connect to <code>Students</code> table on <code>PROD1</code> in <code>Schools</code> schema only pull
 currently enrolled students</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_db_url.html">get_db_url()</a></code> </p>
-        </td>
-        <td><p>retrieves database URL and server name</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_gptw.html">get_gptw()</a></code> <code><a href="get_gptw.html">get_gptw_oe_questions()</a></code> <code><a href="get_gptw.html">get_gptw_oe_region_responses()</a></code> <code><a href="get_gptw.html">get_gptw_oe_responses()</a></code> <code><a href="get_gptw.html">get_gptw_questions()</a></code> <code><a href="get_gptw.html">get_gptw_results()</a></code> <code><a href="get_gptw.html">get_gptw_sections()</a></code> </p>
-        </td>
-        <td><p>Connect to <code>ResultsView</code> View in <code>GPTW</code> on <code>791150-hqvra</code> which provides
-a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_iabwa.html">get_iabwa()</a></code> </p>
-        </td>
-        <td><p>Connect to <code>IABWA</code> table on <code>PROD2</code> in <code>Assessments</code> schema</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_regions.html">get_regions()</a></code> </p>
-        </td>
-        <td><p>Connect to <code>Regions</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_renstar_math.html">get_renstar_math()</a></code> <code><a href="get_renstar_math.html">get_renstar_reading()</a></code> </p>
-        </td>
-        <td><p>Connect to <code>StarMathV2</code> table in <code>SRC_AR</code> on <code>964592-SQLDS</code></p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_schools.html">get_schools()</a></code> </p>
-        </td>
-        <td><p>Connect to <code>Schools</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
       </tr><tr>
         
         <td>
@@ -277,10 +180,48 @@ membership (i.e., enrollment) and attendance data</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="kinit.html">kinit()</a></code> </p>
+          <p><code><a href="get_schools.html">get_schools()</a></code> </p>
         </td>
-        <td><p>Checks/Gets Kereberos Ticket-Getting-Tickets are</p></td>
+        <td><p>Connect to <code>Schools</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="get_regions.html">get_regions()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>Regions</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_iabwa.html">get_iabwa()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>IABWA</code> table on <code>PROD2</code> in <code>Assessments</code> schema</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_renstar_math.html">get_renstar_math()</a></code> <code><a href="get_renstar_math.html">get_renstar_reading()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>StarMathV2</code> table in <code>SRC_AR</code> on <code>964592-SQLDS</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_gptw.html">get_gptw()</a></code> <code><a href="get_gptw.html">get_gptw_oe_questions()</a></code> <code><a href="get_gptw.html">get_gptw_oe_region_responses()</a></code> <code><a href="get_gptw.html">get_gptw_oe_responses()</a></code> <code><a href="get_gptw.html">get_gptw_questions()</a></code> <code><a href="get_gptw.html">get_gptw_results()</a></code> <code><a href="get_gptw.html">get_gptw_sections()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>ResultsView</code> View in <code>GPTW</code> on <code>791150-hqvra</code> which provides
+a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-useful-utilities" class="hasAnchor"><a href="#section-useful-utilities" class="anchor"></a>Useful utilities</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="setup_creds.html">setup_creds()</a></code> </p>
@@ -289,9 +230,107 @@ membership (i.e., enrollment) and attendance data</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="collector.html">collector()</a></code> </p>
+        </td>
+        <td><p>Collect data from database to local environment piecemeal</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="disconnect.html">disconnect()</a></code> </p>
+        </td>
+        <td><p>Disconnect from a database in the IDEA data warehouse</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="calc_ps_termid.html">calc_ps_termid()</a></code> </p>
+        </td>
+        <td><p>Calculate 4 digit PowerSchool TermID given first year of a school year</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_db_url.html">get_db_url()</a></code> </p>
+        </td>
+        <td><p>retrieves database URL and server name</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="generate_schema.html">generate_schema()</a></code> </p>
+        </td>
+        <td><p>Generates server.database.dbo schema string</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data-about-databases" class="hasAnchor"><a href="#section-data-about-databases" class="anchor"></a>Data about databases</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="db_locations.html">db_locations</a></code> </p>
+        </td>
+        <td><p>Locations of databases in IDEA's data warehouse</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="data_warehouse_details.html">data_warehouse_details</a></code> </p>
+        </td>
+        <td><p>Field level details of all non-R&amp;A databases in IDEA's data warehouse</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-not-very-useful-functions" class="hasAnchor"><a href="#section-not-very-useful-functions" class="anchor"></a>Not very useful functions</h2>
+          <p class="section-desc"><p>These are useful functions for the package internals, but are not very interesting for regular, intreractive use. <strong>Use these with caution!</strong></p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="get_creds.html">get_creds()</a></code> </p>
+        </td>
+        <td><p>Get's creds from environment variable</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="update_uid.html">update_uid()</a></code> <code><a href="update_uid.html">update_pwd()</a></code> <code><a href="update_uid.html">update_driver()</a></code> </p>
         </td>
         <td><p>Update IDEA_RNA_DB_UID in .Renviron file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="kinit.html">kinit()</a></code> </p>
+        </td>
+        <td><p>Checks/Gets Kereberos Ticket-Getting-Tickets are</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="check_get_connection.html">check_get_connection()</a></code> </p>
+        </td>
+        <td><p>Check if DB connections available and valid or create new one</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="create_connection.html">create_connection()</a></code> </p>
+        </td>
+        <td><p>Create connection to database</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="check_macos_linux.html">check_macos_linux()</a></code> </p>
+        </td>
+        <td><p>Check if OS is *Nix flavored</p></td>
       </tr>
     </tbody>
     </table>
