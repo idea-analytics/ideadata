@@ -58,10 +58,16 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/get_student_daily_attendance.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_student_engagement_attendance.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/get_students.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/get_students_academic_summary.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_students_continuous_enrollment.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc>

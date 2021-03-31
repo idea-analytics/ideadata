@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.9000</span>
       </span>
     </div>
 
@@ -168,6 +168,13 @@ membership (i.e., enrollment) and attendance data</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="get_student_engagement_attendance.html">get_student_engagement_attendance()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>StudentEngagementAttendance</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
+the "learning environment" of students (i.,e remote vs in-person) for each day</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_students.html">get_students()</a></code> </p>
         </td>
         <td><p>Connect to <code>Students</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
@@ -177,6 +184,13 @@ membership (i.e., enrollment) and attendance data</p></td>
           <p><code><a href="get_students_academic_summary.html">get_students_academic_summary()</a></code> </p>
         </td>
         <td><p>Connect to <code>StudentAcademicSummary</code> table on <code>PROD1</code> in <code>Schools</code> schema which has</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_students_continuous_enrollment.html">get_students_continuous_enrollment()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>StudentsContinuousEnrollment</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
+the "learing environment" of students (i.,e remote vs in-person) for each day</p></td>
       </tr><tr>
         
         <td>
@@ -200,14 +214,14 @@ membership (i.e., enrollment) and attendance data</p></td>
         <td>
           <p><code><a href="get_renstar_math.html">get_renstar_math()</a></code> <code><a href="get_renstar_math.html">get_renstar_reading()</a></code> </p>
         </td>
-        <td><p>Connect to <code>StarMathV2</code> table in <code>SRC_AR</code> on <code>964592-SQLDS</code></p></td>
+        <td><p>Connect to <code>StarMathV2</code> or <code>StarReadingV2</code> tables in <code>SRC_AR</code> on <code>964592-SQLDS</code></p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="get_gptw.html">get_gptw()</a></code> <code><a href="get_gptw.html">get_gptw_oe_questions()</a></code> <code><a href="get_gptw.html">get_gptw_oe_region_responses()</a></code> <code><a href="get_gptw.html">get_gptw_oe_responses()</a></code> <code><a href="get_gptw.html">get_gptw_questions()</a></code> <code><a href="get_gptw.html">get_gptw_results()</a></code> <code><a href="get_gptw.html">get_gptw_sections()</a></code> </p>
         </td>
-        <td><p>Connect to <code>ResultsView</code> View in <code>GPTW</code> on <code>791150-hqvra</code> which provides
-a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey</p></td>
+        <td><p>Connect to <code>ResultsView</code> View or other tables  in <code>GPTW</code> on <code>791150-hqvra</code> which provides
+a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey</p></td>
       </tr>
     </tbody><tbody>
       <tr>

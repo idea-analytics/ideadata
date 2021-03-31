@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Connect to Regions table on PROD1 in Schools schema — get_regions • ideadata</title>
+<title>Connect to StudentEngagementAttendance table on PROD1 in Attendance schema which has
+the "learning environment" of students (i.,e remote vs in-person) for each day — get_student_engagement_attendance • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +47,10 @@
 
 
 
-<meta property="og:title" content="Connect to Regions table on PROD1 in Schools schema — get_regions" />
-<meta property="og:description" content="Connect to Regions table on PROD1 in Schools schema" />
+<meta property="og:title" content="Connect to StudentEngagementAttendance table on PROD1 in Attendance schema which has
+the "learning environment" of students (i.,e remote vs in-person) for each day — get_student_engagement_attendance" />
+<meta property="og:description" content="Connect to StudentEngagementAttendance table on PROD1 in Attendance schema which has
+the &quot;learning environment&quot; of students (i.,e remote vs in-person) for each day" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -129,16 +132,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Connect to <code>Regions</code> table on <code>PROD1</code> in <code>Schools</code> schema</h1>
+    <h1>Connect to <code>StudentEngagementAttendance</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
+the "learning environment" of students (i.,e remote vs in-person) for each day</h1>
     
-    <div class="hidden name"><code>get_regions.Rd</code></div>
+    <div class="hidden name"><code>get_student_engagement_attendance.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Connect to <code>Regions</code> table on <code>PROD1</code> in <code>Schools</code> schema</p>
+    <p>Connect to <code>StudentEngagementAttendance</code> table on <code>PROD1</code> in <code>Attendance</code> schema which has
+the "learning environment" of students (i.,e remote vs in-person) for each day</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_regions</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_student_engagement_attendance</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -147,18 +152,13 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'># This attaches to the school db with \code{conn_PROD1} connection</span>
-<span class='va'>stus</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_students.html'>get_students</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='co'># This attaches to the Attendance db with \code{conn_PROD1} connection</span>
+
+<span class='co'># This pulls down engagement data form the DB and onto your computer</span>
+<span class='co'># and then cleans the names (lower snakecase) using [janitor::clean_names()]</span>
+<span class='va'>stus_engagement</span> <span class='op'>&lt;-</span> <span class='fu'>get_student_engagement_attendance</span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in get_creds(): <span style='color: #BB0000;'>DB_USER or DB_PASS environment variables are missing.</span><span></span>
 #&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div><div class='input'>
-<span class='co'># This pulls down schools data form the DB and onto your computer</span>
-<span class='co'># and then cleans the names (lower snakecase) using [janitor::clean_names()]</span>
-
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>regions</span> <span class='op'>&lt;-</span> <span class='fu'>get_regions</span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>clean_names</span><span class='op'>(</span><span class='op'>)</span>
-  <span class='op'>}</span>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
