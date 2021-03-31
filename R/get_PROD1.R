@@ -184,7 +184,58 @@ get_students_academic_summary <- function(){
 
   out
 
+}
 
+
+#' Connect to `StudentEngagementAttendance` table on \code{PROD1} in `Attendance` schema which has
+#' the "learning environment" of students (i.,e remote vs in-person) for each day
+#'
+#' @return a `tbl_sql SQL Server` object.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the Attendance db with \code{conn_PROD1} connection
+#'
+#' # This pulls down engagement data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' stus_engagement <- get_student_engagement_attendance()
+#'
+get_student_engagement_attendance <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Attendance"),
+                                                  dplyr::sql("StudentEngagementAttendance")))
+
+  out
 
 }
 
+
+#' Connect to `StudentsContinuousEnrollment` table on \code{PROD1} in `Attendance` schema which has
+#' the "learing environment" of students (i.,e remote vs in-person) for each day
+#'
+#' @return a `tbl_sql SQL Server` object.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' # This attaches to the Schools db with \code{conn_PROD1} connection
+#'
+#' # This pulls down schools data form the DB and onto your computer
+#' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' stus_cont_enrollment <- get_students_continuous_enrollment()
+#'
+get_students_continuous_enrollment <- function(){
+
+  check_get_connection("PROD1")
+
+  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+                                                  dplyr::sql("StudentsContinuousEnrollment")))
+
+  out
+
+}

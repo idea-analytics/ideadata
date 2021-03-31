@@ -3,7 +3,7 @@
 \name{get_renstar_math}
 \alias{get_renstar_math}
 \alias{get_renstar_reading}
-\title{Connect to \code{StarMathV2} table in \code{SRC_AR} on \code{964592-SQLDS}}
+\title{Connect to \code{StarMathV2} or \code{StarReadingV2} tables in \code{SRC_AR} on \code{964592-SQLDS}}
 \usage{
 get_renstar_math()
 
@@ -13,7 +13,7 @@ get_renstar_reading()
 a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to \code{StarMathV2} table in \code{SRC_AR} on \code{964592-SQLDS}
+Connect to \code{StarMathV2} or \code{StarReadingV2} tables in \code{SRC_AR} on \code{964592-SQLDS}
 }
 \details{
 Not that this is a linked server connection from  \code{791150-HQVRA}

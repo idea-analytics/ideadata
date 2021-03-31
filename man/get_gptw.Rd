@@ -8,8 +8,8 @@
 \alias{get_gptw_questions}
 \alias{get_gptw_results}
 \alias{get_gptw_sections}
-\title{Connect to \code{ResultsView} View in \code{GPTW} on \code{791150-hqvra} which provides
-a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey}
+\title{Connect to \code{ResultsView} View or other tables  in \code{GPTW} on \code{791150-hqvra} which provides
+a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey}
 \usage{
 get_gptw()
 
@@ -29,8 +29,8 @@ get_gptw_sections()
 a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to \code{ResultsView} View in \code{GPTW} on \code{791150-hqvra} which provides
-a tidy (i.e.) a long view of non-OE responses from the 2020-21 GPTW survey
+Connect to \code{ResultsView} View or other tables  in \code{GPTW} on \code{791150-hqvra} which provides
+a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey
 }
 \section{Functions}{
 \itemize{
