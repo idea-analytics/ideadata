@@ -36,6 +36,7 @@ get_renstar_math <- function(){
 
 
 #' @describeIn get_renstar_math  Connect to `StarReadingV2` table in `SRC_AR` on `964592-SQLDS`
+#' @export
 get_renstar_reading <- function(){
 
   check_get_connection(.database_name = "Dashboard",
