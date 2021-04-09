@@ -13,7 +13,10 @@ globalVariables("conn_GPTW")
 #'
 #' @examples
 #' # This attaches to the school db with \code{conn_Dashboard} connection
+#' \dontrun{
 #' gptw <- get_gptw()
+#' }
+#'
 get_gptw <- function(){
 
   check_get_connection(.database_name = "GPTW",

@@ -18,6 +18,9 @@ Connect to \code{StudentAcademicSummary} table on \code{PROD1} in \code{Schools}
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+
+\dontrun{
 stus_academ_summary <- get_students_academic_summary()
+}
 
 }
