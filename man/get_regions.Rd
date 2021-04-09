@@ -15,8 +15,9 @@ Connect to \code{Regions} table on \code{PROD1} in \code{Schools} schema
 \examples{
 
 # This attaches to the school db with \code{conn_PROD1} connection
+\dontrun{
 stus <- get_students()
-
+}
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
 

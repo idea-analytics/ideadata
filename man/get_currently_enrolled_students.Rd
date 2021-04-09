@@ -17,6 +17,8 @@ Specifically, pull students data where \code{EnrollmentStatus == 0},
 \examples{
 
 # This attaches to the school db with \code{conn_PROD1} connection
+\dontrun{
 current <- get_currently_enrolled_students()
+}
 
 }
