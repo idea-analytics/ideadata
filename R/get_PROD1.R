@@ -10,7 +10,10 @@ globalVariables("conn_PROD1")
 #' @examples
 #'
 #' # This attaches to the school db with \code{conn_PROD1} connection
+#'
+#' \dontrun{
 #' schools <- get_schools()
+#'  }
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
@@ -43,7 +46,9 @@ get_schools <- function(){
 #' @examples
 #'
 #' # This attaches to the school db with \code{conn_PROD1} connection
+#' \dontrun{
 #' stus <- get_students()
+#' }
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
@@ -76,8 +81,9 @@ get_students <- function(){
 #' @examples
 #'
 #' # This attaches to the school db with \code{conn_PROD1} connection
+#' \dontrun{
 #' stus <- get_students()
-#'
+#' }
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
 #'
@@ -113,7 +119,9 @@ get_regions <- function(){
 #' @examples
 #'
 #' # This attaches to the school db with \code{conn_PROD1} connection
+#' \dontrun{
 #' current <- get_currently_enrolled_students()
+#' }
 #'
 
 get_currently_enrolled_students <- function(){
@@ -173,7 +181,10 @@ get_student_daily_attendance <- function(){
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#'
+#' \dontrun{
 #' stus_academ_summary <- get_students_academic_summary()
+#' }
 #'
 get_students_academic_summary <- function(){
 
@@ -200,7 +211,9 @@ get_students_academic_summary <- function(){
 #'
 #' # This pulls down engagement data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' \dontrun{
 #' stus_engagement <- get_student_engagement_attendance()
+#' }
 #'
 get_student_engagement_attendance <- function(){
 
@@ -227,8 +240,9 @@ get_student_engagement_attendance <- function(){
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' \dontrun{
 #' stus_cont_enrollment <- get_students_continuous_enrollment()
-#'
+#' }
 get_students_continuous_enrollment <- function(){
 
   check_get_connection("PROD1")

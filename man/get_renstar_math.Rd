@@ -18,7 +18,7 @@ Connect to \code{StarMathV2} or \code{StarReadingV2} tables in \code{SRC_AR} on 
 \details{
 Not that this is a linked server connection from  \code{791150-HQVRA}
 (i.e., R&A's SQL Server instance) to \code{964592-SQLDS}.  Since we need to connect
-to a database when making a connection we donncet to the \code{Dashboard} database
+to a database when making a connection we connect to the \code{Dashboard} database
 on \code{964592-SQLDS}.  Doing so results in the conn_Dashboard connection object,
 which is fine, but a bit of a hack.
 }
@@ -29,5 +29,7 @@ which is fine, but a bit of a hack.
 
 \examples{
 # This attaches to the school db with \code{conn_Dashboard} connection
-schools <- get_schools()
+\dontrun{
+rs_math <- get_renstar_math()
+}
 }
