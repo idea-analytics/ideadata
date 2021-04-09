@@ -49,5 +49,8 @@ a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey
 
 \examples{
 # This attaches to the school db with \code{conn_Dashboard} connection
+\dontrun{
 gptw <- get_gptw()
+}
+
 }

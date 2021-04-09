@@ -7,7 +7,7 @@ globalVariables("conn_Dashboard")
 #'
 #' @details Not that this is a linked server connection from  `791150-HQVRA`
 #' (i.e., R&A's SQL Server instance) to `964592-SQLDS`.  Since we need to connect
-#' to a database when making a connection we donncet to the `Dashboard` database
+#' to a database when making a connection we connect to the `Dashboard` database
 #' on `964592-SQLDS`.  Doing so results in the conn_Dashboard connection object,
 #' which is fine, but a bit of a hack.
 #'
@@ -16,7 +16,9 @@ globalVariables("conn_Dashboard")
 #'
 #' @examples
 #' # This attaches to the school db with \code{conn_Dashboard} connection
-#' schools <- get_schools()
+#' \dontrun{
+#' rs_math <- get_renstar_math()
+#' }
 get_renstar_math <- function(){
 
   check_get_connection(.database_name = "Dashboard",

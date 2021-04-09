@@ -20,6 +20,7 @@ the "learing environment" of students (i.,e remote vs in-person) for each day
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+\dontrun{
 stus_cont_enrollment <- get_students_continuous_enrollment()
-
+}
 }
