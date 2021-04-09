@@ -12,6 +12,7 @@ reference:
   - starts_with("get_iabwa")
   - starts_with("get_renstar")
   - starts_with("get_gptw")
+  - starts_with("get_learning")
 - title: Useful utilities
 - contents:
   - setup_creds
