@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
       </span>
     </div>
 
@@ -150,7 +150,7 @@
 
     <p>Not that this is a linked server connection from  <code>791150-HQVRA</code>
 (i.e., R&amp;A's SQL Server instance) to <code>964592-SQLDS</code>.  Since we need to connect
-to a database when making a connection we donncet to the <code>Dashboard</code> database
+to a database when making a connection we connect to the <code>Dashboard</code> database
 on <code>964592-SQLDS</code>.  Doing so results in the conn_Dashboard connection object,
 which is fine, but a bit of a hack.</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
@@ -162,9 +162,10 @@ which is fine, but a bit of a hack.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># This attaches to the school db with \code{conn_Dashboard} connection</span>
-<span class='va'>schools</span> <span class='op'>&lt;-</span> <span class='fu'><a href='get_schools.html'>get_schools</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in get_creds(): <span style='color: #BB0000;'>DB_USER or DB_PASS environment variables are missing.</span><span></span>
-#&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div></span></pre>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>rs_math</span> <span class='op'>&lt;-</span> <span class='fu'>get_renstar_math</span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

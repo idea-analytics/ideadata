@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
       </span>
     </div>
 
@@ -151,10 +151,12 @@
 
 <span class='co'># This pulls down schools data form the DB and onto your computer</span>
 <span class='co'># and then cleans the names (lower snakecase) using [janitor::clean_names()]</span>
+
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='va'>stus_academ_summary</span> <span class='op'>&lt;-</span> <span class='fu'>get_students_academic_summary</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in get_creds(): <span style='color: #BB0000;'>DB_USER or DB_PASS environment variables are missing.</span><span></span>
-#&gt; <span class='error'>  Please read set-up vignette to configure your system.</span></div><div class='input'>
-</div></span></pre>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
