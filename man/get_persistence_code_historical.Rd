@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_linked_servers.R
 \name{get_persistence_code_historical}
 \alias{get_persistence_code_historical}
-\title{Connect to \code{PersitenceCodeHistorical} \link[=*sic*]{\emph{sic}} table in \code{Persistence} database on \code{964592-SQLDS}}
+\title{Connect to \code{PersitenceCodeHistorical} (\emph{sic}) table in \code{Persistence} database on \code{964592-SQLDS}}
 \usage{
 get_persistence_code_historical()
 }
@@ -10,7 +10,7 @@ get_persistence_code_historical()
 a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to \code{PersitenceCodeHistorical} \link[=*sic*]{\emph{sic}} table in \code{Persistence} database on \code{964592-SQLDS}
+Connect to \code{PersitenceCodeHistorical} (\emph{sic}) table in \code{Persistence} database on \code{964592-SQLDS}
 }
 \details{
 Not that this is a linked server connection from  \code{791150-HQVRA}
