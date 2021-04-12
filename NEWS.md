@@ -1,5 +1,7 @@
 # ideadata 0.1.6
 
+* added functions to get GPTW
+
 # ideadata 0.1.5
 
 * added functions to get engagement data (i.e., in-person vs remote) and continuous enrollment data. 
