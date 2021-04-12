@@ -1,3 +1,5 @@
+# ideadata 0.1.7
+
 # ideadata 0.1.6
 
 * added functions to get GPTW
