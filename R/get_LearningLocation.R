@@ -10,7 +10,7 @@ globalVariables("conn_LearningLocation")
 #' coded mixed.
 #'
 #' @return a `tbl_sql SQL Server` object.
-#' @
+#'
 #' @export
 #'
 #' @examples
