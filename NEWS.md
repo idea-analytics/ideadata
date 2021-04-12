@@ -1,4 +1,10 @@
+# ideadata 0.1.7
+
+* added functions to get Persistence data from a linked server. 
+
 # ideadata 0.1.6
+
+* added functions to get GPTW data
 
 # ideadata 0.1.5
 
