@@ -5,14 +5,30 @@ reference:
     Get connections to tables in IDEA's warehouse.  These functions return
     direct connections to as `tbl` objects and are ready to use with `dplyr` verbs
 - contents:
+- subtitle: PowerSchool-based descriptive data
+- contents:
   - starts_with("get_currently")
   - starts_with("get_student")
   - starts_with("get_schools")
   - starts_with("get_regions")
+
+- subtitle: Assessment Data
+- contents:
   - starts_with("get_iabwa")
   - starts_with("get_renstar")
+
+- subtitle: Great Places to Work Data
+- contents:
   - starts_with("get_gptw")
+
+- subtitle: Learning location data (i.e, remote vs in-school)
+- contents:
   - starts_with("get_learning")
+
+- subtitle: Student Persistence
+- contents:
+  - starts_with("get_persistence")
+
 - title: Useful utilities
 - contents:
   - setup_creds
@@ -21,10 +37,12 @@ reference:
   - calc_ps_termid
   - get_db_url
   - generate_schema
+
 - title: Data about databases
 - contents:
   - db_locations
   - data_warehouse_details
+
 - title: Not very useful functions
   desc: >
     These are useful functions for the package internals, but are not
@@ -34,5 +52,4 @@ reference:
   - starts_with("update")
   - kinit
   - contains("connection")
-
   - check_macos_linux
