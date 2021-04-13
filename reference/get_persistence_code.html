@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checks/Gets Kereberos Ticket-Getting-Tickets are — kinit • ideadata</title>
+<title>Connect to PersistenceCode table in Persistence database on 964592-SQLDS — get_persistence_code • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Checks/Gets Kereberos Ticket-Getting-Tickets are — kinit" />
-<meta property="og:description" content="Checks/Gets Kereberos Ticket-Getting-Tickets are" />
+<meta property="og:title" content="Connect to PersistenceCode table in Persistence database on 964592-SQLDS — get_persistence_code" />
+<meta property="og:description" content="Connect to PersistenceCode table in Persistence database on 964592-SQLDS" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -129,34 +129,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Checks/Gets Kereberos Ticket-Getting-Tickets are</h1>
+    <h1>Connect to <code>PersistenceCode</code> table in <code>Persistence</code> database on <code>964592-SQLDS</code></h1>
     
-    <div class="hidden name"><code>kinit.Rd</code></div>
+    <div class="hidden name"><code>get_persistence_code.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Checks/Gets Kereberos Ticket-Getting-Tickets are</p>
+    <p>Connect to <code>PersistenceCode</code> table in <code>Persistence</code> database on <code>964592-SQLDS</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>kinit</span><span class='op'>(</span><span class='va'>uid</span>, <span class='va'>pwd</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_persistence_code</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>uid</th>
-      <td><p>your IDEA user id (just the <code>firstname.lastname</code> part)</p></td>
-    </tr>
-    <tr>
-      <th>pwd</th>
-      <td><p>your IDEA pass word</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>None, this function is run for its side-effects</p>
+    <p>a <code>tbl_sql SQL Server</code> object.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>Not that this is a linked server connection from  <code>791150-HQVRA</code>
+(i.e., R&amp;A's SQL Server instance) to <code>964592-SQLDS</code>.  Since we need to connect
+to a linked database when making a connection to this table we first connect to the <code>Dashboard</code> database
+on <code>964592-SQLDS</code>.  Doing so results in the conn_Dashboard connection object,
+which is fine, but a bit of a hack.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># This attaches to the `Persistence` db with \code{conn_Dashboard} connection</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>ps_code</span> <span class='op'>&lt;-</span> <span class='fu'>get_persistence_code</span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

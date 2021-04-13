@@ -49,6 +49,18 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/get_learning_location.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code_historical.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_historical.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_reasons_codes.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/get_regions.html</loc>
   </url>
   <url>

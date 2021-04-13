@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
       </span>
     </div>
 
@@ -151,6 +151,19 @@
     </tbody><tbody>
       
       
+      
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-powerschool-based-descriptive-data" class="hasAnchor"><a href="#section-powerschool-based-descriptive-data" class="anchor"></a>PowerSchool-based descriptive data</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -203,7 +216,20 @@ the "learing environment" of students (i.,e remote vs in-person) for each day</p
           <p><code><a href="get_regions.html">get_regions()</a></code> </p>
         </td>
         <td><p>Connect to <code>Regions</code> table on <code>PROD1</code> in <code>Schools</code> schema</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-assessment-data" class="hasAnchor"><a href="#section-assessment-data" class="anchor"></a>Assessment Data</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="get_iabwa.html">get_iabwa()</a></code> </p>
@@ -215,20 +241,83 @@ the "learing environment" of students (i.,e remote vs in-person) for each day</p
           <p><code><a href="get_renstar_math.html">get_renstar_math()</a></code> <code><a href="get_renstar_math.html">get_renstar_reading()</a></code> </p>
         </td>
         <td><p>Connect to <code>StarMathV2</code> or <code>StarReadingV2</code> tables in <code>SRC_AR</code> on <code>964592-SQLDS</code></p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-great-places-to-work-data" class="hasAnchor"><a href="#section-great-places-to-work-data" class="anchor"></a>Great Places to Work Data</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="get_gptw.html">get_gptw()</a></code> <code><a href="get_gptw.html">get_gptw_oe_questions()</a></code> <code><a href="get_gptw.html">get_gptw_oe_region_responses()</a></code> <code><a href="get_gptw.html">get_gptw_oe_responses()</a></code> <code><a href="get_gptw.html">get_gptw_questions()</a></code> <code><a href="get_gptw.html">get_gptw_results()</a></code> <code><a href="get_gptw.html">get_gptw_sections()</a></code> </p>
         </td>
         <td><p>Connect to <code>ResultsView</code> View or other tables  in <code>GPTW</code> on <code>791150-hqvra</code> which provides
 a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-learning-location-data-i-e-remote-vs-in-school-" class="hasAnchor"><a href="#section-learning-location-data-i-e-remote-vs-in-school-" class="anchor"></a>Learning location data (i.e, remote vs in-school)</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="get_learning_location.html">get_learning_location()</a></code> </p>
         </td>
         <td><p>Connect to <code>LearningLocation</code> database <code>791150-hqvra</code> which provides
 daily learning location (i.e, remote or in-person) for every student on ever day</p></td>
+      </tr>
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-student-persistence" class="hasAnchor"><a href="#section-student-persistence" class="anchor"></a>Student Persistence</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="get_persistence_code.html">get_persistence_code()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>PersistenceCode</code> table in <code>Persistence</code> database on <code>964592-SQLDS</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_persistence_code_historical.html">get_persistence_code_historical()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>PersitenceCodeHistorical</code> (<em>sic</em>) table in <code>Persistence</code> database on <code>964592-SQLDS</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_persistence_historical.html">get_persistence_historical()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>PersistenceHistorical</code> table in <code>Persistence</code> database on <code>964592-SQLDS</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_persistence_reasons_codes.html">get_persistence_reasons_codes()</a></code> </p>
+        </td>
+        <td><p>Connect to <code>PersistenceReasonsCodes</code>  table in <code>Persistence</code> database on <code>964592-SQLDS</code></p></td>
       </tr>
     </tbody><tbody>
       <tr>
