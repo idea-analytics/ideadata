@@ -1,3 +1,5 @@
+# ideadata 0.1.8
+
 # ideadata 0.1.7
 
 * added functions to get Persistence data from a linked server. 
