@@ -157,3 +157,21 @@ calc_ps_termid <- function(sy,
                            quarter = 0) {
   (sy - 1990)*100 + quarter
 }
+
+#' Calcuatalate the weeks elapsed from a reference date
+#'
+#' @param ref_date The end date (as character) for the duration used to
+#' calculate elapsed weeks
+#' @param quarter  he fixed date (as character) to start counting weeks from
+#'
+#' @return an integer giving the number of weeks elapsed b/w `first_day` and `ref_date`
+#' @export
+#'
+#' @examples
+#'
+#' library(lubridate)
+#' calc_elapsed_weeks(today())
+calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
+  (lubridate::floor_date(lubridate::ymd(ref_date), unit="week") -
+     lubridate::floor_date(lubridate::ymd(first_day), unit="week"))/lubridate::dweeks(1)+1
+}

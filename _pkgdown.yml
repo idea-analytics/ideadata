@@ -34,7 +34,7 @@ reference:
   - setup_creds
   - collector
   - disconnect
-  - calc_ps_termid
+  - starts_with("calc_")
   - get_db_url
   - generate_schema
 

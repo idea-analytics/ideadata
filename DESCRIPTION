@@ -25,7 +25,8 @@ Imports:
     utils,
     devtools,
     janitor,
-    openssl
+    openssl,
+    lubridate
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: 
