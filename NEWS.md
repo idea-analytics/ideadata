@@ -1,5 +1,7 @@
 # ideadata 0.1.8
 
+* added `calc_elapsed_weeks()` function
+
 # ideadata 0.1.7
 
 * added functions to get Persistence data from a linked server. 
