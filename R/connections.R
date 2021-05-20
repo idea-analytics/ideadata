@@ -184,7 +184,7 @@ generate_schema <- function(.database_name){
 }
 
 
-' Check  "hidden" DB connections available and valid or create new one
+#' Check  "hidden" DB connections available and valid or create new one
 #'
 #' @inheritParams create_connection
 #'
@@ -198,27 +198,34 @@ generate_schema <- function(.database_name){
 check_get_hidden_connection <- function(.database_name="Documentation",
                                  r_and_a_server = TRUE){
 
+  if (!"ideadata_shim" %in% search()) {
+    e <- new.env()
+    base::attach(e, name = "ideadata_shim", warn.conflicts = FALSE)
+
+  }
+
+
   connection_name <- glue::glue("conn_{.database_name}")
 
   # code <- paste('library(ideadata)',
   #               glue::glue('create_connection("{.database_name}", r_and_a_server={r_and_a_server})'),
   #               sep = '\n'     )
 
-  if (!exists(connection_name, where = "package:ideadata")) {
+  if (!base::exists(connection_name, where = "ideadata_shim")) {
     create_connection(.database_name,
                       r_and_a_server,
-                      env = as.environment("package:ideadata")) # if not, create connection
+                      env = base::as.environment("ideadata_shim")) # if not, create connection
 
 
     #on_connection_open(get(connection_name, envir = globalenv()), code)
 
   } else { # Check if existing connection is still open
-    if (!DBI::dbIsValid(get(connection_name, envir = as.environment("package:ideadata")))|
-        !check_db_conn_still_valid(get(connection_name, where = "package:ideadata"))) {
+    if (!DBI::dbIsValid(get(connection_name, envir = as.environment("ideadata_shim")))|
+        !check_db_conn_still_valid(get(connection_name, envir = as.environment("ideadata_shim")))) {
       message(glue::glue("Resetting connection to {connection_name}"))
       create_connection(.database_name,
                         r_and_a_server,
-                        env = as.environment("package:ideadata")) # if not, create connection
+                        env = as.environment("ideadata_shim")) # if not, create connection
       #on_connection_open(get(connection_name, envir = globalenv()), code)
     }
   }

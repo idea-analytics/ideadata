@@ -162,7 +162,7 @@ calc_ps_termid <- function(sy,
 #'
 #' @param ref_date The end date (as character) for the duration used to
 #' calculate elapsed weeks
-#' @param quarter  he fixed date (as character) to start counting weeks from
+#' @param first_day  the fixed date (as character) to start counting weeks from
 #'
 #' @return an integer giving the number of weeks elapsed b/w `first_day` and `ref_date`
 #' @export
