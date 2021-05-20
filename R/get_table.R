@@ -1,3 +1,45 @@
+utils::globalVariables(c("ServerName",
+                         "DatabaseName",
+                         "Schema",
+                         "TableName"))
+
+#' Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)
+#'
+#' @param .table_name the name of a table as a quoted string that you'd like to obtain
+#' @param .database_name the name of the database which hosts the table
+#' @param .schema the name of the schema that hosts the table
+#' @param ... other arguments passed to `get_table` (recursively); end user won't typcially use this
+#'
+#' @return a `tbl_sql SQL Server` object (or `Null` if there is not unique table in the warehouse)
+#'
+#' @details This is a workhouse function that provides direct access to any table we have in the warehouse.
+#' If the table name uniquely defines that table then the function looks up the server, database, and schema
+#' location and you'll get the table back; if more than one table is identified the function will
+#' fail informatively, giving you the `get_table` command to run for every option in the warehouse.
+#'
+#'  Note well that this function makes at least 2 database calls.  The first is to look up the table location
+#'  and then second to get your data.  This means that it will run slower than other `get_*` functions in
+#'  this package the don't make the first call: those tables' locations are looked up on a static dateframe.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # This won't return a table, but instead an informative error show all `Students`
+#' # tables (20 as of this writing) in the warehouse
+#' # The warning provides code that can be copied and pasted to get a given table.
+#' students <- get_tables("Students")
+#'
+#' # Trying again with a specific table in specific schema in a specific database
+#'   get_table(.table_name = "Students",
+#'             .database_name = "PROD1",
+#'             .schema = "Schools")
+#'
+#' # And here's an example
+#' }
+#'
+
+
 get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
   if(is.null(.database_name) | is.null(.schema)){
 
@@ -79,10 +121,29 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
 }
 
 
+#' Identify rows with given table name, database name, or schema in the MetaData table in the R&A's documentation
+#' database.
+#'
+#' @param .table_name the name of a table that may be located somewhere, as a quoted string
+#' @param .database_name the name of a database in the warehouse , as a quoted string
+#' @param .schema  the name of a schema in the warehouse, as a quoted string
+#'
+#' @return a tibble with all unique table, schema, database, and server combinations found in the MetaData table
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ideadata)
+#'
+#' id_tables_in_dbs("Students")
+#' }
+
 id_tables_in_dbs <- function(.table_name, .database_name = NULL, .schema = NULL){
 
+  if (is.null(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
+
   check_get_hidden_connection()
-  data_warehouse_details <- tbl(get("conn_Documentation", envir = as.environment("package:ideadata")),
+  data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
                                 "MetaData")
 
   table_in_dbs <- data_warehouse_details %>%
@@ -91,10 +152,10 @@ id_tables_in_dbs <- function(.table_name, .database_name = NULL, .schema = NULL)
   dplyr::distinct()
 
   #extra filtering when we have more details.
-  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% filter(DatabaseName == .database_name)
-  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% filter(Schema == .schema)
+  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(DatabaseName == .database_name)
+  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(Schema == .schema)
 
-  out <- table_in_dbs %>% distinct() %>% collect()
+  out <- table_in_dbs %>% dplyr::distinct() %>% dplyr::collect()
 
   # Return
   out
