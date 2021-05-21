@@ -10,7 +10,7 @@ calc_elapsed_weeks(ref_date, first_day = "2020-07-01")
 \item{ref_date}{The end date (as character) for the duration used to
 calculate elapsed weeks}
 
-\item{quarter}{he fixed date (as character) to start counting weeks from}
+\item{first_day}{the fixed date (as character) to start counting weeks from}
 }
 \value{
 an integer giving the number of weeks elapsed b/w \code{first_day} and \code{ref_date}

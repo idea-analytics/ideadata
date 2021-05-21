@@ -1,3 +1,18 @@
+# ideadata 1.0.0
+
+This is a major release where this package is substantially feature complete. 
+
+## Major Updates
+
+* added the `get_table()` function which is a workhorse that can pull arbitrary tables in the warehouse with
+simply the table name.  In the case of more than 1 table with the same name, the function fails informatively and provides example code to get the table the user really needs. 
+
+## Minor updates
+
+* added vignettes for `collector()`, `get_tables()`
+
+* Changed connections strings from using IP addresses to FQDNs in the `server` argument. 
+
 # ideadata 0.1.8
 
 * added `calc_elapsed_weeks()` function
