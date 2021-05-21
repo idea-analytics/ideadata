@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid • ideadata</title>
+<title>Check  "hidden" DB connections available and valid or create new one — check_get_hidden_connection • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid" />
-<meta property="og:description" content="Calculate 4 digit PowerSchool TermID given first year of a school year" />
+<meta property="og:title" content="Check  "hidden" DB connections available and valid or create new one — check_get_hidden_connection" />
+<meta property="og:description" content="Check  &quot;hidden&quot; DB connections available and valid or create new one" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -132,38 +132,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate 4 digit PowerSchool TermID given first year of a school year</h1>
+    <h1>Check  "hidden" DB connections available and valid or create new one</h1>
     
-    <div class="hidden name"><code>calc_ps_termid.Rd</code></div>
+    <div class="hidden name"><code>check_get_hidden_connection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate 4 digit PowerSchool TermID given first year of a school year</p>
+    <p>Check  "hidden" DB connections available and valid or create new one</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='va'>sy</span>, quarter <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>check_get_hidden_connection</span><span class='op'>(</span>
+  .database_name <span class='op'>=</span> <span class='st'>"Documentation"</span>,
+  r_and_a_server <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>sy</th>
-      <td><p>First year in a school year (e.g. 2015 for SY 2015-2016)</p></td>
+      <th>.database_name</th>
+      <td><p>name of the database you want to connect to</p></td>
     </tr>
     <tr>
-      <th>quarter</th>
-      <td><p>quarter the quarter as integer in a year. The default is 0,
-which returns the school year's termid.</p></td>
+      <th>r_and_a_server</th>
+      <td><p>switch for attaching to R&amp;A server. Default is <code>FALSE</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a character or integer vector</p>
+    <p>returns an S4 object that inherits from DBIConnection.
+This object is used to communicate with the database engine.</p>
+<p>Note that this function is called for it's side-effect: it will create
+a connection object with the name <code>conn_{.database_name}</code> **that is in the
+<code>ideadata</code> package environment</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='fl'>2015</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 2500</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

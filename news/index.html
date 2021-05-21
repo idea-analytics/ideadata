@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -107,6 +107,9 @@
     <li>
       <a href="../articles/using-collector.html">Using collector() for large data sets</a>
     </li>
+    <li>
+      <a href="../articles/using-get_table.html">Using get_table()</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -132,6 +135,26 @@
       
     </div>
 
+    <div id="ideadata-100" class="section level1">
+<h1 class="page-header" data-toc-text="1.0.0">
+<a href="#ideadata-100" class="anchor"></a>ideadata 1.0.0</h1>
+<p>This is a major release where this package is substantially feature complete.</p>
+<div id="major-updates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-updates" class="anchor"></a>Major Updates</h2>
+<ul>
+<li>added the <code><a href="../reference/get_table.html">get_table()</a></code> function which is a workhorse that can pull arbitrary tables in the warehouse with simply the table name. In the case of more than 1 table with the same name, the function fails informatively and provides example code to get the table the user really needs.</li>
+</ul>
+</div>
+<div id="minor-updates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-updates" class="anchor"></a>Minor updates</h2>
+<ul>
+<li><p>added vignettes for <code><a href="../reference/collector.html">collector()</a></code>, <code>get_tables()</code></p></li>
+<li><p>Changed connections strings from using IP addresses to FQDNs in the <code>server</code> argument.</p></li>
+</ul>
+</div>
+</div>
     <div id="ideadata-018" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.8">
 <a href="#ideadata-018" class="anchor"></a>ideadata 0.1.8</h1>

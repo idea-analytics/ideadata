@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -107,6 +107,9 @@
     </li>
     <li>
       <a href="../articles/using-collector.html">Using collector() for large data sets</a>
+    </li>
+    <li>
+      <a href="../articles/using-get_table.html">Using get_table()</a>
     </li>
   </ul>
 </li>
@@ -138,7 +141,7 @@
     <p>Create connection to database</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_connection</span><span class='op'>(</span><span class='va'>.database_name</span>, r_and_a_server <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>create_connection</span><span class='op'>(</span><span class='va'>.database_name</span>, r_and_a_server <span class='op'>=</span> <span class='cn'>FALSE</span>, env <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/environment.html'>globalenv</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,6 +153,12 @@
     <tr>
       <th>r_and_a_server</th>
       <td><p>switch for attaching to R&amp;A server. Default is <code>FALSE</code></p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>which environment to save the connection.  The default is the global
+environment and you should not change this unless you really need to and you know
+what you are doing.</p></td>
     </tr>
     </table>
 

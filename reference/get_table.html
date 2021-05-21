@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid • ideadata</title>
+<title>Get an arbitrary table from the data warehouse (more axccurate if database and schema are given) — get_table • ideadata</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Calculate 4 digit PowerSchool TermID given first year of a school year — calc_ps_termid" />
-<meta property="og:description" content="Calculate 4 digit PowerSchool TermID given first year of a school year" />
+<meta property="og:title" content="Get an arbitrary table from the data warehouse (more axccurate if database and schema are given) — get_table" />
+<meta property="og:description" content="Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)" />
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png" />
 
 
@@ -132,38 +132,67 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate 4 digit PowerSchool TermID given first year of a school year</h1>
+    <h1>Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)</h1>
     
-    <div class="hidden name"><code>calc_ps_termid.Rd</code></div>
+    <div class="hidden name"><code>get_table.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate 4 digit PowerSchool TermID given first year of a school year</p>
+    <p>Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='va'>sy</span>, quarter <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_table</span><span class='op'>(</span><span class='va'>.table_name</span>, .database_name <span class='op'>=</span> <span class='cn'>NULL</span>, .schema <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>sy</th>
-      <td><p>First year in a school year (e.g. 2015 for SY 2015-2016)</p></td>
+      <th>.table_name</th>
+      <td><p>the name of a table as a quoted string that you'd like to obtain</p></td>
     </tr>
     <tr>
-      <th>quarter</th>
-      <td><p>quarter the quarter as integer in a year. The default is 0,
-which returns the school year's termid.</p></td>
+      <th>.database_name</th>
+      <td><p>the name of the database which hosts the table</p></td>
+    </tr>
+    <tr>
+      <th>.schema</th>
+      <td><p>the name of the schema that hosts the table</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments passed to <code>get_table</code> (recursively); end user won't typcially use this</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a character or integer vector</p>
+    <p>a <code>tbl_sql SQL Server</code> object (or <code>Null</code> if there is not unique table in the warehouse)</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This is a workhouse function that provides direct access to any table we have in the warehouse.
+If the table name uniquely defines that table then the function looks up the server, database, and schema
+location and you'll get the table back; if more than one table is identified the function will
+fail informatively, giving you the <code>get_table</code> command to run for every option in the warehouse.</p>
+<p>Note well that this function makes at least 2 database calls.  The first is to look up the table location
+and then second to get your data.  This means that it will run slower than other <code>get_*</code> functions in
+this package the don't make the first call: those tables' locations are looked up on a static dateframe.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>calc_ps_termid</span><span class='op'>(</span><span class='fl'>2015</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 2500</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='co'># This won't return a table, but instead an informative error show all `Students`</span>
+<span class='co'># tables (20 as of this writing) in the warehouse</span>
+<span class='co'># The warning provides code that can be copied and pasted to get a given table.</span>
+<span class='va'>students</span> <span class='op'>&lt;-</span> <span class='fu'>get_tables</span><span class='op'>(</span><span class='st'>"Students"</span><span class='op'>)</span>
+
+<span class='co'># Trying again with a specific table in specific schema in a specific database</span>
+  <span class='fu'>get_table</span><span class='op'>(</span>.table_name <span class='op'>=</span> <span class='st'>"Students"</span>,
+            .database_name <span class='op'>=</span> <span class='st'>"PROD1"</span>,
+            .schema <span class='op'>=</span> <span class='st'>"Schools"</span><span class='op'>)</span>
+
+<span class='co'># And here's an example</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

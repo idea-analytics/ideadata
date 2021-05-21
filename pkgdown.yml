@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   setting-up-your-credentials: setting-up-your-credentials.html
   using-collector: using-collector.html
-last_built: 2021-04-20T22:11Z
+  using-get_table: using-get_table.html
+last_built: 2021-05-21T16:21Z
 urls:
   reference: https://idea-analytics.github.io/ideadata/reference
   article: https://idea-analytics.github.io/ideadata/articles

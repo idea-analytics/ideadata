@@ -13,6 +13,9 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/check_get_connection.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/check_get_hidden_connection.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/check_macos_linux.html</loc>
   </url>
   <url>
@@ -88,6 +91,12 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/get_students_continuous_enrollment.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_table.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/id_tables_in_dbs.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc>
   </url>
   <url>
@@ -101,5 +110,8 @@
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/articles/using-collector.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/articles/using-get_table.html</loc>
   </url>
 </urlset>
