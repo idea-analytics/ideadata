@@ -1,4 +1,4 @@
-globalVariables("conn_GPTW")
+utils::globalVariables("conn_GPTW")
 
 
 

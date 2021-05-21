@@ -57,6 +57,9 @@ get_db_url <- function(.database_name){
 #'
 #' @param .database_name name of the database you want to connect to
 #' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+#' @param env which environment to save the connection.  The default is the global
+#' environment and you should not change this unless you really need to and you know
+#' what you are doing.
 #'
 #' @return returns an S4 object that inherits from DBIConnection.
 #' This object is used to communicate with the database engine.
@@ -71,7 +74,8 @@ get_db_url <- function(.database_name){
 #' @examples
 #' create_connection("PROD1")
 create_connection <- function(.database_name,
-                              r_and_a_server = FALSE){
+                              r_and_a_server = FALSE,
+                              env = globalenv()){
 
   creds <- get_creds()
 
@@ -79,20 +83,20 @@ create_connection <- function(.database_name,
 
   db_details <- get_db_url(.database_name)
 
-  if(r_and_a_server){
+  #if(r_and_a_server){
     server <- db_details$server_name
     server <- glue::glue("{server}.IPS.ORG")
-  } else {
-    server <- db_details$url
-  }
+  #} else {
+  #  server <- db_details$url
+  #}
 
 
 
   connection_string <- glue::glue(
     "Driver={creds$driver};",
     "Server={server};",
-    "UID={creds$uid};",
-    "PWD={utils::URLencode(creds$pwd)};",
+   # "UID={creds$uid};",
+  #  "PWD={utils::URLencode(creds$pwd)};",
     "Trusted_Connection=yes;",
     "database={.database_name}"
   )
@@ -108,7 +112,7 @@ create_connection <- function(.database_name,
   # Using a call to global so that this connection object is only made once
   # and is available for all get_* functions
   do.call("<-", list(connection_name, conn),
-          envir = globalenv())
+          envir = env)
 
 }
 
@@ -140,11 +144,27 @@ check_get_connection <- function(.database_name,
     on_connection_open(get(connection_name, envir = globalenv()), code)
 
   } else { # Check if existing connection is still open
-    if (!DBI::dbIsValid(get(connection_name))) {
+    if (!DBI::dbIsValid(get(connection_name))|
+        !check_db_conn_still_valid(get(connection_name))) {
+      message(glue::glue("Resetting connection to {connection_name}"))
       create_connection(.database_name, r_and_a_server) # if not, create connection
       on_connection_open(get(connection_name, envir = globalenv()), code)
       }
   }
+}
+
+
+check_db_conn_still_valid <- function(connection_name) {
+
+  out <- tryCatch(
+    {
+      odbc::dbSendQuery(get(connection_name), "SELECT TRUE;")
+    },
+    error=function(cond) {
+      out <- FALSE
+    }
+  )
+  return(out)
 }
 
 
@@ -162,6 +182,55 @@ generate_schema <- function(.database_name){
 
   schema
 }
+
+
+#' Check  "hidden" DB connections available and valid or create new one
+#'
+#' @inheritParams create_connection
+#'
+#' @return returns an S4 object that inherits from DBIConnection.
+#' This object is used to communicate with the database engine.
+#'
+#' Note that this function is called for it's side-effect: it will create
+#' a connection object with the name \code{conn_\{.database_name\}} **that is in the
+#' `ideadata` package environment
+#'
+check_get_hidden_connection <- function(.database_name="Documentation",
+                                 r_and_a_server = TRUE){
+
+  if (!"ideadata_shim" %in% search()) {
+    e <- new.env()
+    base::attach(e, name = "ideadata_shim", warn.conflicts = FALSE)
+
+  }
+
+
+  connection_name <- glue::glue("conn_{.database_name}")
+
+  # code <- paste('library(ideadata)',
+  #               glue::glue('create_connection("{.database_name}", r_and_a_server={r_and_a_server})'),
+  #               sep = '\n'     )
+
+  if (!base::exists(connection_name, where = "ideadata_shim")) {
+    create_connection(.database_name,
+                      r_and_a_server,
+                      env = base::as.environment("ideadata_shim")) # if not, create connection
+
+
+    #on_connection_open(get(connection_name, envir = globalenv()), code)
+
+  } else { # Check if existing connection is still open
+    if (!DBI::dbIsValid(get(connection_name, envir = as.environment("ideadata_shim")))|
+        !check_db_conn_still_valid(get(connection_name, envir = as.environment("ideadata_shim")))) {
+      message(glue::glue("Resetting connection to {connection_name}"))
+      create_connection(.database_name,
+                        r_and_a_server,
+                        env = as.environment("ideadata_shim")) # if not, create connection
+      #on_connection_open(get(connection_name, envir = globalenv()), code)
+    }
+  }
+}
+
 
 
 #' Disconnect from a database in the IDEA data warehouse
