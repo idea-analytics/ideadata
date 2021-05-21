@@ -1,3 +1,5 @@
+# ideadata 1.0.0
+
 # ideadata 0.1.8
 
 * added `calc_elapsed_weeks()` function
