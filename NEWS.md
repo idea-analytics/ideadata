@@ -1,6 +1,12 @@
 # ideadata 1.0.2
 
+* create a switch in the kinit function to differentiate between macOS and Linux since out of the box 
+Kereberos authentication is slightly different on both. 
+
 # ideadata 1.0.1
+
+* rolled back the connection function to not perform one check on live connection  (it always saw live connections
+as dead and would reconnect, making joins impossible.)
 
 # ideadata 1.0.0
 
