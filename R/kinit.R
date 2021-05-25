@@ -29,6 +29,26 @@ kinit <- function(uid, pwd){
     return()
   }
 
+  if(Sys.info()["sysname"] == "Linux") {
+
+    kinit_string <- glue::glue('echo \'{Sys.getenv("IDEA_RNA_DB_PWD")}\' | kinit {Sys.getenv("IDEA_RNA_DB_UID")}@IPS.ORG ')
+
+    sys_response <- system(kinit_string)
+
+    } else {
+
+    tmp_file <- tempfile(fileext = ".txt")
+
+    readr::write_lines(x = pwd, file=tmp_file)
+
+
+    kinit_string <- glue::glue('kinit --password-file="{tmp_file}" {uid}@IPS.ORG')
+
+
+    sys_response <- system(kinit_string)
+  }
+
+
   tmp_file <- tempfile(fileext = ".txt")
 
   readr::write_lines(x = pwd, file=tmp_file)
@@ -48,6 +68,6 @@ kinit <- function(uid, pwd){
 
   message(crayon::green("kinit succeeded in getting TGT"))
 
-  unlink(tmp_file)
+  if(Sys.info()["sysname"] != "Linux") unlink(tmp_file)
 
 }
