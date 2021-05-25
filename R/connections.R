@@ -144,8 +144,9 @@ check_get_connection <- function(.database_name,
     on_connection_open(get(connection_name, envir = globalenv()), code)
 
   } else { # Check if existing connection is still open
-    if (!DBI::dbIsValid(get(connection_name))|
-        !check_db_conn_still_valid(get(connection_name))) {
+    if (!DBI::dbIsValid(get(connection_name))#|
+        #!check_db_conn_still_valid(get(connection_name))
+        ) {
       message(glue::glue("Resetting connection to {connection_name}"))
       create_connection(.database_name, r_and_a_server) # if not, create connection
       on_connection_open(get(connection_name, envir = globalenv()), code)
