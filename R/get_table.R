@@ -40,8 +40,8 @@ utils::globalVariables(c("ServerName",
 #'
 
 
-get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
-  if(is.null(.database_name) | is.null(.schema)){
+get_table <- function(.table_name, .server_name = NULL, .database_name = NULL, .schema = NULL, ...){
+  if(is.null(.server_name) | is.null(.database_name) | is.null(.schema)){
 
     #check_get_hidden_connection()
     #data_warehouse_details <- tbl(get("conn_Documentation", envir = as.environment("package:ideadata")), "MetaData")
@@ -138,7 +138,7 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
 #' id_tables_in_dbs("Students")
 #' }
 
-id_tables_in_dbs <- function(.table_name, .database_name = NULL, .schema = NULL){
+id_tables_in_dbs <- function(.table_name, .server_name = NULL, .database_name = NULL, .schema = NULL){
 
   if (is.null(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
 
@@ -154,6 +154,7 @@ id_tables_in_dbs <- function(.table_name, .database_name = NULL, .schema = NULL)
   #extra filtering when we have more details.
   if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(DatabaseName == .database_name)
   if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(Schema == .schema)
+  if (!is.null(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(ServerName == .server_name)
 
   out <- table_in_dbs %>% dplyr::distinct() %>% dplyr::collect()
 
