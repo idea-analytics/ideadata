@@ -29,8 +29,9 @@ warehouse_meta_data  <- dplyr::tbl(conn,
                         )
 #meta_data <- ideadata::get_table(.table_name = "Metadata", .database_name = "Documentation", .schema = "dbo")
 warehouse_meta_data <-  dplyr::distinct(warehouse_meta_data, ServerName, DatabaseName, Schema, TableName)
+warehouse_meta_data <- dplyr::collect(warehouse_meta_data)
 warehouse_meta_data <- janitor::clean_names(warehouse_meta_data)
-#meta_data <- dplyr::collect(meta_data)
+
 
 #odbc::dbDisconnect(conn)
 rm(conn)

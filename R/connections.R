@@ -48,8 +48,10 @@ get_creds <- function(){
 #' get_db_url("PROD1")
 
 get_db_url <- function(.database_name){
-  db_locations %>%
-    dplyr::filter(.data$database_name == .database_name)
+  warehouse_meta_data %>%
+    dplyr::select(server_name, database_name, schema) %>%
+    dplyr::filter(.data$database_name == .database_name) %>%
+    dplyr::distinct()
 }
 
 
@@ -74,18 +76,37 @@ get_db_url <- function(.database_name){
 #' @examples
 #' create_connection("PROD1")
 create_connection <- function(.database_name,
-                              r_and_a_server = FALSE,
+                              .server_name,
+                              #r_and_a_server = FALSE,
                               env = globalenv()){
 
   creds <- get_creds()
 
   kinit(creds$uid, creds$pwd)
 
-  db_details <- get_db_url(.database_name)
+  if(missing(.server_name)) {
+    db_details <- get_db_url(.database_name) %>%
+      dplyr::distinct(server_name, database_name)
 
-  #if(r_and_a_server){
-    server <- db_details$server_name
-    server <- glue::glue("{server}.IPS.ORG")
+    n_rows_db_details <- nrow(db_details)
+
+    if(n_rows_db_details>1) {
+
+      cli::cli_alert_warning(glue::glue("There are {n_rows_db_details} databases with the name {.database_name} in our warehouse\n"))
+      cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
+      cli::cli_alert_success("Any of these should work:\n")
+      print(glue::glue_data_col(db_details, '\ \ check_get_conncetion(.server_name = "{crayon::green(server_name)}", .database_name = "{crayon::green(.database_name)}"'))
+
+      return() # returns early with alerts, since we can't id unique table in warehoue
+
+    }
+
+
+      server <- glue::glue("{db_details$server_name}.IPS.ORG")
+  } else {
+      server <- glue::glue("{.server_name}.IPS.ORG")
+  }
+
   #} else {
   #  server <- db_details$url
   #}
@@ -129,6 +150,8 @@ create_connection <- function(.database_name,
 #' @export
 #'
 check_get_connection <- function(.database_name,
+                                 .schema,
+                                 .server_name,
                                  r_and_a_server = FALSE){
 
   connection_name <- glue::glue("conn_{.database_name}")
@@ -138,7 +161,12 @@ check_get_connection <- function(.database_name,
                 sep = '\n'     )
 
   if (!exists(connection_name)) {
-    create_connection(.database_name, r_and_a_server) # if not, create connection
+    create_connection(.database_name,
+                      #.schema,
+                      .server_name#,
+
+                      #r_and_a_server
+                      ) # if not, create connection
 
 
     on_connection_open(get(connection_name, envir = globalenv()), code)
@@ -179,6 +207,7 @@ generate_schema <- function(.database_name){
 
   db_info <- get_db_url(.database_name)
 
+  #here only need the server name and the database name
   schema <- glue::glue("[{db_info$server_name}].[{.database_name}].[dbo]")
 
   schema

@@ -60,19 +60,20 @@ get_table <- function(.table_name, .server_name = NULL, .database_name = NULL, .
       cli::cli_alert_warning(glue::glue("There are {n_dbs_with_tables} tables with that name in our warehouse\n"))
       cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
       cli::cli_alert_success("Any of these should work:\n")
-      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(TableName)}", .database_name = "{crayon::green(DatabaseName)}", .schema = "{crayon::green(Schema)}")'))
+      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}")'))
 
       return() # returns early with alerts, since we can't id unique table in warehoue
 
     } else {
       # case where there is actually only one table
-      .table_name <- table_in_dbs$TableName
-      .database_name <- table_in_dbs$DatabaseName
-      .schema <- table_in_dbs$Schema
+      .table_name <- table_in_dbs$table_name
+      .database_name <- table_in_dbs$database_name
+      .schema <- table_in_dbs$schema
+      .server_name <- table_in_dbs$server_name
     }
 
    #recursivley call this function, since we have all needed data
-   out <-get_table(.table_name, .database_name, .schema, db_detail = table_in_dbs)
+   out <-get_table(.table_name, .server_name, .database_name, .schema, db_detail = table_in_dbs)
 
   return(out)
 
@@ -95,19 +96,21 @@ get_table <- function(.table_name, .server_name = NULL, .database_name = NULL, .
     cli::cli_alert_danger(glue::glue("There are {nrow_db_detail} tables with that name in our warehouse\n"))
     cli::cli_alert_warning(".dn_name, .shema, and .table_name should identify a unique table.\n")
     cli::cli_alert_warning("However, thse are in the warehouse:\n")
-    print(glue::glue_data_col(db_detail, '\ \ .table_name = "{crayon::green(TableName)}", .database_name = "{crayon::green(DatabaseName)}", .schema = "{crayon::green(Schema)}"'))
+    print(glue::glue_data_col(db_detail, '\ \ .table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}"'))
 
     return()
 
   }
 
   #is R&A Server?
-  is_r_and_a_server <- db_detail$ServerName == "791150-HQVRA"
+  is_r_and_a_server <- db_detail$server_name == "791150-HQVRA"
 
-  check_get_connection(.database_name = db_detail$DatabaseName,
+  check_get_connection(.database_name = db_detail$database_name,
+                       .schema = db_detail$schema,
+                       .server_name = db_detail$server_name,
                        r_and_a_server = is_r_and_a_server)
 
-  schema_string <- glue::glue("[{db_detail$ServerName}].[{.database_name}].[{.schema}]")
+  schema_string <- glue::glue("[{db_detail$server_name}].[{.database_name}].[{.schema}]")
 
   connection_name <- glue::glue("conn_{.database_name}")
 
@@ -142,21 +145,22 @@ id_tables_in_dbs <- function(.table_name, .server_name = NULL, .database_name = 
 
   if (is.null(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
 
-  check_get_hidden_connection()
-  data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
-                                "MetaData")
+  #check_get_hidden_connection()
+  # data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
+  #                               "MetaData")
 
-  table_in_dbs <- data_warehouse_details %>%
-  dplyr::select(ServerName, DatabaseName, Schema, TableName) %>%
-  dplyr::filter(TableName == .table_name) %>%
+  #table_in_dbs <- data_warehouse_details %>%
+  table_in_dbs <- warehouse_meta_data %>%
+  dplyr::select(server_name, database_name, schema, table_name) %>%
+  dplyr::filter(table_name == .table_name) %>%
   dplyr::distinct()
 
   #extra filtering when we have more details.
-  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(DatabaseName == .database_name)
-  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(Schema == .schema)
-  if (!is.null(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(ServerName == .server_name)
+  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(database_name == .database_name)
+  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(schema == .schema)
+  if (!is.null(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(server_name == .server_name)
 
-  out <- table_in_dbs %>% dplyr::distinct() %>% dplyr::collect()
+  out <- table_in_dbs %>% dplyr::distinct() #%>% dplyr::collect()
 
   # Return
   out
