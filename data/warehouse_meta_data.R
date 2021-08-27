@@ -20,18 +20,37 @@ connection_string <- glue::glue(
 
 
 # Create ODBC Connection
-conn <- odbc::dbConnect(odbc::odbc(), .connection_string = connection_string)
+tryCatch({
+  conn <- odbc::dbConnect(odbc::odbc(), .connection_string = connection_string)
 
 
-warehouse_meta_data  <- dplyr::tbl(conn,
-                        dbplyr::in_schema(dbplyr::sql("[REDACTED-SQLSERVER].[Documentation].[dbo]"),
-                                          dbplyr::sql("Metadata"))
-                        )
-#meta_data <- ideadata::get_table(.table_name = "Metadata", .database_name = "Documentation", .schema = "dbo")
-warehouse_meta_data <-  dplyr::distinct(warehouse_meta_data, ServerName, DatabaseName, Schema, TableName)
-warehouse_meta_data <- dplyr::collect(warehouse_meta_data)
-warehouse_meta_data <- janitor::clean_names(warehouse_meta_data)
+
+  warehouse_meta_data  <- dplyr::tbl(conn,
+                                     dbplyr::in_schema(dbplyr::sql("[REDACTED-SQLSERVER].[Documentation].[dbo]"),
+                                                       dbplyr::sql("Metadata"))
+  )
+  #meta_data <- ideadata::get_table(.table_name = "Metadata", .database_name = "Documentation", .schema = "dbo")
+  warehouse_meta_data <-  dplyr::distinct(warehouse_meta_data, ServerName, DatabaseName, Schema, TableName)
+  warehouse_meta_data <- dplyr::collect(warehouse_meta_data)
+  warehouse_meta_data <- janitor::clean_names(warehouse_meta_data)
 
 
-#odbc::dbDisconnect(conn)
-rm(conn)
+  #odbc::dbDisconnect(conn)
+  rm(conn)
+  },
+  error = function(e) {
+
+    if(stringr::str_detect(e$message, "Server is not found")) {
+
+    cli::cli_alert_warning("Are you behind the firewall?\n\n")
+    cli::cli_alert_warning(
+      crayon::red(
+        crayon::bgYellow("When loading ideadata you need to behind IDEA's firewall!!!")
+        )
+      )
+    stop(e)
+      }
+    }
+  )
+
+

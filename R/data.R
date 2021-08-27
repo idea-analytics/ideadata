@@ -32,7 +32,7 @@
 
 
 
-#' Field level details of all non-R&A databases in IDEA's data warehouse
+#' Field level details of all (R&A and non-R&A databases) in IDEA's data warehouse
 #'
 #' A dataset containing the fields and their locations (tables, databases, servers)
 #'
