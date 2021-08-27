@@ -1,3 +1,5 @@
+# ideadata 1.1.0
+
 # ideadata 1.0.2
 
 * create a switch in the kinit function to differentiate between macOS and Linux since out of the box 
