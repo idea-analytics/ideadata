@@ -1,5 +1,7 @@
 # ideadata 1.1.0
 
+* When attaching `ideadata` with `library(ideadata`) the package creates a data warehouse meta data table that users can use to look for data locations _and_ which `ideadata` uses for looking up table locations.  This process ensures that at library attach the user and the package has the most up-to-date data about the warehouse. 
+
 # ideadata 1.0.2
 
 * create a switch in the kinit function to differentiate between macOS and Linux since out of the box 

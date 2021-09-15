@@ -34,6 +34,7 @@ tryCatch({
   warehouse_meta_data <- dplyr::collect(warehouse_meta_data)
   warehouse_meta_data <- janitor::clean_names(warehouse_meta_data)
 
+  warehouse_meta_data
 
   #odbc::dbDisconnect(conn)
   rm(conn)

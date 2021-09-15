@@ -40,13 +40,16 @@ utils::globalVariables(c("ServerName",
 #'
 
 
-get_table <- function(.table_name, .server_name = NULL, .database_name = NULL, .schema = NULL, ...){
-  if(is.null(.server_name) | is.null(.database_name) | is.null(.schema)){
+get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
+  if(missing(.server_name) | missing(.database_name) | missing(.schema)){
 
     #check_get_hidden_connection()
     #data_warehouse_details <- tbl(get("conn_Documentation", envir = as.environment("package:ideadata")), "MetaData")
 
-    table_in_dbs <- id_tables_in_dbs(.table_name, .database_name, .schema)
+    table_in_dbs <- id_tables_in_dbs(.table_name = .table_name,
+                                     .database_name = .database_name,
+                                     .schema = .schema,
+                                     .server_name = .server_name)
       # data_warehouse_details %>%
       # dplyr::select(ServerName, DatabaseName, Schema, TableName) %>%
       # dplyr::filter(TableName == .table_name) %>%
@@ -141,9 +144,9 @@ get_table <- function(.table_name, .server_name = NULL, .database_name = NULL, .
 #' id_tables_in_dbs("Students")
 #' }
 
-id_tables_in_dbs <- function(.table_name, .server_name = NULL, .database_name = NULL, .schema = NULL){
+id_tables_in_dbs <- function(.table_name, .server_name, .database_name , .schema){
 
-  if (is.null(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
+  if (missing(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
 
   #check_get_hidden_connection()
   # data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
@@ -156,9 +159,9 @@ id_tables_in_dbs <- function(.table_name, .server_name = NULL, .database_name = 
   dplyr::distinct()
 
   #extra filtering when we have more details.
-  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(database_name == .database_name)
-  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(schema == .schema)
-  if (!is.null(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(server_name == .server_name)
+  if (!missing(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(database_name == .database_name)
+  if (!missing(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(schema == .schema)
+  if (!missing(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(server_name == .server_name)
 
   out <- table_in_dbs %>% dplyr::distinct() #%>% dplyr::collect()
 
