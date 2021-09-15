@@ -2,19 +2,27 @@
 #' Collect data from database to local environment piecemeal
 #'
 #' @details IDEA has 60,000+ students, which means data that is collected daily
-#' or more frequently can get large really quickly as the day goes along.
+#' or more frequently can get large really quickly as the year passes.  From experience using
+#' collect() to pull data from the remote DB to a local environment will fail eventually for
+#' collections that are larger than about 60-100K rows.  `collector()` allows you to break up pulling
+#' the data down into smaller peices.  Passing `collector` columns from the database table results in
+#' multiple calls to `collect()` subsutted to disctinct combinations of the selected columns
 #'
-#' @param .data remote [dplyr::tbl()] table that needs to be collected
-#' @param .. columns used to break `.data` into pieces to be downloaded
+#' Note that there is a performance hit. If you can pull down data with `collect`, you should, since
+#' it's faster than calling collect multiple times (as `collector()` does).  However, if you find that
+#' `collect()` keeps failing, than `collector()` will likely solve that problem by pulling the data set in
 #'
+#' #' @param .data remote [dplyr::tbl()] table that needs to be collected
+#' @param ... columns used to break `.data` into pieces to be downloaded
+#' @param verbose whether to include messages or not. Defaul is `TRUE`
 #' @return a tibble
 #' @export
 #'
 #' @examples
 #' library(dplyr)
 #'
-#' regions_remote <- get_regions()
-#' regions <- regions_remote %>% collector(State)
+#' schools_remote <- get_schools()
+#' schools <- schools_remote %>% collector(SchoolShortName, RegionID)
 #'
 collector <- function(.df,
                       #.split_column

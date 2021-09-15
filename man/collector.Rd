@@ -4,12 +4,12 @@
 \alias{collector}
 \title{Collect data from database to local environment piecemeal}
 \usage{
-collector(.data, .split_column)
+collector(.df, ..., verbose = TRUE)
 }
 \arguments{
-\item{.data}{remote \code{\link[dplyr:tbl]{dplyr::tbl()}} table that needs to be collected}
+\item{...}{columns used to break \code{.data} into pieces to be downloaded}
 
-\item{.split_column}{column used to break \code{.data} into peices to be downloaded}
+\item{verbose}{whether to include messages or not. Defaul is \code{TRUE}}
 }
 \value{
 a tibble
@@ -19,12 +19,22 @@ Collect data from database to local environment piecemeal
 }
 \details{
 IDEA has 60,000+ students, which means data that is collected daily
-or more frequently can get large really quickly as the day goes along.
+or more frequently can get large really quickly as the year passes.  From experience using
+collect() to pull data from the remote DB to a local environment will fail eventually for
+collections that are larger than about 60-100K rows.  \code{collector()} allows you to break up pulling
+the data down into smaller peices.  Passing \code{collector} columns from the database table results in
+multiple calls to \code{collect()} subsutted to disctinct combinations of the selected columns
+
+Note that there is a performance hit. If you can pull down data with \code{collect}, you should, since
+it's faster than calling collect multiple times (as \code{collector()} does).  However, if you find that
+\code{collect()} keeps failing, than \code{collector()} will likely solve that problem by pulling the data set in
+
+#' @param .data remote \code{\link[dplyr:tbl]{dplyr::tbl()}} table that needs to be collected
 }
 \examples{
 library(dplyr)
 
-regions_remote <- get_regions()
-regions <- regions_remote \%>\% collector(State)
+schools_remote <- get_schools()
+schools <- schools_remote \%>\% collector(SchoolShortName, RegionID)
 
 }

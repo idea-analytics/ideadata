@@ -5,7 +5,7 @@
 \title{Identify rows with given table name, database name, or schema in the MetaData table in the R&A's documentation
 database.}
 \usage{
-id_tables_in_dbs(.table_name, .database_name = NULL, .schema = NULL)
+id_tables_in_dbs(.table_name, .server_name, .database_name, .schema)
 }
 \arguments{
 \item{.table_name}{the name of a table that may be located somewhere, as a quoted string}
