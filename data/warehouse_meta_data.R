@@ -46,7 +46,7 @@ tryCatch({
     cli::cli_alert_warning("Are you behind the firewall?\n\n")
     cli::cli_alert_warning(
       crayon::red(
-        crayon::bgYellow("When loading ideadata you need to behind IDEA's firewall!!!")
+        crayon::bgYellow("When loading ideadata you need to behind IDEA's firewall!!!\nCheck your VPN connection")
         )
       )
     stop(e)

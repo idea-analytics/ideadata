@@ -4,7 +4,7 @@
 \alias{get_table}
 \title{Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)}
 \usage{
-get_table(.table_name, .database_name = NULL, .schema = NULL, ...)
+get_table(.table_name, .server_name, .database_name, .schema, ...)
 }
 \arguments{
 \item{.table_name}{the name of a table as a quoted string that you'd like to obtain}

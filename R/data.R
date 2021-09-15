@@ -47,4 +47,4 @@
 #'   \item{url}{the IP Address of the server for the data base in `database_name`}
 #'   ...
 #' }
-"metadata"
+"warehouse_meta_data"
