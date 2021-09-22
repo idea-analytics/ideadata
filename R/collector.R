@@ -53,6 +53,9 @@ collector <- function(.df,
     #creeate a named list of column names and column values
     splitter_filter_list <- splitter_filter %>%
       dplyr::collect() %>%
+      #need to make dates strings, otherwie they are reresented as days or second since an origin date, which
+      #looks like an integer and is not good
+      dplyr::mutate(dplyr::across(tidyselect:::where(lubridate::is.Date), as.character)) %>%
       as.list()
 
     #transform list to string of the form `column_name == column value`

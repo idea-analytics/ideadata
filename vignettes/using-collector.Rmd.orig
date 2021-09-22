@@ -15,9 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 
-Some of our datasets are large and moving them from that database to your computer can take a fare amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a log of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
+Some of our datasets are large and moving them from that database to your computer can take a fair amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a lot of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
 
-For this reason, `ideadata` has a `collector` function.  It's used the same way as `collect`, but requires you to pass a paramater---`.split_column` that is used to break your data into pieces based on the set of values with in the column you identify. 
+For this reason, `ideadata` has a `collector()` function.  It's used the same way as `collect`, but requires you to pass paramaters (i.e., column names for the table you are trying to collect ) that are used to break your data into pieces based on the set of values with in the columns you identify. 
 
 Consider the `StudentDailyAttendance` table on `PROD1`
 ```{r basic-example}
@@ -44,14 +44,14 @@ stu_attend_2021 %>%
   count()
 
 ```
-So as of the February 26th, 2021 there 7,907,580 student attendance records. That will be a tall order for `collect` so instead lets use `collector`
+So as of the August 15, 2021 there are 11,701,320	 student attendance records. That will be a tall order for `collect` so instead lets use `collector`
 
 ```{r collect}
 
 stu_attend_2021_feb <- stu_attendance %>% 
-  select(StudentNumber, AttDate, Membership, Absences) %>% 
-  filter(AttDate >= '2021-02-15 00:00') %>%  
-  collector(AttDate) %>% 
+  select(StudentNumber, AttDate, schoolnumber ,Membership, Absences) %>% 
+  filter(AttDate >= '2021-09-13') %>%  
+  collector(AttDate, schoolnumber) %>% 
   janitor::clean_names()
 
 
