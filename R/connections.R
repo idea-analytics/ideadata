@@ -95,7 +95,7 @@ create_connection <- function(.database_name,
       cli::cli_alert_warning(glue::glue("There are {n_rows_db_details} databases with the name {.database_name} in our warehouse\n"))
       cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
       cli::cli_alert_success("Any of these should work:\n")
-      print(glue::glue_data_col(db_details, '\ \ check_get_conncetion(.server_name = "{crayon::green(server_name)}", .database_name = "{crayon::green(.database_name)}"'))
+      print(glue::glue_data_col(db_details, '\ \ check_get_connection(.server_name = "{crayon::green(server_name)}", .database_name = "{crayon::green(.database_name)}"'))
 
       return() # returns early with alerts, since we can't id unique table in warehoue
 
