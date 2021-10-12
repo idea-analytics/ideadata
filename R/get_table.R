@@ -63,7 +63,7 @@ get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
       cli::cli_alert_warning(glue::glue("There are {n_dbs_with_tables} tables with that name in our warehouse\n"))
       cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
       cli::cli_alert_success("Any of these should work:\n")
-      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}", .server_name = "{crayon::green(server_name)})"'))
+      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}", .server_name = "{crayon::green(server_name)}")'))
 
       return() # returns early with alerts, since we can't id unique table in warehoue
 
@@ -87,7 +87,10 @@ get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
 
   if(length(dots) == 0) {
     # case where not called recursively
-    db_detail <- id_tables_in_dbs(.table_name, .database_name, .schema)
+    db_detail <- id_tables_in_dbs(.table_name = .table_name,
+                                  .database_name = .database_name,
+                                  .schema = .schema,
+                                  .server_name = .server_name)
   } else {
     db_detail <- dots$db_detail
   }
