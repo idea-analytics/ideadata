@@ -1,7 +1,7 @@
 Package: ideadata
 Type: Package
 Title: Tools and Utilities for accessing IDEA's Data Warehousegit g
-Version: 1.1.1
+Version: 2.0.0
 Author: Chris Haid
 Maintainer: Chris Haid <christopher.haid@ideapublicschools.org>
 Description: Access tables in the IDEA Public Schools data warehouse.

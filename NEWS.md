@@ -1,4 +1,11 @@
+# ideadata 2.0.0
+
 # ideadata 1.1.1
+
+* Some improvements to `collector`
+* Fixed docuemntation warnings. 
+* New documentation for `collector` and minor updates to `get_tables` vignette. 
+
 
 # ideadata 1.1.0
 
