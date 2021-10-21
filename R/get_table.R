@@ -7,7 +7,8 @@ utils::globalVariables(c("ServerName",
 #'
 #' @param .table_name the name of a table as a quoted string that you'd like to obtain
 #' @param .database_name the name of the database which hosts the table
-#' @param .schema the name of the schema that hosts the table
+#' @param .schema the name of the schema that hosts the database
+#' @param .server_name the name of the server that hosts the database
 #' @param ... other arguments passed to `get_table` (recursively); end user won't typcially use this
 #'
 #' @return a `tbl_sql SQL Server` object (or `Null` if there is not unique table in the warehouse)
@@ -136,6 +137,7 @@ get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
 #' @param .table_name the name of a table that may be located somewhere, as a quoted string
 #' @param .database_name the name of a database in the warehouse , as a quoted string
 #' @param .schema  the name of a schema in the warehouse, as a quoted string
+#' @param .server_name the name of the server that hosts the database
 #'
 #' @return a tibble with all unique table, schema, database, and server combinations found in the MetaData table
 #' @export
