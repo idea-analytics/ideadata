@@ -71,7 +71,7 @@ In this instance the database connection may fail.  It's not ideal, but it happe
 ```{r collector}
 
 schools_df <- schools %>% 
-  collector(CountyName) %>% 
+  collector(SchoolState, CountyName) %>% 
   janitor::clean_names()
 
 ```
