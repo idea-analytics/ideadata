@@ -10,71 +10,74 @@ vignette: >
 
 
 
-Some of our datasets are large and moving them from that database to your computer can take a fare amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a log of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
+Some of our datasets are large and moving them from that database to your computer can take a fair amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a lot of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
 
-For this reason, `ideadata` has a `collector` function.  It's used the same way as `collect`, but requires you to pass a paramater---`.split_column` that is used to break your data into pieces based on the set of values with in the column you identify. 
+For this reason, `ideadata` has a `collector()` function.  It's used the same way as `collect`, but requires you to pass parameters (i.e., column names for the table you are trying to collect ) that are used to break your data into pieces based on the set of values within the columns you identify. 
 
 Consider the `StudentDailyAttendance` table on `PROD1`
 
 ```r
 devtools::load_all(".")
-#> Loading ideadata
+#> ℹ Loading ideadata
 #library(ideadata)
 library(dplyr)
+library(lubridate)
 
 stu_attendance  <- get_student_daily_attendance()
-#> christopher.haid's Kereberos TGT is current
 
 glimpse(stu_attendance)
 #> Rows: ??
-#> Columns: 46
-#> Database: Microsoft SQL Server 13.00.5865[IPS\christopher.haid@1065574-SQLPRD1/PROD1]
-#> $ AcademicYear         <chr> "2015-2016", "2015-2016", "2015-2016", "2015-2016"…
-#> $ SchoolTermID         <dbl> 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 25…
-#> $ SchoolName           <chr> "IDEA Alamo Middle School", "IDEA Quest Academy", …
-#> $ schoolnumber         <dbl> 108807047, 108807102, 108807047, 108807048, 108807…
-#> $ StateSchoolNumber    <dbl> 108807007, 108807102, 108807007, 108807008, 108807…
-#> $ SchoolShortName      <chr> "Alamo", "Quest", "Alamo", "Pharr", "Frontier", "F…
-#> $ SchoolType           <chr> "College Prep", "Academy", "College Prep", "Colleg…
-#> $ VPofSchools          <dbl> 2596, 5302, 2596, 5779, 175, 175, 1320, 5779, 1986…
-#> $ VPofSchoolsName      <chr> "Israel Ybarra", "Rosa Chapa", "Israel Ybarra", "S…
-#> $ RegionID             <dbl> 7, 7, 7, 7, 7, 7, 2, 7, 7, 7, 2, 7, 7, 7, 7, 2, 2,…
-#> $ RegionDescription    <chr> "Rio Grande Valley", "Rio Grande Valley", "Rio Gra…
-#> $ GradeLevelID         <dbl> 6, 1, 8, 8, 8, 2, 2, 3, 6, 3, 3, 0, 6, 0, 0, 6, 1,…
-#> $ GradeLevel           <chr> "6", "1", "8", "8", "8", "2", "2", "3", "6", "3", …
-#> $ AttStudentKey        <dbl> 336448, 336449, 336450, 336451, 336452, 336453, 33…
-#> $ StudentNumber        <dbl> 108050740, 108034756, 108033943, 108040036, 108003…
-#> $ FirstName            <chr> "Kayla", "Jonathan", "Eliezer", "Jacob", "Celest",…
-#> $ LastName             <chr> "De La Rosa", "Saenz", "Salazar", "Alejandro", "Ca…
-#> $ FullName             <chr> "De La Rosa, Kayla Ruby", "Saenz, Jonathan", "Sala…
-#> $ WeekNumber           <chr> "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", …
-#> $ DateNumber           <int> 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15…
-#> $ AttDate              <date> 2015-08-28, 2015-08-28, 2015-08-28, 2015-08-28, 2…
-#> $ Membership           <dbl> 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, …
-#> $ Absences             <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
-#> $ VAbsences            <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
-#> $ SPED                 <int> 0, NA, 0, 0, NA, 0, 0, NA, 0, 0, 0, 0, NA, 0, 0, 0…
-#> $ ELL                  <int> 0, NA, 0, 1, NA, 1, 0, NA, 0, 1, 1, 1, NA, 1, 1, 0…
-#> $ LEP                  <int> 0, NA, 0, 1, NA, 1, 0, NA, 0, 1, 1, 1, NA, 1, 1, 0…
-#> $ Farm                 <int> 1, NA, 1, 1, NA, 1, 0, NA, 1, 0, 1, 1, NA, 1, 1, 1…
-#> $ CSI                  <int> 0, NA, 0, 0, NA, 0, 0, NA, 0, 0, 0, 0, NA, 0, 0, 0…
-#> $ NonSpedEllCsi        <int> 1, NA, 1, 0, NA, 0, 1, NA, 1, 0, 0, 0, NA, 0, 0, 1…
-#> $ Ethnicity            <chr> "White", NA, "White", "White", NA, "White", "White…
-#> $ Hispanic             <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ ContinuouslyEnrolled <chr> "1", "0", "1", "1", "0", "1", "1", "0", "1", "1", …
-#> $ AtRisk               <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ PersistenceType      <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ SchoolYear           <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ DayAfterEvent        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ EventDate            <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-#> $ MaxTempinF           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ AvgTempInF           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ MinTempInF           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ CompareKey           <chr> "2596|Israel Ybarra|7|Rio Grande Valley|2500|10880…
-#> $ RdoEmployeeID        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ RdoEmployeeName      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ SchoolTypeOperation  <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ Enroll               <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> Columns: 49
+#> Database: Microsoft SQL Server 13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]
+#> $ AcademicYear         [3m[38;5;246m<chr>[39m[23m "2020-2021", "2020-2021", "2020-2021", "2020-2021", "2020-2021", "2020…
+#> $ SchoolTermID         [3m[38;5;246m<dbl>[39m[23m 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000…
+#> $ SchoolName           [3m[38;5;246m<chr>[39m[23m "IDEA Frontier College Preparatory", "IDEA Academy Primary", "IDEA Edg…
+#> $ schoolnumber         [3m[38;5;246m<dbl>[39m[23m 108807003, 3, 109907024, 109907003, 108807117, 108807195, 108807037, 1…
+#> $ StateSchoolNumber    [3m[38;5;246m<dbl>[39m[23m 108807003, 108807101, 108807202, 108807040, 108807117, 108807195, 1088…
+#> $ SchoolShortName      [3m[38;5;246m<chr>[39m[23m "Frontier", "Donna", "Edgecliff", "Rio Vista", "Tres Lagos", "Harlinge…
+#> $ SchoolType           [3m[38;5;246m<chr>[39m[23m "College Prep", "Academy", "College Prep", "College Prep", "Academy", …
+#> $ VPofSchools          [3m[38;5;246m<dbl>[39m[23m 175, 5779, 9888, 5124, 5062, 175, 6158, 5062, 5062, 5062, 463, 5779, 5…
+#> $ VPofSchoolsName      [3m[38;5;246m<chr>[39m[23m "Alex Anzaldua", "Stephanie Sullenger", "Christine Diaz", "Rebecca Cob…
+#> $ RegionID             [3m[38;5;246m<dbl>[39m[23m 7, 7, 9, 5, 7, 7, 1, 7, 7, 7, 2, 7, 7, 1, 1, 9, 7, 2, 1, 7, 1, 1, 7, 5…
+#> $ RegionDescription    [3m[38;5;246m<chr>[39m[23m "Rio Grande Valley", "Rio Grande Valley", "Tarrant County", "El Paso",…
+#> $ GradeLevelID         [3m[38;5;246m<dbl>[39m[23m 11, 0, 6, 7, 4, 0, 10, 8, 8, 8, 6, 1, 2, 6, 3, 1, 2, 6, 7, 9, 5, 7, 1,…
+#> $ GradeLevel           [3m[38;5;246m<chr>[39m[23m "11", "K", "6", "7", "4", "K", "10", "8", "8", "8", "6", "1", "2", "6"…
+#> $ AttStudentKey        [3m[38;5;246m<dbl>[39m[23m 42609066, 42609067, 42609068, 42609069, 42609070, 42609071, 42610932, …
+#> $ StudentNumber        [3m[38;5;246m<dbl>[39m[23m 108006521, 108087122, 108114827, 108088137, 108064960, 108110230, 1080…
+#> $ FirstName            [3m[38;5;246m<chr>[39m[23m "Angel", "Bella", "Daisy", "Lorenzo", "Jesus", "Carolina", "Katty", "C…
+#> $ LastName             [3m[38;5;246m<chr>[39m[23m "Duran", "Soto", "Torres", "Escobedo", "Cantu", "Flores", "Alvarado", …
+#> $ FullName             [3m[38;5;246m<chr>[39m[23m "Duran, Angel Gabriel", "Soto, Bella Rose", "Torres, Daisy", "Escobedo…
+#> $ WeekNumber           [3m[38;5;246m<chr>[39m[23m "38", "38", "38", "38", "38", "38", "38", "38", "38", "38", "38", "38"…
+#> $ DateNumber           [3m[38;5;246m<int>[39m[23m 157, 157, 156, 148, 157, 157, 155, 157, 157, 157, 155, 157, 157, 155, …
+#> $ AttDate              [3m[38;5;246m<date>[39m[23m 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-3…
+#> $ Membership           [3m[38;5;246m<dbl>[39m[23m 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, …
+#> $ Absences             [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ VAbsences            [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ SPED                 [3m[38;5;246m<int>[39m[23m 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0…
+#> $ ELL                  [3m[38;5;246m<int>[39m[23m 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0…
+#> $ LEP                  [3m[38;5;246m<int>[39m[23m 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0…
+#> $ Farm                 [3m[38;5;246m<int>[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1…
+#> $ CSI                  [3m[38;5;246m<int>[39m[23m 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0…
+#> $ NonSpedEllCsi        [3m[38;5;246m<int>[39m[23m 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1…
+#> $ Ethnicity            [3m[38;5;246m<chr>[39m[23m "White", "White", "White", "White", "White", "White", "White", "White"…
+#> $ Hispanic             [3m[38;5;246m<int>[39m[23m 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ ContinuouslyEnrolled [3m[38;5;246m<chr>[39m[23m "True", "False", "False", "False", "True", "False", "False", "True", "…
+#> $ AtRisk               [3m[38;5;246m<int>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ PersistenceType      [3m[38;5;246m<int>[39m[23m 3, 3, 1, 3, 3, 1, 3, 3, 3, 3, 1, 3, 1, 3, 1, 1, 3, 3, 3, 3, 1, 3, 3, 1…
+#> $ SchoolYear           [3m[38;5;246m<chr>[39m[23m "2+", "2+", "1", "2+", "2+", "1", "2+", "2+", "2+", "2+", "2+", "2+", …
+#> $ DayAfterEvent        [3m[38;5;246m<chr>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ EventDate            [3m[38;5;246m<date>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+#> $ MaxTempinF           [3m[38;5;246m<dbl>[39m[23m 78.3, 78.3, 67.5, NA, 78.3, 78.3, 68.9, 78.3, 78.3, 78.3, 74.5, 78.3, …
+#> $ AvgTempInF           [3m[38;5;246m<dbl>[39m[23m 74.6, 74.6, 63.1, NA, 74.6, 74.6, 68.2, 74.6, 74.6, 74.6, 68.6, 74.6, …
+#> $ MinTempInF           [3m[38;5;246m<dbl>[39m[23m 71.4, 71.4, 59.2, NA, 71.4, 71.4, 65.3, 71.4, 71.4, 71.4, 66.2, 71.4, …
+#> $ CompareKey           [3m[38;5;246m<chr>[39m[23m "175|Alex Anzaldua|7|Rio Grande Valley|3000|108807003|11|108006521|202…
+#> $ RdoEmployeeID        [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ RdoEmployeeName      [3m[38;5;246m<chr>[39m[23m "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""…
+#> $ SchoolTypeOperation  [3m[38;5;246m<chr>[39m[23m "FULL SCALE", "FULL SCALE", "LAUNCHING", "FULL SCALE", "FULL SCALE", "…
+#> $ Enroll               [3m[38;5;246m<int>[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ Area                 [3m[38;5;246m<chr>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ SubRegionID          [3m[38;5;246m<dbl>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ SubRegionDescription [3m[38;5;246m<chr>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 ```
 
 ```r
@@ -82,85 +85,98 @@ glimpse(stu_attendance)
 #school years are stored as characters, which is inefficient for filtering
 # TermIDs are doubles (thought they really ought be integers), but are 
 # much faster for filtering. 
-term_id <- calc_ps_termid(2020)
+
+term_id <- calc_ps_termid(2021)
 
 
-stu_attend_2021 <-stu_attendance %>% 
+stu_attend_2021 <- stu_attendance %>% 
   filter(SchoolTermID == term_id)
 
-stu_attend_2021 %>% 
-  count()
-#> # Source:   lazy query [?? x 1]
-#> # Database: Microsoft SQL Server
-#> #   13.00.5865[IPS\christopher.haid@1065574-SQLPRD1/PROD1]
-#>         n
-#>     <int>
-#> 1 8423824
+n_rows <- stu_attend_2021 %>% 
+  count() %>% 
+  pull()
+
+n_rows
+#> [1] 3723612
 ```
-So as of the February 26th, 2021 there 7,907,580 student attendance records. That will be a tall order for `collect` so instead lets use `collector`
+So as of the October 21, 2021 there are 3,723,612	student attendance records. That will be a tall order for `collect` so instead lets use `collector`.
+
+`collector` takes column names, uses thosecolumns to get all combinations of variables that appear in the data, and then uses those combinations to pull your data down in smaller chunks defined be each combination (e.g., for each school and data, as shown below). 
 
 
 ```r
+collection_data_start <- today() - days(2)
 
-stu_attend_2021_feb <- stu_attendance %>% 
-  select(StudentNumber, AttDate, Membership, Absences) %>% 
-  filter(AttDate >= '2021-02-15 00:00') %>%  
-  collector(AttDate) %>% 
+stu_attend_2021_temp <- stu_attendance %>% 
+  select(StudentNumber, AttDate, schoolnumber , Membership, Absences) %>% 
+  filter(AttDate >= '2021-10-08', 
+         SchoolNumber %in% c('108807186', '108807187', '108807302', '109907024')) %>%  
+
+  compute()
+#> Created a temporary table named #dbplyr_007
+
+ 
+stu_attend_2021_collected <-  stu_attend_2021_temp %>% 
+  collector(AttDate, schoolnumber) %>% 
   janitor::clean_names()
 #> Collecting data
-#> Pulling data for AttDate == 2021-02-16 ...
-#> Pulling data for AttDate == 2021-02-17 ...
-#> Pulling data for AttDate == 2021-02-18 ...
-#> Pulling data for AttDate == 2021-02-19 ...
-#> Pulling data for AttDate == 2021-02-22 ...
-#> Pulling data for AttDate == 2021-02-23 ...
-#> Pulling data for AttDate == 2021-02-24 ...
-#> Pulling data for AttDate == 2021-02-25 ...
-#> Pulling data for AttDate == 2021-02-26 ...
-#> Pulling data for AttDate == 2021-03-01 ...
-#> Pulling data for AttDate == 2021-03-02 ...
-#> Pulling data for AttDate == 2021-03-03 ...
-#> Pulling data for AttDate == 2021-03-04 ...
-#> Pulling data for AttDate == 2021-03-05 ...
-#> Pulling data for AttDate == 2021-03-08 ...
-#> Pulling data for AttDate == 2021-03-09 ...
-#> Pulling data for AttDate == 2021-03-10 ...
-#> Pulling data for AttDate == 2021-03-11 ...
-#> Pulling data for AttDate == 2021-03-15 ...
-#> Pulling data for AttDate == 2021-03-16 ...
+#> Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '109907024' ...
+#> Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807186' ...
+#> Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807187' ...
+#> Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807302' ...
+#> Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '109907024' ...
 #> Data collection complete
 ```
+
+
+
+Note the call to `dplyr::compute()` in the code above (highlighted).
+
+
+
+What is that `compute()` call doing?
+
+`compute()` forces the database to evaluate all the prior steps (i.e. a filter, a select, and another filter), after which the will create a temporary table there (i.e., a table which get's deleted when your conenction closes.  
+
+Wihout this step each iteration created by `collector()` (via `purrr::map_df()`) will re run the the magrittr pipeline, of which the tw filter steps are computationally expensive. 
+A caveat with this desing pattern is you need to have permissions to write temporary tables to the database.  If you can't do that, then you'll have to suffer the pain of waiting for the DB to run all of your `magrittr` pipeline (i.e., all the stuff following each `%>%`) for each iteration.  
+
+In any case, here are the results of the call, witht eh student numbers masked by an sha1 cryptohash:
+
 
 ```r
 stu_attend_2021_feb %>% 
   head(20) %>% 
   mutate(student_number = openssl::sha1(as.character(student_number))) %>% #crypto hash
   knitr::kable()
+#> Error in head(., 20): object 'stu_attend_2021_feb' not found
 ```
 
-
-
-|student_number                           |att_date   | membership| absences|
-|:----------------------------------------|:----------|----------:|--------:|
-|a2f96816e1fe5cec313f7e3e0595f72479d8b12e |2021-02-16 |          1|        1|
-|9a507398b859e777182a82ee103c2edb7810a485 |2021-02-16 |          1|        1|
-|2620c1902a05ea596a1e55c145395fd38632c0b3 |2021-02-16 |          1|        1|
-|72a60ec51f1d527be064fc1506d6a0130a473ce7 |2021-02-16 |          1|        0|
-|66a9102da16438c01a9fe0258f7c72ce63feece6 |2021-02-16 |          1|        0|
-|0818abe48119841f8fad099b5dabbd630fecf469 |2021-02-16 |          1|        1|
-|6fcbb1628caf394cfa0d7b749794116c55378605 |2021-02-16 |          1|        0|
-|5ab7556a6e391f87e63c45bff64a3b81b81f7089 |2021-02-16 |          1|        0|
-|cf8e4fceb916f298bc80c89d51614c7ca67d6160 |2021-02-16 |          1|        0|
-|a1e17c63661e429b624ee34aaea76ce6583bb3b4 |2021-02-16 |          1|        1|
-|8525a30cf0d3e82b7af4c90369d1646175597523 |2021-02-16 |          1|        1|
-|5e42e70d845c26a953ca595a95f91a951029c8c9 |2021-02-16 |          1|        0|
-|7e06d765484c545e3291bfb09d3124b72e51a7fd |2021-02-16 |          1|        0|
-|f550905b31d1ba69fdfe13c8e23b1fc85a1b8ce9 |2021-02-16 |          1|        0|
-|c8144720539ad5b24ec6543923872107bdcf0959 |2021-02-16 |          1|        0|
-|7d2b01852171f31a954fb6714a74efedb7c61ae4 |2021-02-16 |          1|        0|
-|c5e41fd5f863022221bf01a376069349e7b8a824 |2021-02-16 |          1|        0|
-|69d3db9b02fb1d184946fcccc4a9e902d7dc0a2a |2021-02-16 |          1|        0|
-|ad1e0f539cb63c77aab993e5d9d0f783858c75c6 |2021-02-16 |          1|        0|
-|418ad4ee7a1ac273eb0864b7b57e2184a6fb10ea |2021-02-16 |          1|        0|
-
-Notice that the table `stu_attendance` (i.e, `STudentDailyAttendance` on `PROD1`) has 46 columns.  A trick used above is to reduce  the columns to only those you need to use later with a `select` statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database. 
+Notice that the table `stu_attendance` (i.e, `STudentDailyAttendance` on `PROD1`) has 49 columns.  A trick used above is to reduce  the columns to only those you need to use later with a `select` statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database. 

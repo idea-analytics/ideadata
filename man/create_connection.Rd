@@ -4,12 +4,12 @@
 \alias{create_connection}
 \title{Create connection to database}
 \usage{
-create_connection(.database_name, r_and_a_server = FALSE, env = globalenv())
+create_connection(.database_name, .server_name, env = globalenv())
 }
 \arguments{
 \item{.database_name}{name of the database you want to connect to}
 
-\item{r_and_a_server}{switch for attaching to R&A server. Default is \code{FALSE}}
+\item{.server_name}{the name of the server the database is hosted on}
 
 \item{env}{which environment to save the connection.  The default is the global
 environment and you should not change this unless you really need to and you know

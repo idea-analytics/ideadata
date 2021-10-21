@@ -7,7 +7,8 @@ utils::globalVariables(c("ServerName",
 #'
 #' @param .table_name the name of a table as a quoted string that you'd like to obtain
 #' @param .database_name the name of the database which hosts the table
-#' @param .schema the name of the schema that hosts the table
+#' @param .schema the name of the schema that hosts the database
+#' @param .server_name the name of the server that hosts the database
 #' @param ... other arguments passed to `get_table` (recursively); end user won't typcially use this
 #'
 #' @return a `tbl_sql SQL Server` object (or `Null` if there is not unique table in the warehouse)
@@ -40,13 +41,16 @@ utils::globalVariables(c("ServerName",
 #'
 
 
-get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
-  if(is.null(.database_name) | is.null(.schema)){
+get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
+  if(missing(.server_name) | missing(.database_name) | missing(.schema)){
 
     #check_get_hidden_connection()
     #data_warehouse_details <- tbl(get("conn_Documentation", envir = as.environment("package:ideadata")), "MetaData")
 
-    table_in_dbs <- id_tables_in_dbs(.table_name, .database_name, .schema)
+    table_in_dbs <- id_tables_in_dbs(.table_name = .table_name,
+                                     .database_name = .database_name,
+                                     .schema = .schema,
+                                     .server_name = .server_name)
       # data_warehouse_details %>%
       # dplyr::select(ServerName, DatabaseName, Schema, TableName) %>%
       # dplyr::filter(TableName == .table_name) %>%
@@ -60,19 +64,20 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
       cli::cli_alert_warning(glue::glue("There are {n_dbs_with_tables} tables with that name in our warehouse\n"))
       cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
       cli::cli_alert_success("Any of these should work:\n")
-      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(TableName)}", .database_name = "{crayon::green(DatabaseName)}", .schema = "{crayon::green(Schema)}")'))
+      print(glue::glue_data_col(table_in_dbs, '\ \ get_table(.table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}", .server_name = "{crayon::green(server_name)}")'))
 
       return() # returns early with alerts, since we can't id unique table in warehoue
 
     } else {
       # case where there is actually only one table
-      .table_name <- table_in_dbs$TableName
-      .database_name <- table_in_dbs$DatabaseName
-      .schema <- table_in_dbs$Schema
+      .table_name <- table_in_dbs$table_name
+      .database_name <- table_in_dbs$database_name
+      .schema <- table_in_dbs$schema
+      .server_name <- table_in_dbs$server_name
     }
 
    #recursivley call this function, since we have all needed data
-   out <-get_table(.table_name, .database_name, .schema, db_detail = table_in_dbs)
+   out <-get_table(.table_name, .server_name, .database_name, .schema, db_detail = table_in_dbs)
 
   return(out)
 
@@ -83,7 +88,10 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
 
   if(length(dots) == 0) {
     # case where not called recursively
-    db_detail <- id_tables_in_dbs(.table_name, .database_name, .schema)
+    db_detail <- id_tables_in_dbs(.table_name = .table_name,
+                                  .database_name = .database_name,
+                                  .schema = .schema,
+                                  .server_name = .server_name)
   } else {
     db_detail <- dots$db_detail
   }
@@ -95,19 +103,21 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
     cli::cli_alert_danger(glue::glue("There are {nrow_db_detail} tables with that name in our warehouse\n"))
     cli::cli_alert_warning(".dn_name, .shema, and .table_name should identify a unique table.\n")
     cli::cli_alert_warning("However, thse are in the warehouse:\n")
-    print(glue::glue_data_col(db_detail, '\ \ .table_name = "{crayon::green(TableName)}", .database_name = "{crayon::green(DatabaseName)}", .schema = "{crayon::green(Schema)}"'))
+    print(glue::glue_data_col(db_detail, '\ \ .table_name = "{crayon::green(table_name)}", .database_name = "{crayon::green(database_name)}", .schema = "{crayon::green(schema)}"'))
 
     return()
 
   }
 
   #is R&A Server?
-  is_r_and_a_server <- db_detail$ServerName == "791150-HQVRA"
+  is_r_and_a_server <- db_detail$server_name == "791150-HQVRA"
 
-  check_get_connection(.database_name = db_detail$DatabaseName,
+  check_get_connection(.database_name = db_detail$database_name,
+                       .schema = db_detail$schema,
+                       .server_name = db_detail$server_name,
                        r_and_a_server = is_r_and_a_server)
 
-  schema_string <- glue::glue("[{db_detail$ServerName}].[{.database_name}].[{.schema}]")
+  schema_string <- glue::glue("[{db_detail$server_name}].[{.database_name}].[{.schema}]")
 
   connection_name <- glue::glue("conn_{.database_name}")
 
@@ -127,6 +137,7 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
 #' @param .table_name the name of a table that may be located somewhere, as a quoted string
 #' @param .database_name the name of a database in the warehouse , as a quoted string
 #' @param .schema  the name of a schema in the warehouse, as a quoted string
+#' @param .server_name the name of the server that hosts the database
 #'
 #' @return a tibble with all unique table, schema, database, and server combinations found in the MetaData table
 #' @export
@@ -138,24 +149,26 @@ get_table <- function(.table_name, .database_name = NULL, .schema = NULL, ...){
 #' id_tables_in_dbs("Students")
 #' }
 
-id_tables_in_dbs <- function(.table_name, .database_name = NULL, .schema = NULL){
+id_tables_in_dbs <- function(.table_name, .server_name, .database_name , .schema){
 
-  if (is.null(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
+  if (missing(.table_name)) stop(".table_name is a required argument to id_tables_in_db")
 
-  check_get_hidden_connection()
-  data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
-                                "MetaData")
+  #check_get_hidden_connection()
+  # data_warehouse_details <- dplyr::tbl(get("conn_Documentation", envir = base::as.environment("ideadata_shim")),
+  #                               "MetaData")
 
-  table_in_dbs <- data_warehouse_details %>%
-  dplyr::select(ServerName, DatabaseName, Schema, TableName) %>%
-  dplyr::filter(TableName == .table_name) %>%
+  #table_in_dbs <- data_warehouse_details %>%
+  table_in_dbs <- warehouse_meta_data %>%
+  dplyr::select(server_name, database_name, schema, table_name) %>%
+  dplyr::filter(table_name == .table_name) %>%
   dplyr::distinct()
 
   #extra filtering when we have more details.
-  if (!is.null(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(DatabaseName == .database_name)
-  if (!is.null(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(Schema == .schema)
+  if (!missing(.database_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(database_name == .database_name)
+  if (!missing(.schema)) table_in_dbs <- table_in_dbs %>% dplyr::filter(schema == .schema)
+  if (!missing(.server_name)) table_in_dbs <- table_in_dbs %>% dplyr::filter(server_name == .server_name)
 
-  out <- table_in_dbs %>% dplyr::distinct() %>% dplyr::collect()
+  out <- table_in_dbs %>% dplyr::distinct() #%>% dplyr::collect()
 
   # Return
   out

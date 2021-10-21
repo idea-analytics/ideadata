@@ -1,3 +1,20 @@
+# ideadata 2.0.0
+
+* This is the newest version for release to the R&A Team.  Biggest change is that `get_table` doesn't connect to the warehouse `MetaData`. It uses a build in dataframe that is refreshed when the package is loaded. 
+* `collector` now takes multiple columns to split up a data set to pass to `purrr`. 
+* Minor documentation in `collector`'s vignette on using `dplyr::compute` to reduce SQL Server time on unevaluated `dplyr` pipelines. 
+
+# ideadata 1.1.1
+
+* Some improvements to `collector`
+* Fixed docuemntation warnings. 
+* New documentation for `collector` and minor updates to `get_tables` vignette. 
+
+
+# ideadata 1.1.0
+
+* When attaching `ideadata` with `library(ideadata`) the package creates a data warehouse meta data table that users can use to look for data locations _and_ which `ideadata` uses for looking up table locations.  This process ensures that at library attach the user and the package has the most up-to-date data about the warehouse. 
+
 # ideadata 1.0.2
 
 * create a switch in the kinit function to differentiate between macOS and Linux since out of the box 
