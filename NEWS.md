@@ -1,5 +1,9 @@
 # ideadata 2.0.0
 
+* This is the newest version for release to the R&A Team.  Biggest change is that `get_table` doesn't connect to the warehouse `MetaData`. It uses a build in dataframe that is refreshed when the package is loaded. 
+* `collector` now takes multiple columns to split up a data set to pass to `purrr`. 
+* Minor documentation in `collector`'s vignette on using `dplyr::compute` to reduce SQL Server time on unevaluated `dplyr` pipelines. 
+
 # ideadata 1.1.1
 
 * Some improvements to `collector`
