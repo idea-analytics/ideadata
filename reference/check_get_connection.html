@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -141,7 +141,12 @@
     <p>Check if DB connections available and valid or create new one</p>
     </div>
 
-    <pre class="usage"><span class='fu'>check_get_connection</span><span class='op'>(</span><span class='va'>.database_name</span>, r_and_a_server <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>check_get_connection</span><span class='op'>(</span>
+  <span class='va'>.database_name</span>,
+  <span class='va'>.schema</span>,
+  <span class='va'>.server_name</span>,
+  r_and_a_server <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,6 +154,14 @@
     <tr>
       <th>.database_name</th>
       <td><p>name of the database you want to connect to</p></td>
+    </tr>
+    <tr>
+      <th>.schema</th>
+      <td><p>the schema for the table you want to access</p></td>
+    </tr>
+    <tr>
+      <th>.server_name</th>
+      <td><p>the name of the server the database is hosted on</p></td>
     </tr>
     <tr>
       <th>r_and_a_server</th>

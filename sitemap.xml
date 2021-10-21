@@ -100,10 +100,16 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/pipe.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/setup_creds.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/update_uid.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/warehouse_meta_data.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/articles/setting-up-your-credentials.html</loc>

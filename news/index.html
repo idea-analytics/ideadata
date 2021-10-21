@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -135,6 +135,33 @@
       
     </div>
 
+    <div id="ideadata-200" class="section level1">
+<h1 class="page-header" data-toc-text="2.0.0">
+<a href="#ideadata-200" class="anchor"></a>ideadata 2.0.0</h1>
+<ul>
+<li>This is the newest version for release to the R&amp;A Team. Biggest change is that <code>get_table</code> doesn’t connect to the warehouse <code>MetaData</code>. It uses a build in dataframe that is refreshed when the package is loaded.</li>
+<li>
+<code>collector</code> now takes multiple columns to split up a data set to pass to <code>purrr</code>.</li>
+<li>Minor documentation in <code>collector</code>’s vignette on using <code><a href="https://dplyr.tidyverse.org/reference/compute.html">dplyr::compute</a></code> to reduce SQL Server time on unevaluated <code>dplyr</code> pipelines.</li>
+</ul>
+</div>
+    <div id="ideadata-111" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.1">
+<a href="#ideadata-111" class="anchor"></a>ideadata 1.1.1</h1>
+<ul>
+<li>Some improvements to <code>collector</code>
+</li>
+<li>Fixed docuemntation warnings.</li>
+<li>New documentation for <code>collector</code> and minor updates to <code>get_tables</code> vignette.</li>
+</ul>
+</div>
+    <div id="ideadata-110" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.0">
+<a href="#ideadata-110" class="anchor"></a>ideadata 1.1.0</h1>
+<ul>
+<li>When attaching <code>ideadata</code> with <code>library(ideadata</code>) the package creates a data warehouse meta data table that users can use to look for data locations <em>and</em> which <code>ideadata</code> uses for looking up table locations. This process ensures that at library attach the user and the package has the most up-to-date data about the warehouse.</li>
+</ul>
+</div>
     <div id="ideadata-102" class="section level1">
 <h1 class="page-header" data-toc-text="1.0.2">
 <a href="#ideadata-102" class="anchor"></a>ideadata 1.0.2</h1>
