@@ -7,6 +7,8 @@
 collector(.df, ..., verbose = TRUE)
 }
 \arguments{
+\item{.df}{remote \code{\link[dplyr:tbl]{dplyr::tbl()}} table that needs to be collected}
+
 \item{...}{columns used to break \code{.data} into pieces to be downloaded}
 
 \item{verbose}{whether to include messages or not. Defaul is \code{TRUE}}
@@ -28,8 +30,6 @@ multiple calls to \code{collect()} subsutted to disctinct combinations of the se
 Note that there is a performance hit. If you can pull down data with \code{collect}, you should, since
 it's faster than calling collect multiple times (as \code{collector()} does).  However, if you find that
 \code{collect()} keeps failing, than \code{collector()} will likely solve that problem by pulling the data set in
-
-#' @param .data remote \code{\link[dplyr:tbl]{dplyr::tbl()}} table that needs to be collected
 }
 \examples{
 library(dplyr)

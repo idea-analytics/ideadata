@@ -10,6 +10,8 @@ id_tables_in_dbs(.table_name, .server_name, .database_name, .schema)
 \arguments{
 \item{.table_name}{the name of a table that may be located somewhere, as a quoted string}
 
+\item{.server_name}{the name of the server that hosts the database}
+
 \item{.database_name}{the name of a database in the warehouse , as a quoted string}
 
 \item{.schema}{the name of a schema in the warehouse, as a quoted string}

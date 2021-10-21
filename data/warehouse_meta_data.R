@@ -1,18 +1,13 @@
 # Creates the meta
 
-#uid <- Sys.getenv("IDEA_RNA_DB_UID")
-#pwd <- Sys.getenv("IDEA_RNA_DB_PWD")
-
-
 
 
 # create ODBC Connection String
 connection_string <- glue::glue(
   "Driver={Sys.getenv('IDEA_RNA_ODBC_DRIVER')};",
-  #"Server=791150-HQVRA.IPS.ORG;",
+
   "Server=REDACTED-SQLSERVER.IPS.ORG;",
-  # "UID={creds$uid};",
-  #  "PWD={utils::URLencode(creds$pwd)};",
+
   "Trusted_Connection=yes;",
   "database=Documentation"
 )
@@ -38,6 +33,7 @@ tryCatch({
 
   #odbc::dbDisconnect(conn)
   rm(conn)
+  rm(connection_string)
   },
   error = function(e) {
 

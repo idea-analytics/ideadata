@@ -1,3 +1,4 @@
+utils::globalVariables(c("row_number", "where"))
 
 #' Collect data from database to local environment piecemeal
 #'
@@ -12,7 +13,7 @@
 #' it's faster than calling collect multiple times (as `collector()` does).  However, if you find that
 #' `collect()` keeps failing, than `collector()` will likely solve that problem by pulling the data set in
 #'
-#' #' @param .data remote [dplyr::tbl()] table that needs to be collected
+#' @param .df remote [dplyr::tbl()] table that needs to be collected
 #' @param ... columns used to break `.data` into pieces to be downloaded
 #' @param verbose whether to include messages or not. Defaul is `TRUE`
 #' @return a tibble
@@ -55,7 +56,7 @@ collector <- function(.df,
       dplyr::collect() %>%
       #need to make dates strings, otherwie they are reresented as days or second since an origin date, which
       #looks like an integer and is not good
-      dplyr::mutate(dplyr::across(tidyselect:::where(lubridate::is.Date), as.character)) %>%
+      dplyr::mutate(dplyr::across(where(lubridate::is.Date), as.character)) %>%
       as.list()
 
     #transform list to string of the form `column_name == column value`

@@ -1,7 +1,10 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("db_locations",
                                                         "server_name",
                                                         "database_name",
-                                                        "url"))
+                                                        "url",
+                                                        "warehouse_meta_data",
+                                                        "schema",
+                                                        "table_name"))
 
 
 #' Get's creds from environment variable
@@ -58,7 +61,9 @@ get_db_url <- function(.database_name){
 #' Create connection to database
 #'
 #' @param .database_name name of the database you want to connect to
-#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+# #' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+# #' @param .schema the schema for the table you want to access
+#' @param .server_name the name of the server the database is hosted on
 #' @param env which environment to save the connection.  The default is the global
 #' environment and you should not change this unless you really need to and you know
 #' what you are doing.
@@ -140,6 +145,8 @@ create_connection <- function(.database_name,
 #' Check if DB connections available and valid or create new one
 #'
 #' @inheritParams create_connection
+#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+#' @param .schema the schema for the table you want to access
 #'
 #' @return returns an S4 object that inherits from DBIConnection.
 #' This object is used to communicate with the database engine.
@@ -217,6 +224,7 @@ generate_schema <- function(.database_name){
 #' Check  "hidden" DB connections available and valid or create new one
 #'
 #' @inheritParams create_connection
+#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
 #'
 #' @return returns an S4 object that inherits from DBIConnection.
 #' This object is used to communicate with the database engine.

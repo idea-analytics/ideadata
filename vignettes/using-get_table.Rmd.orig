@@ -24,7 +24,9 @@ To mitigate against the time Chris has to develop new `get_*` functions and the 
 
 This function does exactly what it says: it get's tables from the warehouse by looking up table location in the `MetaData` table in the `Documentation` schema of R&A's SQL Server instance.  That table updates frequently and contains a comprehensive view of the data warehouse at any time.
 
-`get_table()` makes a connection (this one is hidden in the `idea_shims` environment) to that table when called, finds a table location, and then pulls that table down.  The look-up is relatively quick, but do realize, it's introduces an extra connection, an extra query, and an extra pull of the data. Consequently it's slow to use for getting student data than the `get_students()` function.
+When you load `ideadata` (i.e., when you run `library(ideadat)` the package makes a connection  to the `MetaData` table and saves it as a dataframe names `warehouse_meta_data` that you can access by running `data(warehouse_meta_data)`. 
+
+Not that you might need to detach and reload `ideadata` if you know the warehouse has a new table but `get_table()` can't find it.  This will force the `warehouse_meta_data` table to update. 
 
 ## Usage
 
@@ -43,7 +45,11 @@ head(oe_responses)
 Not too bad.
 
 ### Less simple usage, or failing informatively
-This function **will fail** if the tables is not uniquely named in the warehouse. Why? Because there is no way to know which table you really mean.  One solution, if you know the location, is to provide the table name, database name, and schema to the `.table_name`, `database_name`, and `.schema` arguments of `get_table()`.  That will locate the right server and make the connection and avoid failure.
+This function **will fail** if the tables is not uniquely named in the warehouse. 
+
+Why? 
+
+Because there is no way to know which table you really mean.  One solution, if you know the location, is to provide the table name, database name, and schema to the `.table_name`, `database_name`,  `.schema`, and `.server_name` arguments of `get_table()`.  That will locate the right server and make the connection and avoid failure.
 
 **But here is something cool**: What if you don't know that info? When `get_table` fails in this scenario it fails informatively.  `get_table` will show you all the tables it's found in the warehouse and *give you code you can copy and paste to get the table you want*.
 

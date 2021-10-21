@@ -9,11 +9,11 @@ create_connection(.database_name, .server_name, env = globalenv())
 \arguments{
 \item{.database_name}{name of the database you want to connect to}
 
+\item{.server_name}{the name of the server the database is hosted on}
+
 \item{env}{which environment to save the connection.  The default is the global
 environment and you should not change this unless you really need to and you know
 what you are doing.}
-
-\item{r_and_a_server}{switch for attaching to R&A server. Default is \code{FALSE}}
 }
 \value{
 returns an S4 object that inherits from DBIConnection.

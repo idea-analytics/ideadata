@@ -14,6 +14,10 @@ check_get_connection(
 \arguments{
 \item{.database_name}{name of the database you want to connect to}
 
+\item{.schema}{the schema for the table you want to access}
+
+\item{.server_name}{the name of the server the database is hosted on}
+
 \item{r_and_a_server}{switch for attaching to R&A server. Default is \code{FALSE}}
 }
 \value{
