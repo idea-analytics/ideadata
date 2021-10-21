@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -98,253 +98,152 @@
 
     
     
-<p>Some of our datasets are large and moving them from that database to your computer can take a fare amount of time. So long in fact that is not uncommon for our connections to die.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Additionally, you tend not to get a log of feedback when using <code>dplyr</code>’s <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> function to return the data to your computer. It either gets the data silently or dies trying.</p>
-<p>For this reason, <code>ideadata</code> has a <code>collector</code> function. It’s used the same way as <code>collect</code>, but requires you to pass a paramater—<code>.split_column</code> that is used to break your data into pieces based on the set of values with in the column you identify.</p>
+<p>Some of our datasets are large and moving them from that database to your computer can take a fair amount of time. So long in fact that is not uncommon for our connections to die.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Additionally, you tend not to get a lot of feedback when using <code>dplyr</code>’s <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> function to return the data to your computer. It either gets the data silently or dies trying.</p>
+<p>For this reason, <code>ideadata</code> has a <code><a href="../reference/collector.html">collector()</a></code> function. It’s used the same way as <code>collect</code>, but requires you to pass parameters (i.e., column names for the table you are trying to collect ) that are used to break your data into pieces based on the set of values within the columns you identify.</p>
 <p>Consider the <code>StudentDailyAttendance</code> table on <code>PROD1</code></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>
-<span class="co">#&gt; Loading ideadata</span>
+<span class="co">#&gt; ℹ Loading ideadata</span>
 <span class="co">#library(ideadata)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org">lubridate</a></span><span class="op">)</span>
 
 <span class="va">stu_attendance</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_student_daily_attendance.html">get_student_daily_attendance</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
 
 <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">stu_attendance</span><span class="op">)</span>
 <span class="co">#&gt; Rows: ??</span>
-<span class="co">#&gt; Columns: 46</span>
-<span class="co">#&gt; Database: Microsoft SQL Server 13.00.5865[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
-<span class="co">#&gt; $ AcademicYear         &lt;chr&gt; "2015-2016", "2015-2016", "2015-2016", "2015-2016"…</span>
-<span class="co">#&gt; $ SchoolTermID         &lt;dbl&gt; 2500, 2500, 2500, 2500, 2500, 2500, 2500, 2500, 25…</span>
-<span class="co">#&gt; $ SchoolName           &lt;chr&gt; "IDEA Alamo Middle School", "IDEA Quest Academy", …</span>
-<span class="co">#&gt; $ schoolnumber         &lt;dbl&gt; 108807047, 108807102, 108807047, 108807048, 108807…</span>
-<span class="co">#&gt; $ StateSchoolNumber    &lt;dbl&gt; 108807007, 108807102, 108807007, 108807008, 108807…</span>
-<span class="co">#&gt; $ SchoolShortName      &lt;chr&gt; "Alamo", "Quest", "Alamo", "Pharr", "Frontier", "F…</span>
-<span class="co">#&gt; $ SchoolType           &lt;chr&gt; "College Prep", "Academy", "College Prep", "Colleg…</span>
-<span class="co">#&gt; $ VPofSchools          &lt;dbl&gt; 2596, 5302, 2596, 5779, 175, 175, 1320, 5779, 1986…</span>
-<span class="co">#&gt; $ VPofSchoolsName      &lt;chr&gt; "Israel Ybarra", "Rosa Chapa", "Israel Ybarra", "S…</span>
-<span class="co">#&gt; $ RegionID             &lt;dbl&gt; 7, 7, 7, 7, 7, 7, 2, 7, 7, 7, 2, 7, 7, 7, 7, 2, 2,…</span>
-<span class="co">#&gt; $ RegionDescription    &lt;chr&gt; "Rio Grande Valley", "Rio Grande Valley", "Rio Gra…</span>
-<span class="co">#&gt; $ GradeLevelID         &lt;dbl&gt; 6, 1, 8, 8, 8, 2, 2, 3, 6, 3, 3, 0, 6, 0, 0, 6, 1,…</span>
-<span class="co">#&gt; $ GradeLevel           &lt;chr&gt; "6", "1", "8", "8", "8", "2", "2", "3", "6", "3", …</span>
-<span class="co">#&gt; $ AttStudentKey        &lt;dbl&gt; 336448, 336449, 336450, 336451, 336452, 336453, 33…</span>
-<span class="co">#&gt; $ StudentNumber        &lt;dbl&gt; 108050740, 108034756, 108033943, 108040036, 108003…</span>
-<span class="co">#&gt; $ FirstName            &lt;chr&gt; "Kayla", "Jonathan", "Eliezer", "Jacob", "Celest",…</span>
-<span class="co">#&gt; $ LastName             &lt;chr&gt; "De La Rosa", "Saenz", "Salazar", "Alejandro", "Ca…</span>
-<span class="co">#&gt; $ FullName             &lt;chr&gt; "De La Rosa, Kayla Ruby", "Saenz, Jonathan", "Sala…</span>
-<span class="co">#&gt; $ WeekNumber           &lt;chr&gt; "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", …</span>
-<span class="co">#&gt; $ DateNumber           &lt;int&gt; 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15…</span>
-<span class="co">#&gt; $ AttDate              &lt;date&gt; 2015-08-28, 2015-08-28, 2015-08-28, 2015-08-28, 2…</span>
-<span class="co">#&gt; $ Membership           &lt;dbl&gt; 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, …</span>
-<span class="co">#&gt; $ Absences             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…</span>
-<span class="co">#&gt; $ VAbsences            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…</span>
-<span class="co">#&gt; $ SPED                 &lt;int&gt; 0, NA, 0, 0, NA, 0, 0, NA, 0, 0, 0, 0, NA, 0, 0, 0…</span>
-<span class="co">#&gt; $ ELL                  &lt;int&gt; 0, NA, 0, 1, NA, 1, 0, NA, 0, 1, 1, 1, NA, 1, 1, 0…</span>
-<span class="co">#&gt; $ LEP                  &lt;int&gt; 0, NA, 0, 1, NA, 1, 0, NA, 0, 1, 1, 1, NA, 1, 1, 0…</span>
-<span class="co">#&gt; $ Farm                 &lt;int&gt; 1, NA, 1, 1, NA, 1, 0, NA, 1, 0, 1, 1, NA, 1, 1, 1…</span>
-<span class="co">#&gt; $ CSI                  &lt;int&gt; 0, NA, 0, 0, NA, 0, 0, NA, 0, 0, 0, 0, NA, 0, 0, 0…</span>
-<span class="co">#&gt; $ NonSpedEllCsi        &lt;int&gt; 1, NA, 1, 0, NA, 0, 1, NA, 1, 0, 0, 0, NA, 0, 0, 1…</span>
-<span class="co">#&gt; $ Ethnicity            &lt;chr&gt; "White", NA, "White", "White", NA, "White", "White…</span>
-<span class="co">#&gt; $ Hispanic             &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ ContinuouslyEnrolled &lt;chr&gt; "1", "0", "1", "1", "0", "1", "1", "0", "1", "1", …</span>
-<span class="co">#&gt; $ AtRisk               &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ PersistenceType      &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ SchoolYear           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ DayAfterEvent        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ EventDate            &lt;date&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span>
-<span class="co">#&gt; $ MaxTempinF           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ AvgTempInF           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ MinTempInF           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ CompareKey           &lt;chr&gt; "2596|Israel Ybarra|7|Rio Grande Valley|2500|10880…</span>
-<span class="co">#&gt; $ RdoEmployeeID        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ RdoEmployeeName      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ SchoolTypeOperation  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ Enroll               &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></code></pre></div>
+<span class="co">#&gt; Columns: 49</span>
+<span class="co">#&gt; Database: Microsoft SQL Server 13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
+<span class="co">#&gt; $ AcademicYear         [3m[38;5;246m&lt;chr&gt;[39m[23m "2020-2021", "2020-2021", "2020-2021", "2020-2021", "2020-2021", "2020…</span>
+<span class="co">#&gt; $ SchoolTermID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000…</span>
+<span class="co">#&gt; $ SchoolName           [3m[38;5;246m&lt;chr&gt;[39m[23m "IDEA Frontier College Preparatory", "IDEA Academy Primary", "IDEA Edg…</span>
+<span class="co">#&gt; $ schoolnumber         [3m[38;5;246m&lt;dbl&gt;[39m[23m 108807003, 3, 109907024, 109907003, 108807117, 108807195, 108807037, 1…</span>
+<span class="co">#&gt; $ StateSchoolNumber    [3m[38;5;246m&lt;dbl&gt;[39m[23m 108807003, 108807101, 108807202, 108807040, 108807117, 108807195, 1088…</span>
+<span class="co">#&gt; $ SchoolShortName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Frontier", "Donna", "Edgecliff", "Rio Vista", "Tres Lagos", "Harlinge…</span>
+<span class="co">#&gt; $ SchoolType           [3m[38;5;246m&lt;chr&gt;[39m[23m "College Prep", "Academy", "College Prep", "College Prep", "Academy", …</span>
+<span class="co">#&gt; $ VPofSchools          [3m[38;5;246m&lt;dbl&gt;[39m[23m 175, 5779, 9888, 5124, 5062, 175, 6158, 5062, 5062, 5062, 463, 5779, 5…</span>
+<span class="co">#&gt; $ VPofSchoolsName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Alex Anzaldua", "Stephanie Sullenger", "Christine Diaz", "Rebecca Cob…</span>
+<span class="co">#&gt; $ RegionID             [3m[38;5;246m&lt;dbl&gt;[39m[23m 7, 7, 9, 5, 7, 7, 1, 7, 7, 7, 2, 7, 7, 1, 1, 9, 7, 2, 1, 7, 1, 1, 7, 5…</span>
+<span class="co">#&gt; $ RegionDescription    [3m[38;5;246m&lt;chr&gt;[39m[23m "Rio Grande Valley", "Rio Grande Valley", "Tarrant County", "El Paso",…</span>
+<span class="co">#&gt; $ GradeLevelID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 11, 0, 6, 7, 4, 0, 10, 8, 8, 8, 6, 1, 2, 6, 3, 1, 2, 6, 7, 9, 5, 7, 1,…</span>
+<span class="co">#&gt; $ GradeLevel           [3m[38;5;246m&lt;chr&gt;[39m[23m "11", "K", "6", "7", "4", "K", "10", "8", "8", "8", "6", "1", "2", "6"…</span>
+<span class="co">#&gt; $ AttStudentKey        [3m[38;5;246m&lt;dbl&gt;[39m[23m 42609066, 42609067, 42609068, 42609069, 42609070, 42609071, 42610932, …</span>
+<span class="co">#&gt; $ StudentNumber        [3m[38;5;246m&lt;dbl&gt;[39m[23m 108006521, 108087122, 108114827, 108088137, 108064960, 108110230, 1080…</span>
+<span class="co">#&gt; $ FirstName            [3m[38;5;246m&lt;chr&gt;[39m[23m "Angel", "Bella", "Daisy", "Lorenzo", "Jesus", "Carolina", "Katty", "C…</span>
+<span class="co">#&gt; $ LastName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Duran", "Soto", "Torres", "Escobedo", "Cantu", "Flores", "Alvarado", …</span>
+<span class="co">#&gt; $ FullName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Duran, Angel Gabriel", "Soto, Bella Rose", "Torres, Daisy", "Escobedo…</span>
+<span class="co">#&gt; $ WeekNumber           [3m[38;5;246m&lt;chr&gt;[39m[23m "38", "38", "38", "38", "38", "38", "38", "38", "38", "38", "38", "38"…</span>
+<span class="co">#&gt; $ DateNumber           [3m[38;5;246m&lt;int&gt;[39m[23m 157, 157, 156, 148, 157, 157, 155, 157, 157, 157, 155, 157, 157, 155, …</span>
+<span class="co">#&gt; $ AttDate              [3m[38;5;246m&lt;date&gt;[39m[23m 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-30, 2021-04-3…</span>
+<span class="co">#&gt; $ Membership           [3m[38;5;246m&lt;dbl&gt;[39m[23m 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, …</span>
+<span class="co">#&gt; $ Absences             [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ VAbsences            [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ SPED                 [3m[38;5;246m&lt;int&gt;[39m[23m 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ ELL                  [3m[38;5;246m&lt;int&gt;[39m[23m 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0…</span>
+<span class="co">#&gt; $ LEP                  [3m[38;5;246m&lt;int&gt;[39m[23m 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0…</span>
+<span class="co">#&gt; $ Farm                 [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1…</span>
+<span class="co">#&gt; $ CSI                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ NonSpedEllCsi        [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1…</span>
+<span class="co">#&gt; $ Ethnicity            [3m[38;5;246m&lt;chr&gt;[39m[23m "White", "White", "White", "White", "White", "White", "White", "White"…</span>
+<span class="co">#&gt; $ Hispanic             [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1…</span>
+<span class="co">#&gt; $ ContinuouslyEnrolled [3m[38;5;246m&lt;chr&gt;[39m[23m "True", "False", "False", "False", "True", "False", "False", "True", "…</span>
+<span class="co">#&gt; $ AtRisk               [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ PersistenceType      [3m[38;5;246m&lt;int&gt;[39m[23m 3, 3, 1, 3, 3, 1, 3, 3, 3, 3, 1, 3, 1, 3, 1, 1, 3, 3, 3, 3, 1, 3, 3, 1…</span>
+<span class="co">#&gt; $ SchoolYear           [3m[38;5;246m&lt;chr&gt;[39m[23m "2+", "2+", "1", "2+", "2+", "1", "2+", "2+", "2+", "2+", "2+", "2+", …</span>
+<span class="co">#&gt; $ DayAfterEvent        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ EventDate            [3m[38;5;246m&lt;date&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span>
+<span class="co">#&gt; $ MaxTempinF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 78.3, 78.3, 67.5, NA, 78.3, 78.3, 68.9, 78.3, 78.3, 78.3, 74.5, 78.3, …</span>
+<span class="co">#&gt; $ AvgTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 74.6, 74.6, 63.1, NA, 74.6, 74.6, 68.2, 74.6, 74.6, 74.6, 68.6, 74.6, …</span>
+<span class="co">#&gt; $ MinTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 71.4, 71.4, 59.2, NA, 71.4, 71.4, 65.3, 71.4, 71.4, 71.4, 66.2, 71.4, …</span>
+<span class="co">#&gt; $ CompareKey           [3m[38;5;246m&lt;chr&gt;[39m[23m "175|Alex Anzaldua|7|Rio Grande Valley|3000|108807003|11|108006521|202…</span>
+<span class="co">#&gt; $ RdoEmployeeID        [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</span>
+<span class="co">#&gt; $ RdoEmployeeName      [3m[38;5;246m&lt;chr&gt;[39m[23m "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""…</span>
+<span class="co">#&gt; $ SchoolTypeOperation  [3m[38;5;246m&lt;chr&gt;[39m[23m "FULL SCALE", "FULL SCALE", "LAUNCHING", "FULL SCALE", "FULL SCALE", "…</span>
+<span class="co">#&gt; $ Enroll               [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span>
+<span class="co">#&gt; $ Area                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ SubRegionID          [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ SubRegionDescription [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co">#school years are stored as characters, which is inefficient for filtering</span>
 <span class="co"># TermIDs are doubles (thought they really ought be integers), but are </span>
 <span class="co"># much faster for filtering. </span>
-<span class="va">term_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_ps_termid.html">calc_ps_termid</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">)</span>
+
+<span class="va">term_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_ps_termid.html">calc_ps_termid</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>
 
 
-<span class="va">stu_attend_2021</span> <span class="op">&lt;-</span><span class="va">stu_attendance</span> <span class="op">%&gt;%</span> 
+<span class="va">stu_attend_2021</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SchoolTermID</span> <span class="op">==</span> <span class="va">term_id</span><span class="op">)</span>
 
-<span class="va">stu_attend_2021</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; # Source:   lazy query [?? x 1]</span>
-<span class="co">#&gt; # Database: Microsoft SQL Server</span>
-<span class="co">#&gt; #   13.00.5865[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
-<span class="co">#&gt;         n</span>
-<span class="co">#&gt;     &lt;int&gt;</span>
-<span class="co">#&gt; 1 8423824</span></code></pre></div>
-<p>So as of the February 26th, 2021 there 7,907,580 student attendance records. That will be a tall order for <code>collect</code> so instead lets use <code>collector</code></p>
+<span class="va">n_rows</span> <span class="op">&lt;-</span> <span class="va">stu_attend_2021</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">n_rows</span>
+<span class="co">#&gt; [1] 3723612</span></code></pre></div>
+<p>So as of the October 21, 2021 there are 3,723,612 student attendance records. That will be a tall order for <code>collect</code> so instead lets use <code>collector</code>.</p>
+<p><code>collector</code> takes column names, uses thosecolumns to get all combinations of variables that appear in the data, and then uses those combinations to pull your data down in smaller chunks defined be each combination (e.g., for each school and data, as shown below).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">stu_attend_2021_feb</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">StudentNumber</span>, <span class="va">AttDate</span>, <span class="va">Membership</span>, <span class="va">Absences</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AttDate</span> <span class="op">&gt;=</span> <span class="st">'2021-02-15 00:00'</span><span class="op">)</span> <span class="op">%&gt;%</span>  
-  <span class="fu"><a href="../reference/collector.html">collector</a></span><span class="op">(</span><span class="va">AttDate</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+<code class="sourceCode R"><span class="va">collection_data_start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">days</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>
+
+<span class="va">stu_attend_2021_temp</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">StudentNumber</span>, <span class="va">AttDate</span>, <span class="va">schoolnumber</span> , <span class="va">Membership</span>, <span class="va">Absences</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AttDate</span> <span class="op">&gt;=</span> <span class="st">'2021-10-08'</span>, 
+         <span class="va">SchoolNumber</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'108807186'</span>, <span class="st">'108807187'</span>, <span class="st">'108807302'</span>, <span class="st">'109907024'</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>  
+
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Created a temporary table named #dbplyr_007</span>
+
+ 
+<span class="va">stu_attend_2021_collected</span> <span class="op">&lt;-</span>  <span class="va">stu_attend_2021_temp</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/collector.html">collector</a></span><span class="op">(</span><span class="va">AttDate</span>, <span class="va">schoolnumber</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Collecting data</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-16 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-17 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-18 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-19 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-22 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-23 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-24 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-25 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-02-26 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-01 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-02 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-03 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-04 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-05 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-08 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-09 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-10 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-11 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-15 ...</span>
-<span class="co">#&gt; Pulling data for AttDate == 2021-03-16 ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '109907024' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807186' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807187' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807302' ...</span>
+<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '109907024' ...</span>
 <span class="co">#&gt; Data collection complete</span></code></pre></div>
+<p>Note the call to <code><a href="https://dplyr.tidyverse.org/reference/compute.html">dplyr::compute()</a></code> in the code above (highlighted).</p>
+<p>What is that <code><a href="https://dplyr.tidyverse.org/reference/compute.html">compute()</a></code> call doing?</p>
+<p><code><a href="https://dplyr.tidyverse.org/reference/compute.html">compute()</a></code> forces the database to evaluate all the prior steps (i.e. a filter, a select, and another filter), after which the will create a temporary table there (i.e., a table which get’s deleted when your conenction closes.</p>
+<p>Wihout this step each iteration created by <code><a href="../reference/collector.html">collector()</a></code> (via <code><a href="https://purrr.tidyverse.org/reference/map.html">purrr::map_df()</a></code>) will re run the the magrittr pipeline, of which the tw filter steps are computationally expensive. A caveat with this desing pattern is you need to have permissions to write temporary tables to the database. If you can’t do that, then you’ll have to suffer the pain of waiting for the DB to run all of your <code>magrittr</code> pipeline (i.e., all the stuff following each <code><a href="../reference/%&gt;%.html">%&gt;%</a></code>) for each iteration.</p>
+<p>In any case, here are the results of the call, witht eh student numbers masked by an sha1 cryptohash:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">stu_attend_2021_feb</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>student_number <span class="op">=</span> <span class="fu">openssl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openssl/man/hash.html">sha1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">student_number</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co">#crypto hash</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">student_number</th>
-<th align="left">att_date</th>
-<th align="right">membership</th>
-<th align="right">absences</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">a2f96816e1fe5cec313f7e3e0595f72479d8b12e</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">9a507398b859e777182a82ee103c2edb7810a485</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">2620c1902a05ea596a1e55c145395fd38632c0b3</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">72a60ec51f1d527be064fc1506d6a0130a473ce7</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">66a9102da16438c01a9fe0258f7c72ce63feece6</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">0818abe48119841f8fad099b5dabbd630fecf469</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">6fcbb1628caf394cfa0d7b749794116c55378605</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">5ab7556a6e391f87e63c45bff64a3b81b81f7089</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">cf8e4fceb916f298bc80c89d51614c7ca67d6160</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">a1e17c63661e429b624ee34aaea76ce6583bb3b4</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">8525a30cf0d3e82b7af4c90369d1646175597523</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">5e42e70d845c26a953ca595a95f91a951029c8c9</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">7e06d765484c545e3291bfb09d3124b72e51a7fd</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">f550905b31d1ba69fdfe13c8e23b1fc85a1b8ce9</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">c8144720539ad5b24ec6543923872107bdcf0959</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">7d2b01852171f31a954fb6714a74efedb7c61ae4</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">c5e41fd5f863022221bf01a376069349e7b8a824</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">69d3db9b02fb1d184946fcccc4a9e902d7dc0a2a</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">ad1e0f539cb63c77aab993e5d9d0f783858c75c6</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">418ad4ee7a1ac273eb0864b7b57e2184a6fb10ea</td>
-<td align="left">2021-02-16</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
-<p>Notice that the table <code>stu_attendance</code> (i.e, <code>STudentDailyAttendance</code> on <code>PROD1</code>) has 46 columns. A trick used above is to reduce the columns to only those you need to use later with a <code>select</code> statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database.</p>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Error in head(., 20): object 'stu_attend_2021_feb' not found</span></code></pre></div>
+<p>Notice that the table <code>stu_attendance</code> (i.e, <code>STudentDailyAttendance</code> on <code>PROD1</code>) has 49 columns. A trick used above is to reduce the columns to only those you need to use later with a <code>select</code> statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database.</p>
 <div class="footnotes">
 <hr>
 <ol>

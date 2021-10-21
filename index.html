@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -127,9 +127,9 @@
 <span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>
-<span class="co">#&gt; # Source:   lazy query [?? x 23]</span>
+<span class="co">#&gt; # Source:   lazy query [?? x 25]</span>
 <span class="co">#&gt; # Database: Microsoft SQL Server</span>
-<span class="co">#&gt; #   13.00.5865[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
+<span class="co">#&gt; #   13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
 <span class="co">#&gt;   SchoolNumber SchoolName      SchoolShortName StateSchoolNumb… SchoolAbbreviat…</span>
 <span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;                      &lt;int&gt; &lt;chr&gt;           </span>
 <span class="co">#&gt; 1         -101 "Unknown\r\n"    &lt;NA&gt;                       -101 "Unknown\r\n"   </span>
@@ -138,13 +138,13 @@
 <span class="co">#&gt; 4           41 "IDEA Academy"  "Donna"                108807001 "IMS"           </span>
 <span class="co">#&gt; 5           50 "IDEA Academy … "Donna"                108807101 "IPK"           </span>
 <span class="co">#&gt; 6           99 "Example High … ""                             0 "EXHS"          </span>
-<span class="co">#&gt; # … with 18 more variables: SchoolLowestGrade &lt;int&gt;, SchoolHighestGrade &lt;int&gt;,</span>
+<span class="co">#&gt; # … with 20 more variables: SchoolLowestGrade &lt;int&gt;, SchoolHighestGrade &lt;int&gt;,</span>
 <span class="co">#&gt; #   SchoolStreet &lt;chr&gt;, SchoolCity &lt;chr&gt;, SchoolState &lt;chr&gt;,</span>
 <span class="co">#&gt; #   SchoolZipCode &lt;dbl&gt;, SchoolPhone &lt;chr&gt;, SchoolFax &lt;chr&gt;,</span>
 <span class="co">#&gt; #   PrincipalName &lt;chr&gt;, PrincipalPhone &lt;chr&gt;, PrincipalEmail &lt;chr&gt;,</span>
 <span class="co">#&gt; #   CountyNumber &lt;int&gt;, CountyName &lt;chr&gt;, RegionID &lt;dbl&gt;, VPofSchools &lt;dbl&gt;,</span>
 <span class="co">#&gt; #   ExecutiveDirector &lt;dbl&gt;, RegionDirectorOfOperations &lt;dbl&gt;,</span>
-<span class="co">#&gt; #   CollegeSuccessDirector &lt;dbl&gt;</span></code></pre></div>
+<span class="co">#&gt; #   CollegeSuccessDirector &lt;dbl&gt;, Area &lt;chr&gt;, RegionAltID &lt;dbl&gt;</span></code></pre></div>
 <p>The <code>schools</code> object above is <code>tbl</code> object. That means it works with <code>dplyr</code> verbs and functions, but what happens in the background is that <code>dplyr</code> and <code>dbplyr</code> generate SQL that is sent to the database you are connected to and that all computation (e.g., filtering, selecting, joining, calculations, aggregation) are completed on the remote SQL Server instance and <strong>not</strong> on your computer.</p>
 <p>Nevertheless, you will eventually want to pull that data down onto your machine when you want to use R or Python do what they can do (like modeling or graphics) that the database can’t do.</p>
 <p>Pulling that data down is easy with <br><span class="math display"><em>d</em><em>p</em><em>l</em><em>y</em><em>r</em> :  : <em>c</em><em>o</em><em>l</em><em>l</em><em>e</em><em>c</em><em>t</em>()</span><br></p>
@@ -161,34 +161,34 @@
 <p>In this instance the database connection may fail. It’s not ideal, but it happens. One way to deal with this is to pull down the data piecemeal. The <code><a href="reference/collector.html">collector()</a></code> function in <code>ideadata</code> makes this task trivial. It takes one argument, which is a column name form the table you want to pull down, which is used to break up the data into smaller sets of data that are pulled down from the database onto your computer and then recombined into a single table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">CountyName</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">SchoolState</span>, <span class="va">CountyName</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Warning: ORDER BY is ignored in subqueries without LIMIT</span>
-<span class="co">#&gt; ℹ Do you need to move arrange() later in the pipeline or use window_order() instead?</span>
 <span class="co">#&gt; Collecting data</span>
-<span class="co">#&gt; Pulling data for CountyName == NA ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Bexar ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Bexar County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Bexar  ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Cameron ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Cameron County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == El Paso ...</span>
-<span class="co">#&gt; Pulling data for CountyName == El Paso County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Harris ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Hays ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Hidalgo ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Hidalgo County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Hildalgo ...</span>
-<span class="co">#&gt; Pulling data for CountyName == MIDLAND ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Orleans Parish ...</span>
-<span class="co">#&gt; Pulling data for CountyName == STARR ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Tarrant ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Tarrant County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Travis ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Travis County ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Unknown</span>
-<span class="co">#&gt;  ...</span>
-<span class="co">#&gt; Pulling data for CountyName == Williamson ...</span>
+<span class="co">#&gt; Pulling data filtered to: is.na(SchoolState), is.na(CountyName) ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'FL', is.na(CountyName) ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', is.na(CountyName) ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', CountyName == 'Orleans Parish' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar ' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Ector' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Harris' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hays' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hildalgo' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'MIDLAND' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'STARR' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis County' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Williamson' ...</span>
+<span class="co">#&gt; Pulling data filtered to: SchoolState == 'Unknown\r\n', CountyName == 'Unknown\r\n' ...</span>
 <span class="co">#&gt; Data collection complete</span></code></pre></div>
 </div>
 </div>

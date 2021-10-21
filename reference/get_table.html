@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@
     <p>Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_table</span><span class='op'>(</span><span class='va'>.table_name</span>, .database_name <span class='op'>=</span> <span class='cn'>NULL</span>, .schema <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_table</span><span class='op'>(</span><span class='va'>.table_name</span>, <span class='va'>.server_name</span>, <span class='va'>.database_name</span>, <span class='va'>.schema</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,12 +151,16 @@
       <td><p>the name of a table as a quoted string that you'd like to obtain</p></td>
     </tr>
     <tr>
+      <th>.server_name</th>
+      <td><p>the name of the server that hosts the database</p></td>
+    </tr>
+    <tr>
       <th>.database_name</th>
       <td><p>the name of the database which hosts the table</p></td>
     </tr>
     <tr>
       <th>.schema</th>
-      <td><p>the name of the schema that hosts the table</p></td>
+      <td><p>the name of the schema that hosts the database</p></td>
     </tr>
     <tr>
       <th>...</th>
