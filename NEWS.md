@@ -3,6 +3,7 @@
 * This is the newest version for release to the R&A Team.  Biggest change is that `get_table` doesn't connect to the warehouse `MetaData`. It uses a build in dataframe that is refreshed when the package is loaded. 
 * `collector` now takes multiple columns to split up a data set to pass to `purrr`. 
 * Minor documentation in `collector`'s vignette on using `dplyr::compute` to reduce SQL Server time on unevaluated `dplyr` pipelines. 
+* added `view_warehouse_meta_data()`, which opens the RStudio IDE's viewer for exploring what's in the datawarehouse.
 
 # ideadata 1.1.1
 

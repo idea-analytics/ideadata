@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{calc_elapsed_weeks}
 \alias{calc_elapsed_weeks}
-\title{Calcuatalate the weeks elapsed from a reference date}
+\title{Calculate the weeks elapsed from a reference date}
 \usage{
 calc_elapsed_weeks(ref_date, first_day = "2020-07-01")
 }
@@ -16,7 +16,7 @@ calculate elapsed weeks}
 an integer giving the number of weeks elapsed b/w \code{first_day} and \code{ref_date}
 }
 \description{
-Calcuatalate the weeks elapsed from a reference date
+Calculate the weeks elapsed from a reference date
 }
 \examples{
 

@@ -158,7 +158,7 @@ calc_ps_termid <- function(sy,
   (sy - 1990)*100 + quarter
 }
 
-#' Calcuatalate the weeks elapsed from a reference date
+#' Calculate the weeks elapsed from a reference date
 #'
 #' @param ref_date The end date (as character) for the duration used to
 #' calculate elapsed weeks
@@ -175,3 +175,15 @@ calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
   (lubridate::floor_date(lubridate::ymd(ref_date), unit="week") -
      lubridate::floor_date(lubridate::ymd(first_day), unit="week"))/lubridate::dweeks(1)+1
 }
+
+
+#' View servers, schemas, databases, and tables currently available in IDEA's data warehouse
+#'
+#' @return Nothing, this function is called for it's side effects (name's opeing a sortable/filterable Viewer)
+#' @export
+#'
+
+view_warehouse_metadata <- function() {
+  View(warehouse_meta_data)
+  }
+
