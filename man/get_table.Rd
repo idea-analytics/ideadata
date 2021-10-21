@@ -4,14 +4,16 @@
 \alias{get_table}
 \title{Get an arbitrary table from the data warehouse (more axccurate if database and schema are given)}
 \usage{
-get_table(.table_name, .database_name = NULL, .schema = NULL, ...)
+get_table(.table_name, .server_name, .database_name, .schema, ...)
 }
 \arguments{
 \item{.table_name}{the name of a table as a quoted string that you'd like to obtain}
 
+\item{.server_name}{the name of the server that hosts the database}
+
 \item{.database_name}{the name of the database which hosts the table}
 
-\item{.schema}{the name of the schema that hosts the table}
+\item{.schema}{the name of the schema that hosts the database}
 
 \item{...}{other arguments passed to \code{get_table} (recursively); end user won't typcially use this}
 }

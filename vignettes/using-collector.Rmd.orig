@@ -15,15 +15,16 @@ knitr::opts_chunk$set(
 ```
 
 
-Some of our datasets are large and moving them from that database to your computer can take a fare amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a log of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
+Some of our datasets are large and moving them from that database to your computer can take a fair amount of time.  So long in fact that is not uncommon for our connections to die.^[I don't really understand why this happens].  Additionally, you tend not to get a lot of feedback when using `dplyr`'s `collect()` function to return the data to your computer. It either gets the data silently or dies trying.
 
-For this reason, `ideadata` has a `collector` function.  It's used the same way as `collect`, but requires you to pass a paramater---`.split_column` that is used to break your data into pieces based on the set of values with in the column you identify. 
+For this reason, `ideadata` has a `collector()` function.  It's used the same way as `collect`, but requires you to pass parameters (i.e., column names for the table you are trying to collect ) that are used to break your data into pieces based on the set of values within the columns you identify. 
 
 Consider the `StudentDailyAttendance` table on `PROD1`
 ```{r basic-example}
 devtools::load_all(".")
 #library(ideadata)
 library(dplyr)
+library(lubridate)
 
 stu_attendance  <- get_student_daily_attendance()
 
@@ -34,29 +35,64 @@ glimpse(stu_attendance)
 #school years are stored as characters, which is inefficient for filtering
 # TermIDs are doubles (thought they really ought be integers), but are 
 # much faster for filtering. 
-term_id <- calc_ps_termid(2020)
+
+term_id <- calc_ps_termid(2021)
 
 
-stu_attend_2021 <-stu_attendance %>% 
+stu_attend_2021 <- stu_attendance %>% 
   filter(SchoolTermID == term_id)
 
-stu_attend_2021 %>% 
-  count()
+n_rows <- stu_attend_2021 %>% 
+  count() %>% 
+  pull()
 
+n_rows
 ```
-So as of the February 26th, 2021 there 7,907,580 student attendance records. That will be a tall order for `collect` so instead lets use `collector`
+So as of the `r stamp_date("January 14, 2021")(today())` there are `r scales::comma(n_rows)`	student attendance records. That will be a tall order for `collect` so instead lets use `collector`.
 
-```{r collect}
+`collector` takes column names, uses thosecolumns to get all combinations of variables that appear in the data, and then uses those combinations to pull your data down in smaller chunks defined be each combination (e.g., for each school and data, as shown below). 
 
-stu_attend_2021_feb <- stu_attendance %>% 
-  select(StudentNumber, AttDate, Membership, Absences) %>% 
-  filter(AttDate >= '2021-02-15 00:00') %>%  
-  collector(AttDate) %>% 
+```{r collect, include = TRUE}
+collection_data_start <- today() - days(2)
+
+stu_attend_2021_temp <- stu_attendance %>% 
+  select(StudentNumber, AttDate, schoolnumber , Membership, Absences) %>% 
+  filter(AttDate >= '2021-10-08', 
+         SchoolNumber %in% c('108807186', '108807187', '108807302', '109907024')) %>%  
+
+  compute()
+
+ 
+stu_attend_2021_collected <-  stu_attend_2021_temp %>% 
+  collector(AttDate, schoolnumber) %>% 
   janitor::clean_names()
 
 
 
 ```
+
+
+
+Note the call to `dplyr::compute()` in the code above (highlighted).
+
+```{r flair, echo=FALSE}
+library(flair)
+
+decorate("collect") %>% 
+  flair("compute()")
+  
+
+```
+
+What is that `compute()` call doing?
+
+`compute()` forces the database to evaluate all the prior steps (i.e. a filter, a select, and another filter), after which the will create a temporary table there (i.e., a table which get's deleted when your conenction closes.  
+
+Wihout this step each iteration created by `collector()` (via `purrr::map_df()`) will re run the the magrittr pipeline, of which the tw filter steps are computationally expensive. 
+A caveat with this desing pattern is you need to have permissions to write temporary tables to the database.  If you can't do that, then you'll have to suffer the pain of waiting for the DB to run all of your `magrittr` pipeline (i.e., all the stuff following each `%>%`) for each iteration.  
+
+In any case, here are the results of the call, witht eh student numbers masked by an sha1 cryptohash:
+
 ```{r show_results}
 stu_attend_2021_feb %>% 
   head(20) %>% 

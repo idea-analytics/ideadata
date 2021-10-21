@@ -1,7 +1,10 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("db_locations",
                                                         "server_name",
                                                         "database_name",
-                                                        "url"))
+                                                        "url",
+                                                        "warehouse_meta_data",
+                                                        "schema",
+                                                        "table_name"))
 
 
 #' Get's creds from environment variable
@@ -48,15 +51,19 @@ get_creds <- function(){
 #' get_db_url("PROD1")
 
 get_db_url <- function(.database_name){
-  db_locations %>%
-    dplyr::filter(.data$database_name == .database_name)
+  warehouse_meta_data %>%
+    dplyr::select(server_name, database_name, schema) %>%
+    dplyr::filter(.data$database_name == .database_name) %>%
+    dplyr::distinct()
 }
 
 
 #' Create connection to database
 #'
 #' @param .database_name name of the database you want to connect to
-#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+# #' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+# #' @param .schema the schema for the table you want to access
+#' @param .server_name the name of the server the database is hosted on
 #' @param env which environment to save the connection.  The default is the global
 #' environment and you should not change this unless you really need to and you know
 #' what you are doing.
@@ -74,18 +81,37 @@ get_db_url <- function(.database_name){
 #' @examples
 #' create_connection("PROD1")
 create_connection <- function(.database_name,
-                              r_and_a_server = FALSE,
+                              .server_name,
+                              #r_and_a_server = FALSE,
                               env = globalenv()){
 
   creds <- get_creds()
 
   kinit(creds$uid, creds$pwd)
 
-  db_details <- get_db_url(.database_name)
+  if(missing(.server_name)) {
+    db_details <- get_db_url(.database_name) %>%
+      dplyr::distinct(server_name, database_name)
 
-  #if(r_and_a_server){
-    server <- db_details$server_name
-    server <- glue::glue("{server}.IPS.ORG")
+    n_rows_db_details <- nrow(db_details)
+
+    if(n_rows_db_details>1) {
+
+      cli::cli_alert_warning(glue::glue("There are {n_rows_db_details} databases with the name {.database_name} in our warehouse\n"))
+      cli::cli_alert_info("You'll need to specify the database and schema name with db target.\n")
+      cli::cli_alert_success("Any of these should work:\n")
+      print(glue::glue_data_col(db_details, '\ \ check_get_connection(.server_name = "{crayon::green(server_name)}", .database_name = "{crayon::green(.database_name)}"'))
+
+      return() # returns early with alerts, since we can't id unique table in warehoue
+
+    }
+
+
+      server <- glue::glue("{db_details$server_name}.IPS.ORG")
+  } else {
+      server <- glue::glue("{.server_name}.IPS.ORG")
+  }
+
   #} else {
   #  server <- db_details$url
   #}
@@ -119,6 +145,8 @@ create_connection <- function(.database_name,
 #' Check if DB connections available and valid or create new one
 #'
 #' @inheritParams create_connection
+#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
+#' @param .schema the schema for the table you want to access
 #'
 #' @return returns an S4 object that inherits from DBIConnection.
 #' This object is used to communicate with the database engine.
@@ -129,6 +157,8 @@ create_connection <- function(.database_name,
 #' @export
 #'
 check_get_connection <- function(.database_name,
+                                 .schema,
+                                 .server_name,
                                  r_and_a_server = FALSE){
 
   connection_name <- glue::glue("conn_{.database_name}")
@@ -138,7 +168,12 @@ check_get_connection <- function(.database_name,
                 sep = '\n'     )
 
   if (!exists(connection_name)) {
-    create_connection(.database_name, r_and_a_server) # if not, create connection
+    create_connection(.database_name,
+                      #.schema,
+                      .server_name#,
+
+                      #r_and_a_server
+                      ) # if not, create connection
 
 
     on_connection_open(get(connection_name, envir = globalenv()), code)
@@ -179,6 +214,7 @@ generate_schema <- function(.database_name){
 
   db_info <- get_db_url(.database_name)
 
+  #here only need the server name and the database name
   schema <- glue::glue("[{db_info$server_name}].[{.database_name}].[dbo]")
 
   schema
@@ -188,6 +224,7 @@ generate_schema <- function(.database_name){
 #' Check  "hidden" DB connections available and valid or create new one
 #'
 #' @inheritParams create_connection
+#' @param r_and_a_server switch for attaching to R&A server. Default is `FALSE`
 #'
 #' @return returns an S4 object that inherits from DBIConnection.
 #' This object is used to communicate with the database engine.

@@ -11,15 +11,17 @@ vignette: >
 
 The `ideadata` package utilizes the simple concept of `get_*` functions, which is named after the table that you want to connect to in the warehouse in one line.  Functions like [get_students] are useful because they lower your cognitive load ("What DB and schema do I pull students from and what's the SQL look like") and they ensure that anyone using this package (read: R&A) are always pulling the same data when they start an analysis, save any processing logic.
 
-One big downside: they need to be created one at a time and so if a new set of tables is added to the data warehosue, there can a lag between when those tables are added and when there is a corresponding `get_*` function in this package. 
+One big downside: they need to be created one at a time and so if a new set of tables is added to the data warehouse, there can a lag between when those tables are added and when there is a corresponding `get_*` function in this package.
 
 ## Introducing `get_table()`
 
 To mitigate against the time Chris has to develop new `get_*` functions and the ever evolving nature of data warehouse, `ideadata` now has a new workhourse function: `get_table()`.
 
-This function does exactly what it says: it get's tables from the warehouse by looking up table location in the `MetaData` table in the `Documentation` schema of R&A's SQL Server instance.  That table updates frequently and contains a comprehensive view of the data warehouse at any time. 
+This function does exactly what it says: it get's tables from the warehouse by looking up table location in the `MetaData` table in the `Documentation` schema of R&A's SQL Server instance.  That table updates frequently and contains a comprehensive view of the data warehouse at any time.
 
-`get_table()` makes a connection (this one is hidden in the `idea_shims` environment) to that table when called, finds a table location, and then pulls that table down.  The look-up is relatively quick, but do realize, it's introduces an extra connection, an extra query, and an extra pull of the data. Consequently it's slow to use for getting student data than the `get_students()` function.  
+When you load `ideadata` (i.e., when you run `library(ideadat)` the package makes a connection  to the `MetaData` table and saves it as a dataframe names `warehouse_meta_data` that you can access by running `data(warehouse_meta_data)`. 
+
+Not that you might need to detach and reload `ideadata` if you know the warehouse has a new table but `get_table()` can't find it.  This will force the `warehouse_meta_data` table to update. 
 
 ## Usage
 
@@ -32,29 +34,44 @@ devtools::load_all(".")
 #> ℹ Loading ideadata
 #library(ideadata)
 library(tidyverse)
+#> Warning: package 'tidyverse' was built under R version 4.0.2
+#> ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.3.1 ──
+#> ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+#> ✓ tibble  3.1.0     ✓ stringr 1.4.0
+#> ✓ tidyr   1.1.3     ✓ forcats 0.5.1
+#> ✓ readr   1.4.0
+#> Warning: package 'ggplot2' was built under R version 4.0.2
+#> Warning: package 'tibble' was built under R version 4.0.2
+#> Warning: package 'tidyr' was built under R version 4.0.2
+#> Warning: package 'readr' was built under R version 4.0.2
+#> Warning: package 'forcats' was built under R version 4.0.2
+#> ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> x lubridate::as.difftime() masks base::as.difftime()
+#> x lubridate::date()        masks base::date()
+#> x dplyr::filter()          masks stats::filter()
+#> x lubridate::intersect()   masks base::intersect()
+#> x dplyr::lag()             masks stats::lag()
+#> x lubridate::setdiff()     masks base::setdiff()
+#> x lubridate::union()       masks base::union()
 
 oe_responses <- get_table("OEResponses")
-#> Resetting connection to conn_Documentation
-#> christopher.haid's Kereberos TGT is current
-#> Resetting connection to conn_GPTW
-#> christopher.haid's Kereberos TGT is current
+#> ! There are 2 tables with that name in our warehouse
+#> ℹ You'll need to specify the database and schema name with db target.
+#> ✓ Any of these should work:
+#>   get_table(.table_name = "OEResponses", .database_name = "GPTW", .schema = "dbo", .server_name = "791150-HQVRA")
+#>   get_table(.table_name = "OEResponses", .database_name = "GPTW", .schema = "dbo", .server_name = "RGVPDRA-DASQL")
 
 head(oe_responses)
-#> # Source:   lazy query [?? x 4]
-#> # Database: Microsoft SQL Server 12.00.6433[dbo@791150-HQVRA/GPTW]
-#>   AcademicYear OEQuestionKey OEResponseKey Response                                                                        
-#>   <chr>                <int>         <int> <chr>                                                                           
-#> 1 2020-2021                1             1 "I think we could put less focus on data and grades. While I understand it is i…
-#> 2 2020-2021                1             2 "None "                                                                         
-#> 3 2020-2021                1             3 "Keep following guidelines and wearing mask along with contact tracking. "      
-#> 4 2020-2021                1             4 "N/A "                                                                          
-#> 5 2020-2021                1             5 "Prioritize Safety "                                                            
-#> 6 2020-2021                1             6 "Nothing that I believe should change, we are supported and our culture here is…
+#> NULL
 ```
-Not too bad. 
+Not too bad.
 
 ### Less simple usage, or failing informatively
-This function **will fail** if the tables is not uniquely named in the warehouse. Why? Because there is no way to know which table you really mean.  One solution, if you know the location, is to provide the table name, database name, and schema to the `.table_name`, `database_name`, and `.schema` arguments of `get_table()`.  That will locate the right server and make the connection and avoid failure.
+This function **will fail** if the tables is not uniquely named in the warehouse. 
+
+Why? 
+
+Because there is no way to know which table you really mean.  One solution, if you know the location, is to provide the table name, database name, and schema to the `.table_name`, `database_name`,  `.schema`, and `.server_name` arguments of `get_table()`.  That will locate the right server and make the connection and avoid failure.
 
 **But here is something cool**: What if you don't know that info? When `get_table` fails in this scenario it fails informatively.  `get_table` will show you all the tables it's found in the warehouse and *give you code you can copy and paste to get the table you want*.
 
@@ -63,63 +80,63 @@ Let's say you ask for the `Schools` table
 
 ```r
 schools <- get_table("Schools")
-#> Resetting connection to conn_Documentation
-#> christopher.haid's Kereberos TGT is current
-#> ! There are 21 tables with that name in our warehouse
+#> ! There are 25 tables with that name in our warehouse
 #> ℹ You'll need to specify the database and schema name with db target.
 #> ✓ Any of these should work:
-#>   get_table(.table_name = "Schools", .database_name = "SRC_EA", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "CSIInstruction", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "CSIInstructionDebug", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "CSIInstructionStage", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEABACK", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEAInstruction", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEAInstructionDebug", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEAInstructionStage", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools")
-#>   get_table(.table_name = "Schools", .database_name = "PROD1_2020ss", .schema = "Schools")
-#>   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEA_Labs", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "IDEA_LabsDev", .schema = "dbo")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_DistanceLearning", .schema = "TeamsEducation")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_DistanceLearning_2020ss", .schema = "TeamsEducation")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "LA")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "MidLand.PM")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "TX")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2020ss", .schema = "LA")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2020ss", .schema = "MidLand.PM")
-#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2020ss", .schema = "TX")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_EA", .schema = "dbo", .server_name = "1044407-SQLDS2")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_EA_2021ss", .schema = "dbo", .server_name = "1044407-SQLDS2")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_StateAssessments", .schema = "dbo", .server_name = "1044407-SQLDS2")
+#>   get_table(.table_name = "Schools", .database_name = "CSIInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "IDEAInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "IDEAInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "IDEAInstructionStageFORMS", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "PROD1_2021ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "LA", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "MidLand.PM", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "PowerSchool", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "IDEAInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "1065574-SQLPRD1")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2021ss", .schema = "LA", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2021ss", .schema = "MidLand.PM", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "TravisSnapshotData", .schema = "MidLand.PM", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "791150-HQVRA")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_DistanceLearning", .schema = "TeamsEducation", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools_2021ss", .schema = "TX", .server_name = "887192-SQLDS")
+#>   get_table(.table_name = "Schools", .database_name = "CSIInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "CSIInstruction_ROSTER_BACK", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "CSIInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")
+#>   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "RGVPDRA-DASQL")
+#>   get_table(.table_name = "Schools", .database_name = "PROD1_2020ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")
+#>   get_table(.table_name = "Schools", .database_name = "SRC_Schools", .schema = "TX", .server_name = "887192-SQLDS")
 ```
 
 Oh no! There are 21 tables named `Schools` in the warehouse on 17 databases.  Yikes.
 
-**But look at that error**: It's got what you need!  
+**But look at that error**: It's got what you need!
 
-You can copy and paste any one of those lines to get the unique table you are seeking (in this case the `Schools` table in `Schools` on `Prod1`). 
+You can copy and paste any one of those lines to get the unique table you are seeking (in this case the `Schools` table in `Schools` on `Prod1`).
 
 
 ```r
 
 schools <- get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools")
-#> Resetting connection to conn_Documentation
-#> christopher.haid's Kereberos TGT is current
-#> Resetting connection to conn_PROD1
-#> christopher.haid's Kereberos TGT is current
 
 head(schools)
-#> # Source:   lazy query [?? x 23]
+#> # Source:   lazy query [?? x 25]
 #> # Database: Microsoft SQL Server 13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]
-#>   SchoolNumber SchoolName  SchoolShortName StateSchoolNumb… SchoolAbbreviat… SchoolLowestGra… SchoolHighestGr… SchoolStreet
-#>          <int> <chr>       <chr>                      <int> <chr>                       <int>            <int> <chr>       
-#> 1         -101 "Unknown\r…  <NA>                       -101 "Unknown\r\n"                   0               12 "Unknown\r\…
-#> 2            2 "IDEA Coll… "Donna"                108807001 "ICP"                           9               12 "401 S 1st …
-#> 3            3 "IDEA Acad… "Donna"                108807101 "IA"                           -1                5 "401 S 1st …
-#> 4           41 "IDEA Acad… "Donna"                108807001 "IMS"                           6                8 "401 S 1st …
-#> 5           50 "IDEA Acad… "Donna"                108807101 "IPK"                          -1               -1 "401 S 1st …
-#> 6           99 "Example H… ""                             0 "EXHS"                          9               12  <NA>       
-#> # … with 15 more variables: SchoolCity <chr>, SchoolState <chr>, SchoolZipCode <dbl>, SchoolPhone <chr>, SchoolFax <chr>,
-#> #   PrincipalName <chr>, PrincipalPhone <chr>, PrincipalEmail <chr>, CountyNumber <int>, CountyName <chr>, RegionID <dbl>,
-#> #   VPofSchools <dbl>, ExecutiveDirector <dbl>, RegionDirectorOfOperations <dbl>, CollegeSuccessDirector <dbl>
+#>   SchoolNumber SchoolName         SchoolShortName StateSchoolNumber SchoolAbbreviat… SchoolLowestGra…
+#>          <int> <chr>              <chr>                       <int> <chr>                       <int>
+#> 1         -101 "Unknown\r\n"       <NA>                        -101 "Unknown\r\n"                   0
+#> 2            2 "IDEA College Pre… "Donna"                 108807001 "ICP"                           9
+#> 3            3 "IDEA Academy Pri… "Donna"                 108807101 "IA"                           -1
+#> 4           41 "IDEA Academy"     "Donna"                 108807001 "IMS"                           6
+#> 5           50 "IDEA Academy Pri… "Donna"                 108807101 "IPK"                          -1
+#> 6           99 "Example High Sch… ""                              0 "EXHS"                          9
+#> # … with 19 more variables: SchoolHighestGrade <int>, SchoolStreet <chr>, SchoolCity <chr>,
+#> #   SchoolState <chr>, SchoolZipCode <dbl>, SchoolPhone <chr>, SchoolFax <chr>, PrincipalName <chr>,
+#> #   PrincipalPhone <chr>, PrincipalEmail <chr>, CountyNumber <int>, CountyName <chr>,
+#> #   RegionID <dbl>, VPofSchools <dbl>, ExecutiveDirector <dbl>, RegionDirectorOfOperations <dbl>,
+#> #   CollegeSuccessDirector <dbl>, Area <chr>, RegionAltID <dbl>
 ```
 
 
