@@ -1,5 +1,7 @@
 # ideadata 2.0.1
 
+* Added a call to `data(warhouse_meta_data, envir=environemnt())` to ensure a Linus compatativility with looking up warehouse metadata.
+
 # ideadata 2.0.0
 
 * This is the newest version for release to the R&A Team.  Biggest change is that `get_table` doesn't connect to the warehouse `MetaData`. It uses a build in dataframe that is refreshed when the package is loaded. 
