@@ -51,6 +51,9 @@ get_creds <- function(){
 #' get_db_url("PROD1")
 
 get_db_url <- function(.database_name){
+
+  data(warehouse_meta_data, envir = environment())
+
   warehouse_meta_data %>%
     dplyr::select(server_name, database_name, schema) %>%
     dplyr::filter(.data$database_name == .database_name) %>%
