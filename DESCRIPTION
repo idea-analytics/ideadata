@@ -7,7 +7,7 @@ Maintainer: Chris Haid <christopher.haid@ideapublicschools.org>
 Description: Access tables in the IDEA Public Schools data warehouse.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Imports: 
     readr,
     glue,
