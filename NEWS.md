@@ -1,4 +1,4 @@
-# ideadata (development version)
+# ideadata 3.0.0
 
 # ideadata 2.0.3
 
