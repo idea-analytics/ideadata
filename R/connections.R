@@ -52,7 +52,7 @@ get_creds <- function(){
 
 get_db_url <- function(.database_name){
 
-  data(warehouse_meta_data, envir = environment())
+  #data(warehouse_meta_data, envir = environment())
 
   warehouse_meta_data %>%
     dplyr::select(server_name, database_name, schema) %>%

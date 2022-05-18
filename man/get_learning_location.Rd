@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_LearningLocation.R
 \name{get_learning_location}
 \alias{get_learning_location}
-\title{Connect to \code{LearningLocation} database \code{791150-hqvra} which provides
+\title{Connect to \code{LearningLocation} database \code{RGVPDRA-DASQL} which provides
 daily learning location (i.e, remote or in-person) for every student on ever day}
 \usage{
 get_learning_location()
@@ -11,7 +11,7 @@ get_learning_location()
 a \verb{tbl_sql SQL Server} object.
 }
 \description{
-Connect to \code{LearningLocation} database \code{791150-hqvra} which provides
+Connect to \code{LearningLocation} database \code{RGVPDRA-DASQL} which provides
 daily learning location (i.e, remote or in-person) for every student on ever day
 }
 \details{
@@ -22,7 +22,7 @@ The learning location of a student  on a given is determined by calculating a
 coded mixed.
 }
 \examples{
-# This attaches to the school db with \code{conn_Dashboard} connection
+# This attaches to the school db with \code{conn_LearningLocation} connection
 \dontrun{
 att_type <- get_learning_location()
 }
