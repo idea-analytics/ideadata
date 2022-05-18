@@ -1,6 +1,6 @@
 globalVariables("conn_LearningLocation")
 
-#' Connect to `LearningLocation` database `791150-hqvra` which provides
+#' Connect to `LearningLocation` database `REDACTED-SQLSERVER` which provides
 #' daily learning location (i.e, remote or in-person) for every student on ever day
 #'
 #' @details The learning location of a student  on a given is determined by calculating a
@@ -14,21 +14,16 @@ globalVariables("conn_LearningLocation")
 #' @export
 #'
 #' @examples
-#' # This attaches to the school db with \code{conn_Dashboard} connection
+#' # This attaches to the school db with \code{conn_LearningLocation} connection
 #' \dontrun{
 #' att_type <- get_learning_location()
 #' }
 get_learning_location <- function(){
 
-  check_get_connection(.database_name = "LearningLocation",
-                       r_and_a_server = TRUE)
-
-  schema_string <- generate_schema("LearningLocation")
-
-  out <- dplyr::tbl(conn_LearningLocation,
-                    dbplyr::in_schema(dbplyr::sql(schema_string),
-                                      dbplyr::sql("AttTypesDaily"))
-  )
+  out <-  get_table(.table_name = "AttTypesDaily",
+                    .database_name = "LearningLocation",
+                    .schema = "dbo",
+                    .server_name = "REDACTED-SQLSERVER")
 
   out
 

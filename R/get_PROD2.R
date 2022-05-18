@@ -22,16 +22,18 @@ globalVariables("conn_PROD2")
 #'   }
 get_iabwa <- function(){
 
-  check_get_connection("PROD2")
+  #check_get_connection("PROD2")
 
-  out <- dplyr::tbl(conn_PROD2, dbplyr::in_schema(dplyr::sql("Assessments"),
-                                           dplyr::sql("IABWA")))
+  out <- get_table(.table_name = "IABWA",
+                   .database_name = "PROD2",
+                   .schema = "Assessments",
+                   .server_name = "RGVPSD-DWPRD2")
 
-  ia_bwa_col_names <- colnames(out)
-
-  out <- out %>%
-    # must reorder columns to move Blob to end (there's probably a better way to
-    # suss out auto-magically which columns are blobs and more to the end)
-    dplyr::select(ia_bwa_col_names[c(1,3:13,15:31, 2, 14)])
+out  # ia_bwa_col_names <- colnames(out)
+  #
+  # out <- out %>%
+  #   # must reorder columns to move Blob to end (there's probably a better way to
+  #   # suss out auto-magically which columns are blobs and more to the end)
+  #   dplyr::select(ia_bwa_col_names[c(1,3:13,15:31, 2, 14)])
 
 }
