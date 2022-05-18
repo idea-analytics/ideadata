@@ -185,7 +185,7 @@ calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
 
 view_warehouse_metadata <- function() {
 
-  utils::data(warehouse_meta_data, envir = environment())
+  #utils::data(warehouse_meta_data, envir = environment())
   View(warehouse_meta_data)
   }
 

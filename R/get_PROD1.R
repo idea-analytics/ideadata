@@ -26,10 +26,15 @@ globalVariables("conn_PROD1")
 #'   }
 get_schools <- function(){
 
-  check_get_connection("PROD1")
+  #check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
-                                           dplyr::sql("Schools")))
+  out <- get_table(.table_name = "Schools",
+                   .database_name = "PROD1",
+                   .schema = "Schools",
+                   .server_name = "RGVPDSD-DWPRD1")
+
+    #dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+     #                                      dplyr::sql("Schools")))
 
   out
 
@@ -60,10 +65,12 @@ get_schools <- function(){
 #'   }
 get_students <- function(){
 
-  check_get_connection("PROD1")
+  #check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
-                                           dplyr::sql("Students")))
+  out <- get_table(.table_name = "Students",
+                   .database_name = "PROD1",
+                   .schema = "Schools",
+                   .server_name = "RGVPDSD-DWPRD1")
 
   out
 
@@ -94,10 +101,15 @@ get_students <- function(){
 #'   }
 get_regions <- function(){
 
-  check_get_connection("PROD1")
+  #check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
-                                           dplyr::sql("Regions")))
+  out <- get_table(.table_name = "Regions",
+                   .database_name = "PROD1",
+                   .schema = "Schools",
+                   .server_name = "RGVPDSD-DWPRD1")
+
+    #dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
+     #                                      dplyr::sql("Regions")))
 
   out
 
@@ -126,7 +138,7 @@ get_regions <- function(){
 
 get_currently_enrolled_students <- function(){
 
-  check_get_connection("PROD1")
+  #check_get_connection("PROD1")
 
   stus <- get_students()
 
@@ -158,10 +170,12 @@ get_currently_enrolled_students <- function(){
 #'
 get_student_daily_attendance <- function(){
 
-  check_get_connection("PROD1")
+  #check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Attendance"),
-                                           dplyr::sql("Students")))
+  out <- get_table(.table_name = "Students",
+                   .database_name = "PROD1",
+                   .schema = "Attendance",
+                   .server_name = "RGVPDSD-DWPRD1")
 
   out
 
@@ -190,9 +204,10 @@ get_students_academic_summary <- function(){
 
   check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
-                                                  dplyr::sql("StudentAcademicSummary")))
-
+  out <- get_table(.table_name = "StudentAcademicSummary",
+                   .database_name = "PROD1",
+                   .schema = "Schools",
+                   .server_name = "RGVPDSD-DWPRD1")
   out
 
 }
@@ -219,9 +234,10 @@ get_student_engagement_attendance <- function(){
 
   check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Attendance"),
-                                                  dplyr::sql("StudentEngagementAttendance")))
-
+  out <- get_table(.table_name = "StudentEngagementAttendance",
+                   .database_name = "PROD1",
+                   .schema = "Attendance",
+                   .server_name = "RGVPDSD-DWPRD1")
   out
 
 }
@@ -247,9 +263,10 @@ get_students_continuous_enrollment <- function(){
 
   check_get_connection("PROD1")
 
-  out <- dplyr::tbl(conn_PROD1, dbplyr::in_schema(dplyr::sql("Schools"),
-                                                  dplyr::sql("StudentsContinuousEnrollment")))
-
+  out <- get_table(.table_name = "StudentsContinuousEnrollment",
+                   .database_name = "PROD1",
+                   .schema = "Schools",
+                   .server_name = "RGVPDSD-DWPRD1")
   out
 
 }
