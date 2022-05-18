@@ -28,7 +28,7 @@ Imports:
     openssl,
     lubridate,
     magrittr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
     here,

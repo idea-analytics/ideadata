@@ -158,7 +158,7 @@ id_tables_in_dbs <- function(.table_name, .server_name, .database_name , .schema
   #                               "MetaData")
 
   #table_in_dbs <- data_warehouse_details %>%
-  utils::data(warehouse_meta_data, envir = environment())
+  #utils::data(warehouse_meta_data, envir = environment())
   table_in_dbs <- warehouse_meta_data %>%
   dplyr::select(server_name, database_name, schema, table_name) %>%
   dplyr::filter(table_name == .table_name) %>%
