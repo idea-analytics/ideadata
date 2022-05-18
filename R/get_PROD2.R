@@ -27,7 +27,7 @@ get_iabwa <- function(){
   out <- get_table(.table_name = "IABWA",
                    .database_name = "PROD2",
                    .schema = "Assessments",
-                   .server_name = "RGVPSD-DWPRD2")
+                   .server_name = "RGVPDSD-DWPRD2")
 
 out  # ia_bwa_col_names <- colnames(out)
   #
