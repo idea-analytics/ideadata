@@ -27,7 +27,8 @@ Imports:
     janitor,
     openssl,
     lubridate,
-    magrittr
+    magrittr,
+    praise
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
