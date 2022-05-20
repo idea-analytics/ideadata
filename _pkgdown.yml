@@ -41,8 +41,7 @@ reference:
 
 - title: Data about databases
 - contents:
-  - db_locations
-  - data_warehouse_details
+  - view_warehouse_metadata
 
 - title: Not very useful functions
   desc: >
