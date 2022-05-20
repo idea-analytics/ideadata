@@ -42,7 +42,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install package
-        run: R CMD INSTALL .
+        run: R CMD INSTALL . --no-test-load
 
       - name: Deploy package
         run: |
