@@ -21,5 +21,5 @@ file before populating with the uid, pwd, and driver variables.
 }
 \examples{
 
-setup_creds()
+\dontrun{setup_creds()}
 }

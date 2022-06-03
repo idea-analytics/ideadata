@@ -10,10 +10,13 @@ globalVariables("conn_PROD2")
 #' @examples
 #'
 #' # This attaches to the school db with \code{conn_PROD1} connection
-#' schools <- get_schools()
 #'
+#' \dontrun{
+#' schools <- get_schools()
+#'}
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#'
 #' \dontrun{
 #' ias_bwas <- get_ia_bwa() %>%
 #'   filter(AcademicYear == "2020-2021") %>%

@@ -36,7 +36,7 @@ glimpse(stu_attendance)
 # TermIDs are doubles (thought they really ought be integers), but are 
 # much faster for filtering. 
 
-term_id <- calc_ps_termid(2021)
+term_id <- calc_ps_termid(2022)
 
 
 stu_attend_2021 <- stu_attendance %>% 
@@ -55,15 +55,15 @@ So as of the `r stamp_date("January 14, 2021")(today())` there are `r scales::co
 ```{r collect, include = TRUE}
 collection_data_start <- today() - days(2)
 
-stu_attend_2021_temp <- stu_attendance %>% 
+stu_attend_2022_temp <- stu_attendance %>% 
   select(StudentNumber, AttDate, schoolnumber , Membership, Absences) %>% 
-  filter(AttDate >= '2021-10-08', 
+  filter(AttDate >= '2022-05-01', 
          SchoolNumber %in% c('108807186', '108807187', '108807302', '109907024')) %>%  
 
   compute()
 
  
-stu_attend_2021_collected <-  stu_attend_2021_temp %>% 
+stu_attend_2021_collected <-  stu_attend_2022_temp %>% 
   collector(AttDate, schoolnumber) %>% 
   janitor::clean_names()
 
@@ -94,7 +94,7 @@ A caveat with this desing pattern is you need to have permissions to write tempo
 In any case, here are the results of the call, witht eh student numbers masked by an sha1 cryptohash:
 
 ```{r show_results}
-stu_attend_2021_feb %>% 
+stu_attend_2021_collected %>% 
   head(20) %>% 
   mutate(student_number = openssl::sha1(as.character(student_number))) %>% #crypto hash
   knitr::kable()

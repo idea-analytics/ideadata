@@ -1,3 +1,7 @@
+# ideadata 3.0.2
+
+* fixed loading problems by error catching when not on the network. The package should load without creds as well. 
+
 # ideadata 3.0.1
 
 # ideadata 3.0.0

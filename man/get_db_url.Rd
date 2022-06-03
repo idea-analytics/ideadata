@@ -18,5 +18,5 @@ and \code{url} of the database given by \code{.database_name}
 retrieves database URL and server name
 }
 \examples{
-get_db_url("PROD1")
+\dontrun{get_db_url("PROD1")}
 }

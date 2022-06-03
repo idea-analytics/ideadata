@@ -48,7 +48,7 @@ get_creds <- function(){
 #' @export
 #'
 #' @examples
-#' get_db_url("PROD1")
+#' \dontrun{get_db_url("PROD1")}
 
 get_db_url <- function(.database_name){
 
@@ -82,7 +82,7 @@ get_db_url <- function(.database_name){
 #' @export
 #'
 #' @examples
-#' create_connection("PROD1")
+#' \dontrun{create_connection("PROD1")}
 create_connection <- function(.database_name,
                               .server_name,
                               #r_and_a_server = FALSE,
@@ -286,9 +286,11 @@ check_get_hidden_connection <- function(.database_name="Documentation",
 #'
 #' @examples
 #' # The following creates a connect call `conn_PROD1` in global environment
+#' \dontrun{
 #' regions <- get_regions()
 #'
 #' disconnect(conn_PROD1)
+#' }
 disconnect <- function(con){
 
   con_name <- glue::glue("conn_{con@info$dbname}")
