@@ -18,11 +18,11 @@ Connect to \code{Schools} table on \code{PROD1} in \code{Schools} schema
 
 \dontrun{
 schools <- get_schools()
- }
+
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
-\dontrun{
+
 library(dplyr)
 library(janitor)
 schools <- get_schools() \%>\%

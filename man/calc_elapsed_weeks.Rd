@@ -20,6 +20,8 @@ Calculate the weeks elapsed from a reference date
 }
 \examples{
 
+\dontrun{
 library(lubridate)
 calc_elapsed_weeks(today())
+}
 }

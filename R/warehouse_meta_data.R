@@ -1,4 +1,8 @@
-
+#' Gets warehouse meta data from R&A Documentation data base
+#'
+#' @return a tibble, which is written to `namespace:ideadata`
+#'
+#'
 get_warehouse_meta_data <- function(){
   tryCatch({
   # create ODBC Connection String

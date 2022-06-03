@@ -13,11 +13,11 @@ globalVariables("conn_PROD1")
 #'
 #' \dontrun{
 #' schools <- get_schools()
-#'  }
+#'
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
-#' \dontrun{
+#'
 #' library(dplyr)
 #' library(janitor)
 #' schools <- get_schools() %>%
@@ -166,7 +166,9 @@ get_currently_enrolled_students <- function(){
 #'
 #' # This pulls down schools data form the DB and onto your computer
 #' # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+#' \dontrun{
 #' stu_attend <- get_student_daily_attendance()
+#' }
 #'
 get_student_daily_attendance <- function(){
 
