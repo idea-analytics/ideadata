@@ -14,7 +14,7 @@
 #'
 #' @examples
 #'
-#' setup_creds()
+#' \dontrun{setup_creds()}
 setup_creds <- function(){
 
   r_home <- fs::path_home_r()
@@ -152,7 +152,7 @@ update_driver <- function(.path){
 #' @export
 #'
 #' @examples
-#' calc_ps_termid(2015)
+#' \dontrun{calc_ps_termid(2015)}
 calc_ps_termid <- function(sy,
                            quarter = 0) {
   (sy - 1990)*100 + quarter
@@ -169,8 +169,10 @@ calc_ps_termid <- function(sy,
 #'
 #' @examples
 #'
+#' \dontrun{
 #' library(lubridate)
 #' calc_elapsed_weeks(today())
+#' }
 calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
   (lubridate::floor_date(lubridate::ymd(ref_date), unit="week") -
      lubridate::floor_date(lubridate::ymd(first_day), unit="week"))/lubridate::dweeks(1)+1
@@ -186,6 +188,6 @@ calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
 view_warehouse_metadata <- function() {
 
   #utils::data(warehouse_meta_data, envir = environment())
-  View(warehouse_meta_data)
+  utils::View(warehouse_meta_data)
   }
 

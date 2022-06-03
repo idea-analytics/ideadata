@@ -20,11 +20,12 @@ utils::globalVariables(c("row_number", "where"))
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(dplyr)
 #'
 #' schools_remote <- get_schools()
 #' schools <- schools_remote %>% collector(SchoolShortName, RegionID)
-#'
+#'}
 collector <- function(.df,
                       #.split_column
                       ...,

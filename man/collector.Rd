@@ -32,9 +32,10 @@ it's faster than calling collect multiple times (as \code{collector()} does).  H
 \code{collect()} keeps failing, than \code{collector()} will likely solve that problem by pulling the data set in
 }
 \examples{
+\dontrun{
 library(dplyr)
 
 schools_remote <- get_schools()
 schools <- schools_remote \%>\% collector(SchoolShortName, RegionID)
-
+}
 }
