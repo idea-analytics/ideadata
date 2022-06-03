@@ -19,5 +19,5 @@ a character or integer vector
 Calculate 4 digit PowerSchool TermID given first year of a school year
 }
 \examples{
-calc_ps_termid(2015)
+\dontrun{calc_ps_termid(2015)}
 }

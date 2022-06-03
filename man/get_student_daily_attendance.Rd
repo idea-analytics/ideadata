@@ -20,6 +20,8 @@ membership (i.e., enrollment) and attendance data
 
 # This pulls down schools data form the DB and onto your computer
 # and then cleans the names (lower snakecase) using [janitor::clean_names()]
+\dontrun{
 stu_attend <- get_student_daily_attendance()
+}
 
 }

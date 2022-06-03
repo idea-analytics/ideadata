@@ -21,7 +21,9 @@ the connection, discards all pending work, and frees resources (e.g., memory, so
 }
 \examples{
 # The following creates a connect call `conn_PROD1` in global environment
+\dontrun{
 regions <- get_regions()
 
 disconnect(conn_PROD1)
+}
 }

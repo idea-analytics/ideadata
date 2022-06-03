@@ -27,5 +27,5 @@ functions and users have access to the connection.
 Create connection to database
 }
 \examples{
-create_connection("PROD1")
+\dontrun{create_connection("PROD1")}
 }
