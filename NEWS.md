@@ -6,15 +6,19 @@
 
 # ideadata 3.0.0
 
-* Big update to get ready for new servers in the warhouse. 
-* Connection pattern of looking up metadata completely reengineered
-* Better startup message with more detail about the warehouse
+* Big update to get ready for new servers in the warehouse. 
+* Connection pattern of looking up metadata completely re-engineered
+* Better start-up message with more detail about the warehouse
 * All get_* functions wrap get_table
 
 
 # ideadata 2.0.3
 
 # ideadata 2.0.2
+
+# ideadata 2.0.1
+
+* Added a call to `data(warhouse_meta_data, envir=environemnt())` to ensure a Linux compatibility with looking up warehouse metadata.
 
 # ideadata 2.0.0
 
