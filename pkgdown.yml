@@ -1,11 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   setting-up-your-credentials: setting-up-your-credentials.html
   using-collector: using-collector.html
   using-get_table: using-get_table.html
-last_built: 2021-10-25T18:50Z
+last_built: 2022-06-22T14:32Z
 urls:
   reference: https://idea-analytics.github.io/ideadata/reference
   article: https://idea-analytics.github.io/ideadata/articles
