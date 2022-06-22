@@ -30,7 +30,7 @@ If the table is uniquely named in the data warehouse then the usage is very stra
 
 
 ```r
-devtools::load_all(".")
+library('ideadata')
 #> ℹ Loading ideadata
 #> ── Gathering warehouse metadata ─────────────────────────────────────────────── ideadata 3.0.1 ──
 #> ℹ Checking credentials ...
