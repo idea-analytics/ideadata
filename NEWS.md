@@ -18,7 +18,7 @@
 
 # ideadata 2.0.1
 
-* Added a call to `data(warhouse_meta_data, envir=environemnt())` to ensure a Linus compatativility with looking up warehouse metadata.
+* Added a call to `data(warhouse_meta_data, envir=environemnt())` to ensure a Linux compatibility with looking up warehouse metadata.
 
 # ideadata 2.0.0
 
