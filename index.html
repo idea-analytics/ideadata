@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tools and Utilities for accessing IDEA's Data Warehousegit g • ideadata</title>
+<title>Tools and Utilities for accessing IDEA's Data Warehouse • ideadata</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Tools and Utilities for accessing IDEA's Data Warehousegit g">
+<script src="pkgdown.js"></script><meta property="og:title" content="Tools and Utilities for accessing IDEA's Data Warehouse">
 <meta property="og:description" content="Access tables in the IDEA Public Schools data warehouse.">
 <meta property="og:image" content="https://idea-analytics.github.io/ideadata/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,23 +40,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.0.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -87,31 +83,28 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="ideadata-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#ideadata-" class="anchor"></a>ideadata <img src="reference/figures/logo.png" align="right" height="139">
+<div class="section level1">
+<div class="page-header"><h1 id="ideadata-">ideadata <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#ideadata-"></a>
 </h1></div>
-<!-- badges: start -->
-<!-- badges: end -->
-<p><code>ideadata</code> helps data analysts at IDEA Public Schools access and use data stored in IDEA’s data warehouse. <code>ideadata</code> does so in a <a href="https://www.tidyverse.org/">tidyverse</a> friendly way.</p>
+<!-- badges: start --><!-- badges: end --><p><code>ideadata</code> helps data analysts at IDEA Public Schools access and use data stored in IDEA’s data warehouse. <code>ideadata</code> does so in a <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a> friendly way.</p>
 <p><code>ideadata</code> is an anagram for “data aide”. Hench the logo. Ooooh Yeah!</p>
 <p><img src="https://media3.giphy.com/media/Zx0BgEPhIevlAVEbnq/giphy.gif" align="center" height="200"></p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>Since <code>ideadata</code> is an internal IDEA package there is only a development version, which is installed from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>Since <code>ideadata</code> is an internal IDEA package there is only a development version, which is installed from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#install.pacakges("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"idea-analytics/ideadata"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"idea-analytics/ideadata"</span><span class="op">)</span>
 
 <span class="co">#renv::install("idea-analytics/ideadata@main") also works</span></code></pre></div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
 <p>Here’s how you connect to a table in the warehouse.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 <span class="co">#&gt; Warning: package 'dplyr' was built under R version 4.0.2</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
@@ -121,12 +114,12 @@
 <span class="co">#&gt; The following objects are masked from 'package:base':</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://idea-analytics.github.io/ideadata">ideadata</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://idea-analytics.github.io/ideadata">ideadata</a></span><span class="op">)</span>
 
 <span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_schools.html">get_schools</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>
 <span class="co">#&gt; # Source:   lazy query [?? x 25]</span>
 <span class="co">#&gt; # Database: Microsoft SQL Server</span>
 <span class="co">#&gt; #   13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
@@ -147,22 +140,22 @@
 <span class="co">#&gt; #   CollegeSuccessDirector &lt;dbl&gt;, Area &lt;chr&gt;, RegionAltID &lt;dbl&gt;</span></code></pre></div>
 <p>The <code>schools</code> object above is <code>tbl</code> object. That means it works with <code>dplyr</code> verbs and functions, but what happens in the background is that <code>dplyr</code> and <code>dbplyr</code> generate SQL that is sent to the database you are connected to and that all computation (e.g., filtering, selecting, joining, calculations, aggregation) are completed on the remote SQL Server instance and <strong>not</strong> on your computer.</p>
 <p>Nevertheless, you will eventually want to pull that data down onto your machine when you want to use R or Python do what they can do (like modeling or graphics) that the database can’t do.</p>
-<p>Pulling that data down is easy with <br><span class="math display"><em>d</em><em>p</em><em>l</em><em>y</em><em>r</em> :  : <em>c</em><em>o</em><em>l</em><em>l</em><em>e</em><em>c</em><em>t</em>()</span><br></p>
+<p>Pulling that data down is easy with [dplyr::collect()]</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 
-<span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>(Here <code><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">janitor::clean_names()</a></code> snake_cases all the column names).</p>
-<div id="what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows" class="section level3">
-<h3 class="hasAnchor">
-<a href="#what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows" class="anchor"></a>What if I am pulling down lots fo data (say, millions of rows)?</h3>
+<span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>(Here <code><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">janitor::clean_names()</a></code> snake_cases all the column names).</p>
+<div class="section level3">
+<h3 id="what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows">What if I am pulling down lots fo data (say, millions of rows)?<a class="anchor" aria-label="anchor" href="#what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows"></a>
+</h3>
 <p>In this instance the database connection may fail. It’s not ideal, but it happens. One way to deal with this is to pull down the data piecemeal. The <code><a href="reference/collector.html">collector()</a></code> function in <code>ideadata</code> makes this task trivial. It takes one argument, which is a column name form the table you want to pull down, which is used to break up the data into smaller sets of data that are pulled down from the database onto your computer and then recombined into a single table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">SchoolState</span>, <span class="va">CountyName</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">SchoolState</span>, <span class="va">CountyName</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Collecting data</span>
 <span class="co">#&gt; Pulling data filtered to: is.na(SchoolState), is.na(CountyName) ...</span>
 <span class="co">#&gt; Pulling data filtered to: SchoolState == 'FL', is.na(CountyName) ...</span>
@@ -197,29 +190,42 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing ideadata</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Chris Haid <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Chris Haid.</p>
+  <p></p>
+<p>Developed by Chris Haid.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -227,6 +233,8 @@
 
   
 
+
+  
 
   </body>
 </html>

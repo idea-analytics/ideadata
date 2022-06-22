@@ -1,7 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/404.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/articles/setting-up-your-credentials.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/articles/using-collector.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/articles/using-get_table.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/authors.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/index.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/news/index.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/calc_elapsed_weeks.html</loc>
@@ -23,12 +50,6 @@
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/create_connection.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/data_warehouse_details.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/db_locations.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/disconnect.html</loc>
@@ -94,7 +115,13 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/get_table.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_warehouse_meta_data.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/id_tables_in_dbs.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/index.html</loc>
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc>
@@ -109,15 +136,6 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/update_uid.html</loc>
   </url>
   <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/warehouse_meta_data.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/setting-up-your-credentials.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/using-collector.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/using-get_table.html</loc>
+    <loc>https://idea-analytics.github.io/ideadata/reference/view_warehouse_metadata.html</loc>
   </url>
 </urlset>
