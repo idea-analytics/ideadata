@@ -4,7 +4,9 @@ reference:
   desc: >
     Get connections to tables in IDEA's warehouse.  These functions return
     direct connections to as `tbl` objects and are ready to use with `dplyr` verbs
+- subtitle: The workhorse function
 - contents:
+  - get_table
 - subtitle: PowerSchool-based descriptive data
 - contents:
   - starts_with("get_currently")
@@ -53,3 +55,5 @@ reference:
   - kinit
   - contains("connection")
   - check_macos_linux
+  - get_warehouse_meta_data
+  - id_tables_in_dbs
