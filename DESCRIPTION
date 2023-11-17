@@ -16,21 +16,18 @@ Imports:
     dbplyr,
     DBI,
     cli,
-    usethis,
     stringr,
     fs,
     rlang,
     purrr,
     odbc,
     utils,
-    devtools,
     janitor,
-    openssl,
     lubridate,
     magrittr,
     praise,
     tibble
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Suggests: 
     here,

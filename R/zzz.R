@@ -1,4 +1,4 @@
-
+globalVariables("warehouse_meta_data")
 grab_warehouse_meta_data <- function(){
 
   packageStartupMessage(cli::rule(left = "Gathering warehouse metadata",
