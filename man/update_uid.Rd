@@ -23,8 +23,8 @@ Update IDEA_RNA_DB_UID in .Renviron file
 }
 \section{Functions}{
 \itemize{
-\item \code{update_pwd}: Update IDEA_RNA_DB_PWD in .Renviron file
+\item \code{update_pwd()}: Update IDEA_RNA_DB_PWD in .Renviron file
 
-\item \code{update_driver}: Update IDEA_RNA_ODBC_DRIVER in .Renviron file
+\item \code{update_driver()}: Update IDEA_RNA_ODBC_DRIVER in .Renviron file
+
 }}
-

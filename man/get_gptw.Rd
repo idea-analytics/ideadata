@@ -31,17 +31,17 @@ a tidy (i.e. a long ) view of non-OE responses from the 2020-21 GPTW survey
 }
 \section{Functions}{
 \itemize{
-\item \code{get_gptw_oe_questions}: \code{OEQuestions} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+\item \code{get_gptw_oe_questions()}: \code{OEQuestions} table in \code{GPTW} on \code{RGVPDRA-DASQL}
 
-\item \code{get_gptw_oe_responses}: \code{OEResponses} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+\item \code{get_gptw_oe_responses()}: \code{OEResponses} table in \code{GPTW} on \code{RGVPDRA-DASQL}
 
-\item \code{get_gptw_questions}: \code{Questions} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+\item \code{get_gptw_questions()}: \code{Questions} table in \code{GPTW} on \code{RGVPDRA-DASQL}
 
-\item \code{get_gptw_results}: \code{Results} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+\item \code{get_gptw_results()}: \code{Results} table in \code{GPTW} on \code{RGVPDRA-DASQL}
 
-\item \code{get_gptw_sections}: \code{Sections} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+\item \code{get_gptw_sections()}: \code{Sections} table in \code{GPTW} on \code{RGVPDRA-DASQL}
+
 }}
-
 \examples{
 # This attaches to the school db with \code{conn_GPTW} connection
 \dontrun{
