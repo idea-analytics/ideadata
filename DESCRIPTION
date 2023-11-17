@@ -28,14 +28,17 @@ Imports:
     openssl,
     lubridate,
     magrittr,
-    praise
+    praise,
+    tibble
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
     here,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 Depends: 
     R (>= 2.10)
 URL: https://idea-analytics.github.io/ideadata
 VignetteBuilder: knitr
+Config/testthat/edition: 3
