@@ -23,10 +23,13 @@ get_warehouse_meta_data <- function(){
 
 
 
-    warehouse_meta_data  <- dplyr::tbl(conn,
-                                       dbplyr::in_schema(dbplyr::sql("[RGVPDRA-DASQL].[Documentation].[dbo]"),
-                                                         dbplyr::sql("Metadata"))
-    )
+    # warehouse_meta_data  <- dplyr::tbl(conn,
+    #                                    dbplyr::in_schema(dbplyr::sql("[RGVPDRA-DASQL].[Documentation].[dbo]"),
+    #                                                      dbplyr::sql("Metadata"))
+    #                                    )
+
+    warehouse_meta_data <- dplyr::tbl(conn, dbplyr::sql("SELECT * FROM [RGVPDRA-DASQL].[Documentation].[dbo].Metadata"))
+
     #meta_data <- ideadata::get_table(.table_name = "Metadata", .database_name = "Documentation", .schema = "dbo")
     warehouse_meta_data <-  dplyr::distinct(warehouse_meta_data, ServerName, DatabaseName, Schema, TableName)
     warehouse_meta_data <- dplyr::collect(warehouse_meta_data)

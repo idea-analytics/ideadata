@@ -121,10 +121,15 @@ get_table <- function(.table_name, .server_name, .database_name, .schema, ...){
 
   connection_name <- glue::glue("conn_{.database_name}")
 
+  # out <- dplyr::tbl(src = get(connection_name, envir = globalenv()),
+  #                   dbplyr::in_schema(dbplyr::sql(schema_string),
+  #                                     dbplyr::sql(.table_name))
+  #                   )
+
+  schema_table_sql <- dbplyr::sql(glue::glue("SELECT * FROM {schema_string}.{.table_name}"))
+
   out <- dplyr::tbl(src = get(connection_name, envir = globalenv()),
-                    dbplyr::in_schema(dbplyr::sql(schema_string),
-                                      dbplyr::sql(.table_name))
-                    )
+                    schema_table_sql)
 
   out
 
