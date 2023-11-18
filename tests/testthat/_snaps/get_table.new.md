@@ -7,8 +7,8 @@
       i You'll need to specify the database and schema name with db target.
       v Any of these should work:
     Output
-        get_table(.table_name = "Students", .database_name = "PROD1", .schema = "Schools", .server_name = "RGVPDSD-DWPRD1")
         get_table(.table_name = "Students", .database_name = "Program21stCentury", .schema = "dbo", .server_name = "RGVPDRA-DASQL")
+        get_table(.table_name = "Students", .database_name = "PROD1", .schema = "Schools", .server_name = "RGVPDSD-DWPRD1")
         get_table(.table_name = "Students", .database_name = "PROD1", .schema = "AcceleratedLearning", .server_name = "RGVPDSD-DWPRD1")
         get_table(.table_name = "Students", .database_name = "SRC_Florida_Schools", .schema = "EnrollmentDashboard", .server_name = "RGVPDSD-DWSRC1")
         get_table(.table_name = "Students", .database_name = "SRC_Florida_Schools_Focus", .schema = "Focus", .server_name = "RGVPDSD-DWSRC1")
@@ -32,14 +32,14 @@
         get_table(.table_name = "Students", .database_name = "SRC_Texas_Travis_Schools", .schema = "FWOS", .server_name = "RGVPDSD-DWSRC1")
         get_table(.table_name = "Students", .database_name = "SRC_Edcite", .schema = "Edcite", .server_name = "RGVPDSD-DWSRC2")
         get_table(.table_name = "Students", .database_name = "PowerSchool_Louisiana", .schema = "Data", .server_name = "RGVPDSD-DWSRC5")
-        get_table(.table_name = "Students", .database_name = "CSIInstruction", .schema = "dbo", .server_name = "RGVPDSD-SQLCSI")
         get_table(.table_name = "Students", .database_name = "SRC_Naviance", .schema = "Data", .server_name = "RGVPDSD-DWSRC3")
+        get_table(.table_name = "Students", .database_name = "CSIInstruction", .schema = "dbo", .server_name = "RGVPDSD-SQLCSI")
         get_table(.table_name = "Students", .database_name = "SRC_BlendedLearning", .schema = "dbo", .server_name = "RGVPDSD-DWSRC4")
         get_table(.table_name = "Students", .database_name = "CSIInstructionBackup", .schema = "dbo", .server_name = "RGVPDSD-SQLCSI")
         get_table(.table_name = "Students", .database_name = "IDEAInstructionStage", .schema = "dbo", .server_name = "RGVPDSD-SQLDI")
-        get_table(.table_name = "Students", .database_name = "PROD1", .schema = "Attendance", .server_name = "RGVPDSD-DWPRD1")
         get_table(.table_name = "Students", .database_name = "CSIInstructionStage", .schema = "dbo", .server_name = "RGVPDSD-SQLCSI")
         get_table(.table_name = "Students", .database_name = "IDEAInstructionDebug", .schema = "dbo", .server_name = "RGVPDSD-SQLDI")
+        get_table(.table_name = "Students", .database_name = "PROD1", .schema = "Attendance", .server_name = "RGVPDSD-DWPRD1")
         get_table(.table_name = "Students", .database_name = "SRC_Florida_Schools_Focus", .schema = "EnrollmentDashboard", .server_name = "RGVPDSD-DWSRC1")
         get_table(.table_name = "Students", .database_name = "SRC_Louisiana_Schools", .schema = "FWOS", .server_name = "RGVPDSD-DWSRC1")
         get_table(.table_name = "Students", .database_name = "SRC_Texas_Schools", .schema = "AcceleratedLearning", .server_name = "RGVPDSD-DWSRC1")
