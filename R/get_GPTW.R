@@ -19,7 +19,7 @@ utils::globalVariables("conn_GPTW")
 #'
 get_gptw <- function(){
 
-  out <- get_table("ResultsView")
+  out <- get_table("ResultsView", .database_name = "GPTW")
 
   out
 
@@ -31,7 +31,7 @@ get_gptw <- function(){
 get_gptw_oe_questions <- function(){
 
 
-  out <- get_table("OEQuestions")
+  out <- get_table("OEQuestions", .database_name = "GPTW")
 
   out
 
@@ -44,7 +44,7 @@ get_gptw_oe_questions <- function(){
 get_gptw_oe_responses <- function(){
 
 
-  out <- get_table("OEResponses")
+  out <- get_table("OEResponses", .database_name = "GPTW")
 
 
   out
@@ -55,7 +55,7 @@ get_gptw_oe_responses <- function(){
 #' @describeIn get_gptw  `Questions` table in `GPTW` on `REDACTED-SQLSERVER`
 get_gptw_questions <- function(){
 
-  out <- get_table("Questions")
+  out <- get_table("Questions", .database_name = "GPTW")
 
 
   out
