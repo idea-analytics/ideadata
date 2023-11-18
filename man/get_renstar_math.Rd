@@ -17,9 +17,9 @@ Connect to \code{StarMathV2} or \code{StarReadingV2} tables in \code{SRC_AR} on 
 }
 \section{Functions}{
 \itemize{
-\item \code{get_renstar_reading}: Connect to \code{StarReadingV2} table in \code{SRC_AR} on \code{RGVPDSD-DWSRC4}
-}}
+\item \code{get_renstar_reading()}: Connect to \code{StarReadingV2} table in \code{SRC_AR} on \code{RGVPDSD-DWSRC4}
 
+}}
 \examples{
 # This attaches to the school db with \code{conn_SRC_AR} connection
 \dontrun{

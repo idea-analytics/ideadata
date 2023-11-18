@@ -1,7 +1,7 @@
 Package: ideadata
 Type: Package
 Title: Tools and Utilities for accessing IDEA's Data Warehouse
-Version: 3.0.2
+Version: 4.0.0
 Author: Chris Haid
 Maintainer: Chris Haid <christopher.haid@ideapublicschools.org>
 Description: Access tables in the IDEA Public Schools data warehouse.
@@ -16,26 +16,26 @@ Imports:
     dbplyr,
     DBI,
     cli,
-    usethis,
     stringr,
     fs,
     rlang,
     purrr,
     odbc,
     utils,
-    devtools,
     janitor,
-    openssl,
     lubridate,
     magrittr,
-    praise
-RoxygenNote: 7.1.2
+    praise,
+    tibble
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Suggests: 
     here,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 Depends: 
     R (>= 2.10)
 URL: https://idea-analytics.github.io/ideadata
 VignetteBuilder: knitr
+Config/testthat/edition: 3
