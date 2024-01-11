@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">4.0.0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
 
       
 
-      </header><script src="using-get_table_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using get_table()</h1>
@@ -94,15 +94,39 @@
 
     
     
-<p>The <code>ideadata</code> package utilizes the simple concept of <code>get_*</code> functions, which is named after the table that you want to connect to in the warehouse in one line. Functions like [get_students] are useful because they lower your cognitive load (“What DB and schema do I pull students from and what’s the SQL look like”) and they ensure that anyone using this package (read: R&amp;A) are always pulling the same data when they start an analysis, save any processing logic.</p>
-<p>One big downside: they need to be created one at a time and so if a new set of tables is added to the data warehouse, there can a lag between when those tables are added and when there is a corresponding <code>get_*</code> function in this package.</p>
+<p>The <code>ideadata</code> package utilizes the simple concept of
+<code>get_*</code> functions, which is named after the table that you
+want to connect to in the warehouse in one line. Functions like
+[get_students] are useful because they lower your cognitive load (“What
+DB and schema do I pull students from and what’s the SQL look like”) and
+they ensure that anyone using this package (read: R&amp;A) are always
+pulling the same data when they start an analysis, save any processing
+logic.</p>
+<p>One big downside: they need to be created one at a time and so if a
+new set of tables is added to the data warehouse, there can a lag
+between when those tables are added and when there is a corresponding
+<code>get_*</code> function in this package.</p>
 <div class="section level2">
 <h2 id="introducing-get_table">Introducing <code>get_table()</code><a class="anchor" aria-label="anchor" href="#introducing-get_table"></a>
 </h2>
-<p>To mitigate against the time Chris has to develop new <code>get_*</code> functions and the ever evolving nature of data warehouse, <code>ideadata</code> now has a new workhourse function: <code><a href="../reference/get_table.html">get_table()</a></code>.</p>
-<p>This function does exactly what it says: it get’s tables from the warehouse by looking up table location in the <code>MetaData</code> table in the <code>Documentation</code> schema of R&amp;A’s SQL Server instance. That table updates frequently and contains a comprehensive view of the data warehouse at any time.</p>
-<p>When you load <code>ideadata</code> (i.e., when you run <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(ideadat)</a></code> the package makes a connection to the <code>MetaData</code> table and saves it as a dataframe names <code>warehouse_meta_data</code> that you can access by running <code>data(warehouse_meta_data)</code>.</p>
-<p>Not that you might need to detach and reload <code>ideadata</code> if you know the warehouse has a new table but <code><a href="../reference/get_table.html">get_table()</a></code> can’t find it. This will force the <code>warehouse_meta_data</code> table to update.</p>
+<p>To mitigate against the time Chris has to develop new
+<code>get_*</code> functions and the ever evolving nature of data
+warehouse, <code>ideadata</code> now has a new workhourse function:
+<code><a href="../reference/get_table.html">get_table()</a></code>.</p>
+<p>This function does exactly what it says: it get’s tables from the
+warehouse by looking up table location in the <code>MetaData</code>
+table in the <code>Documentation</code> schema of R&amp;A’s SQL Server
+instance. That table updates frequently and contains a comprehensive
+view of the data warehouse at any time.</p>
+<p>When you load <code>ideadata</code> (i.e., when you run
+<code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(ideadat)</a></code> the package makes a connection to the
+<code>MetaData</code> table and saves it as a dataframe names
+<code>warehouse_meta_data</code> that you can access by running
+<code>data(warehouse_meta_data)</code>.</p>
+<p>Not that you might need to detach and reload <code>ideadata</code> if
+you know the warehouse has a new table but <code><a href="../reference/get_table.html">get_table()</a></code>
+can’t find it. This will force the <code>warehouse_meta_data</code>
+table to update.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -110,105 +134,121 @@
 <div class="section level3">
 <h3 id="simple-usage">Simple usage<a class="anchor" aria-label="anchor" href="#simple-usage"></a>
 </h3>
-<p>If the table is uniquely named in the data warehouse then the usage is very straightforward. You need to simply the table name to function:</p>
+<p>If the table is uniquely named in the data warehouse then the usage
+is very straightforward. You need to simply the table name to
+function:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://idea-analytics.github.io/ideadata">'ideadata'</a></span><span class="op">)</span>
-<span class="co">#&gt; ℹ Loading ideadata</span>
-<span class="co">#&gt; ── Gathering warehouse metadata ─────────────────────────────────────────────── ideadata 3.0.1 ──</span>
-<span class="co">#&gt; ℹ Checking credentials ...</span>
-<span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
-<span class="co">#&gt; ✓ Success: Warehouse metadata gathered!</span>
-<span class="co">#&gt; ℹ The warehouse currently houses:</span>
-<span class="co">#&gt;      2,226 tables</span>
-<span class="co">#&gt;   in 134 databases</span>
-<span class="co">#&gt;   on 17 servers</span>
-<span class="co">#&gt; WHEE! ideadata and you are healthily neat!</span>
-<span class="co">#library(ideadata)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'tidyverse' was built under R version 4.0.2</span>
-<span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.3.1 ──</span>
-<span class="co">#&gt; ✓ ggplot2 3.3.6     ✓ purrr   0.3.4</span>
-<span class="co">#&gt; ✓ tibble  3.1.6     ✓ stringr 1.4.0</span>
-<span class="co">#&gt; ✓ tidyr   1.2.0     ✓ forcats 0.5.1</span>
-<span class="co">#&gt; ✓ readr   2.1.2</span>
-<span class="co">#&gt; Warning: package 'tibble' was built under R version 4.0.2</span>
-<span class="co">#&gt; Warning: package 'tidyr' was built under R version 4.0.5</span>
-<span class="co">#&gt; Warning: package 'readr' was built under R version 4.0.5</span>
-<span class="co">#&gt; Warning: package 'forcats' was built under R version 4.0.2</span>
-<span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span>
-<span class="co">#&gt; x lubridate::as.difftime() masks base::as.difftime()</span>
-<span class="co">#&gt; x lubridate::date()        masks base::date()</span>
-<span class="co">#&gt; x dplyr::filter()          masks stats::filter()</span>
-<span class="co">#&gt; x lubridate::intersect()   masks base::intersect()</span>
-<span class="co">#&gt; x dplyr::lag()             masks stats::lag()</span>
-<span class="co">#&gt; x lubridate::setdiff()     masks base::setdiff()</span>
-<span class="co">#&gt; x lubridate::union()       masks base::union()</span>
-
-<span class="va">oe_responses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span><span class="st">"OEResponses"</span><span class="op">)</span>
-<span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">oe_responses</span><span class="op">)</span>
-<span class="co">#&gt; # Source:   lazy query [?? x 7]</span>
-<span class="co">#&gt; # Database: Microsoft SQL Server 15.00.4198[dbo@REDACTED-SQLSERVER/GPTW]</span>
-<span class="co">#&gt;        ID AcademicYear OEQuestionKey OEResponseKey GroupType Group  Response                     </span>
-<span class="co">#&gt;   &lt;int64&gt; &lt;chr&gt;                &lt;int&gt;         &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;                        </span>
-<span class="co">#&gt; 1       1 2020-2021                5             1 Region    Austin "I would not change a thing;…</span>
-<span class="co">#&gt; 2       2 2020-2021                5             2 Region    Austin "As a new teacher I had hear…</span>
-<span class="co">#&gt; 3       3 2020-2021                5             3 Region    Austin "Choose locations more caref…</span>
-<span class="co">#&gt; 4       4 2020-2021                5             4 Region    Austin "At my previous campus, I wo…</span>
-<span class="co">#&gt; 5       5 2020-2021                5             5 Region    Austin "To treat it's employees lik…</span>
-<span class="co">#&gt; 6       6 2020-2021                5             6 Region    Austin "More check-ins with manager"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://idea-analytics.github.io/ideadata">'ideadata'</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Loading ideadata</span></span>
+<span><span class="co">#&gt; ── Gathering warehouse metadata ─────────────────────────────────────────────── ideadata 3.0.1 ──</span></span>
+<span><span class="co">#&gt; ℹ Checking credentials ...</span></span>
+<span><span class="co">#&gt; christopher.haid's Kereberos TGT is current</span></span>
+<span><span class="co">#&gt; ✓ Success: Warehouse metadata gathered!</span></span>
+<span><span class="co">#&gt; ℹ The warehouse currently houses:</span></span>
+<span><span class="co">#&gt;      2,226 tables</span></span>
+<span><span class="co">#&gt;   in 134 databases</span></span>
+<span><span class="co">#&gt;   on 17 servers</span></span>
+<span><span class="co">#&gt; WHEE! ideadata and you are healthily neat!</span></span>
+<span><span class="co">#library(ideadata)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'tidyverse' was built under R version 4.0.2</span></span>
+<span><span class="co">#&gt; ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.3.1 ──</span></span>
+<span><span class="co">#&gt; ✓ ggplot2 3.3.6     ✓ purrr   0.3.4</span></span>
+<span><span class="co">#&gt; ✓ tibble  3.1.6     ✓ stringr 1.4.0</span></span>
+<span><span class="co">#&gt; ✓ tidyr   1.2.0     ✓ forcats 0.5.1</span></span>
+<span><span class="co">#&gt; ✓ readr   2.1.2</span></span>
+<span><span class="co">#&gt; Warning: package 'tibble' was built under R version 4.0.2</span></span>
+<span><span class="co">#&gt; Warning: package 'tidyr' was built under R version 4.0.5</span></span>
+<span><span class="co">#&gt; Warning: package 'readr' was built under R version 4.0.5</span></span>
+<span><span class="co">#&gt; Warning: package 'forcats' was built under R version 4.0.2</span></span>
+<span><span class="co">#&gt; ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span><span class="co">#&gt; x lubridate::as.difftime() masks base::as.difftime()</span></span>
+<span><span class="co">#&gt; x lubridate::date()        masks base::date()</span></span>
+<span><span class="co">#&gt; x dplyr::filter()          masks stats::filter()</span></span>
+<span><span class="co">#&gt; x lubridate::intersect()   masks base::intersect()</span></span>
+<span><span class="co">#&gt; x dplyr::lag()             masks stats::lag()</span></span>
+<span><span class="co">#&gt; x lubridate::setdiff()     masks base::setdiff()</span></span>
+<span><span class="co">#&gt; x lubridate::union()       masks base::union()</span></span>
+<span></span>
+<span><span class="va">oe_responses</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span><span class="st">"OEResponses"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; christopher.haid's Kereberos TGT is current</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">oe_responses</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # Source:   lazy query [?? x 7]</span></span>
+<span><span class="co">#&gt; # Database: Microsoft SQL Server 15.00.4198[dbo@REDACTED-SQLSERVER/GPTW]</span></span>
+<span><span class="co">#&gt;        ID AcademicYear OEQuestionKey OEResponseKey GroupType Group  Response                     </span></span>
+<span><span class="co">#&gt;   &lt;int64&gt; &lt;chr&gt;                &lt;int&gt;         &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;                        </span></span>
+<span><span class="co">#&gt; 1       1 2020-2021                5             1 Region    Austin "I would not change a thing;…</span></span>
+<span><span class="co">#&gt; 2       2 2020-2021                5             2 Region    Austin "As a new teacher I had hear…</span></span>
+<span><span class="co">#&gt; 3       3 2020-2021                5             3 Region    Austin "Choose locations more caref…</span></span>
+<span><span class="co">#&gt; 4       4 2020-2021                5             4 Region    Austin "At my previous campus, I wo…</span></span>
+<span><span class="co">#&gt; 5       5 2020-2021                5             5 Region    Austin "To treat it's employees lik…</span></span>
+<span><span class="co">#&gt; 6       6 2020-2021                5             6 Region    Austin "More check-ins with manager"</span></span></code></pre></div>
 <p>Not too bad.</p>
 </div>
 <div class="section level3">
 <h3 id="less-simple-usage-or-failing-informatively">Less simple usage, or failing informatively<a class="anchor" aria-label="anchor" href="#less-simple-usage-or-failing-informatively"></a>
 </h3>
-<p>This function <strong>will fail</strong> if the tables is not uniquely named in the warehouse.</p>
+<p>This function <strong>will fail</strong> if the tables is not
+uniquely named in the warehouse.</p>
 <p>Why?</p>
-<p>Because there is no way to know which table you really mean. One solution, if you know the location, is to provide the table name, database name, and schema to the <code>.table_name</code>, <code>database_name</code>, <code>.schema</code>, and <code>.server_name</code> arguments of <code><a href="../reference/get_table.html">get_table()</a></code>. That will locate the right server and make the connection and avoid failure.</p>
-<p><strong>But here is something cool</strong>: What if you don’t know that info? When <code>get_table</code> fails in this scenario it fails informatively. <code>get_table</code> will show you all the tables it’s found in the warehouse and <em>give you code you can copy and paste to get the table you want</em>.</p>
+<p>Because there is no way to know which table you really mean. One
+solution, if you know the location, is to provide the table name,
+database name, and schema to the <code>.table_name</code>,
+<code>database_name</code>, <code>.schema</code>, and
+<code>.server_name</code> arguments of <code><a href="../reference/get_table.html">get_table()</a></code>. That
+will locate the right server and make the connection and avoid
+failure.</p>
+<p><strong>But here is something cool</strong>: What if you don’t know
+that info? When <code>get_table</code> fails in this scenario it fails
+informatively. <code>get_table</code> will show you all the tables it’s
+found in the warehouse and <em>give you code you can copy and paste to
+get the table you want</em>.</p>
 <p>Let’s say you ask for the <code>Schools</code> table</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span><span class="st">"Schools"</span><span class="op">)</span>
-<span class="co">#&gt; ! There are 22 tables with that name in our warehouse</span>
-<span class="co">#&gt; ℹ You'll need to specify the database and schema name with db target.</span>
-<span class="co">#&gt; ✓ Any of these should work:</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1_2021ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1_2020ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Florida_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Louisiana_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Texas_Travis_Schools", .schema = "Skyward", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "TravisSnapshotData", .schema = "MidLand.PM", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_EA", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Ohio_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Florida_Schools_Focus_Dev", .schema = "Focus", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Ohio_Assessments", .schema = "Edcite", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_StateAssessments", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "791150-HQVRA")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Texas_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span></code></pre></div>
-<p>Oh no! There are 21 tables named <code>Schools</code> in the warehouse on 17 databases. Yikes.</p>
+<code class="sourceCode R"><span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span><span class="st">"Schools"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ! There are 22 tables with that name in our warehouse</span></span>
+<span><span class="co">#&gt; ℹ You'll need to specify the database and schema name with db target.</span></span>
+<span><span class="co">#&gt; ✓ Any of these should work:</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstruction", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1_2021ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1_2020ss", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Florida_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Louisiana_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Texas_Travis_Schools", .schema = "Skyward", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "TravisSnapshotData", .schema = "MidLand.PM", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_EA", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Ohio_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Florida_Schools_Focus_Dev", .schema = "Focus", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Ohio_Assessments", .schema = "Edcite", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_StateAssessments", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "CSIInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstructionDebug", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "IDEAInstructionStage", .schema = "dbo", .server_name = "1064618-SQLDI")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "791150-HQVRA")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "Dashboard", .schema = "dbo", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "SRC_Texas_Schools", .schema = "Powerschool", .server_name = "REDACTED-SQLSERVER")</span></span></code></pre></div>
+<p>Oh no! There are 21 tables named <code>Schools</code> in the
+warehouse on 17 databases. Yikes.</p>
 <p><strong>But look at that error</strong>: It’s got what you need!</p>
-<p>You can copy and paste any one of those lines to get the unique table you are seeking (in this case the <code>Schools</code> table in <code>Schools</code> on <code>Prod1</code>).</p>
+<p>You can copy and paste any one of those lines to get the unique table
+you are seeking (in this case the <code>Schools</code> table in
+<code>Schools</code> on <code>Prod1</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span>.table_name <span class="op">=</span> <span class="st">"Schools"</span>, .database_name <span class="op">=</span> <span class="st">"PROD1"</span>, .schema <span class="op">=</span> <span class="st">"Schools"</span><span class="op">)</span>
-<span class="co">#&gt; ! There are 2 tables with that name in our warehouse</span>
-<span class="co">#&gt; ℹ You'll need to specify the database and schema name with db target.</span>
-<span class="co">#&gt; ✓ Any of these should work:</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "REDACTED-SQLSERVER")</span>
-<span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>
-<span class="co">#&gt; NULL</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_table.html">get_table</a></span><span class="op">(</span>.table_name <span class="op">=</span> <span class="st">"Schools"</span>, .database_name <span class="op">=</span> <span class="st">"PROD1"</span>, .schema <span class="op">=</span> <span class="st">"Schools"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ! There are 2 tables with that name in our warehouse</span></span>
+<span><span class="co">#&gt; ℹ You'll need to specify the database and schema name with db target.</span></span>
+<span><span class="co">#&gt; ✓ Any of these should work:</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "REDACTED-SQLSERVER")</span></span>
+<span><span class="co">#&gt;   get_table(.table_name = "Schools", .database_name = "PROD1", .schema = "Schools", .server_name = "1065574-SQLPRD1")</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span></span>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
 </div>
 </div>
   </div>
@@ -230,7 +270,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

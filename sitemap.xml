@@ -58,6 +58,9 @@
     <loc>https://idea-analytics.github.io/ideadata/reference/generate_schema.html</loc>
   </url>
   <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/get_aees.html</loc>
+  </url>
+  <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/get_creds.html</loc>
   </url>
   <url>
@@ -137,5 +140,8 @@
   </url>
   <url>
     <loc>https://idea-analytics.github.io/ideadata/reference/view_warehouse_metadata.html</loc>
+  </url>
+  <url>
+    <loc>https://idea-analytics.github.io/ideadata/reference/warehouse_meta_data.html</loc>
   </url>
 </urlset>

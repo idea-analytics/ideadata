@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">4.0.0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@
 
       
 
-      </header><script src="using-collector_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using collector() for large data sets</h1>
@@ -94,612 +94,644 @@
 
     
     
-<p>Some of our datasets are large and moving them from that database to your computer can take a fair amount of time. So long in fact that is not uncommon for our connections to die.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Additionally, you tend not to get a lot of feedback when using <code>dplyr</code>’s <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect()</a></code> function to return the data to your computer. It either gets the data silently or dies trying.</p>
-<p>For this reason, <code>ideadata</code> has a <code><a href="../reference/collector.html">collector()</a></code> function. It’s used the same way as <code>collect</code>, but requires you to pass parameters (i.e., column names for the table you are trying to collect ) that are used to break your data into pieces based on the set of values within the columns you identify.</p>
-<p>Consider the <code>StudentDailyAttendance</code> table on <code>PROD1</code></p>
+<p>Some of our datasets are large and moving them from that database to
+your computer can take a fair amount of time. So long in fact that is
+not uncommon for our connections to die.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Additionally, you
+tend not to get a lot of feedback when using <code>dplyr</code>’s
+<code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect()</a></code> function to return the data to your computer. It
+either gets the data silently or dies trying.</p>
+<p>For this reason, <code>ideadata</code> has a <code><a href="../reference/collector.html">collector()</a></code>
+function. It’s used the same way as <code>collect</code>, but requires
+you to pass parameters (i.e., column names for the table you are trying
+to collect ) that are used to break your data into pieces based on the
+set of values within the columns you identify.</p>
+<p>Consider the <code>StudentDailyAttendance</code> table on
+<code>PROD1</code></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>
-<span class="co">#&gt; ℹ Loading ideadata</span>
-<span class="co">#&gt; ── Gathering warehouse metadata ─────────────────────────────────────────────── ideadata 3.0.1 ──</span>
-<span class="co">#&gt; ℹ Checking credentials ...</span>
-<span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
-<span class="co">#&gt; ✓ Success: Warehouse metadata gathered!</span>
-<span class="co">#&gt; ℹ The warehouse currently houses:</span>
-<span class="co">#&gt;      2,226 tables</span>
-<span class="co">#&gt;   in 134 databases</span>
-<span class="co">#&gt;   on 17 servers</span>
-<span class="co">#&gt; YOW! ideadata and you are honestly polished!</span>
-<span class="co">#library(ideadata)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span>
-
-<span class="va">stu_attendance</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_student_daily_attendance.html">get_student_daily_attendance</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">stu_attendance</span><span class="op">)</span>
-<span class="co">#&gt; Rows: ??</span>
-<span class="co">#&gt; Columns: 50</span>
-<span class="co">#&gt; Database: Microsoft SQL Server 15.00.4153[IPS\christopher.haid@REDACTED-SQLSERVER/PROD1]</span>
-<span class="co">#&gt; $ AcademicYear         [3m[38;5;246m&lt;chr&gt;[39m[23m "2019-2020", "2019-2020", "2019-2020", "2019-2020", "2019-2020", "…</span>
-<span class="co">#&gt; $ SchoolTermID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, …</span>
-<span class="co">#&gt; $ SchoolName           [3m[38;5;246m&lt;chr&gt;[39m[23m "IDEA Oscar Dunn Academy", "IDEA Oscar Dunn Academy", "IDEA Bridge…</span>
-<span class="co">#&gt; $ schoolnumber         [3m[38;5;246m&lt;dbl&gt;[39m[23m 19001, 19001, 917002, 19001, 917004, 917004, 917005, 19001, 19001,…</span>
-<span class="co">#&gt; $ StateSchoolNumber    [3m[38;5;246m&lt;dbl&gt;[39m[23m 19001, 19001, 17048, 19001, 17049, 17049, 17049, 19001, 19001, 170…</span>
-<span class="co">#&gt; $ SchoolShortName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Oscar Dunn", "Oscar Dunn", "Bridge", "Oscar Dunn", "Innovation", …</span>
-<span class="co">#&gt; $ SchoolType           [3m[38;5;246m&lt;chr&gt;[39m[23m "Academy", "Academy", "College Prep", "Academy", "Academy", "Acade…</span>
-<span class="co">#&gt; $ VPofSchools          [3m[38;5;246m&lt;dbl&gt;[39m[23m 7218, 7218, 7218, 7218, 19402, 19402, 19402, 7218, 7218, 19402, 72…</span>
-<span class="co">#&gt; $ VPofSchoolsName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Kathryn Patterson", "Kathryn Patterson", "Kathryn Patterson", "Ka…</span>
-<span class="co">#&gt; $ RegionID             [3m[38;5;246m&lt;dbl&gt;[39m[23m 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, …</span>
-<span class="co">#&gt; $ RegionDescription    [3m[38;5;246m&lt;chr&gt;[39m[23m "Southern Louisiana", "Southern Louisiana", "Southern Louisiana", …</span>
-<span class="co">#&gt; $ GradeLevelID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 5, 1, 7, 5, 1, 2, 6, 0, 0, 0, 3, 0, 7, 1, 0, 1, 3, 0, 4, 0, 7, 6, …</span>
-<span class="co">#&gt; $ GradeLevel           [3m[38;5;246m&lt;chr&gt;[39m[23m "5", "1", "7", "5", "1", "2", "6", "K", "K", "K", "3", "K", "7", "…</span>
-<span class="co">#&gt; $ AttStudentKey        [3m[38;5;246m&lt;dbl&gt;[39m[23m 25763666, 25763718, 25763742, 25763770, 25853496, 25853514, 258535…</span>
-<span class="co">#&gt; $ StudentNumber        [3m[38;5;246m&lt;dbl&gt;[39m[23m 101001386, 101002376, 101001981, 101001340, 101001899, 101000944, …</span>
-<span class="co">#&gt; $ FirstName            [3m[38;5;246m&lt;chr&gt;[39m[23m "Keili", "Jeremiah", "Ligia", "Riheem", "Kylie", "Tarr", "Nikolas"…</span>
-<span class="co">#&gt; $ LastName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Adams", "De Silva", "Gomez Rivas", "Westerfield", "Carpenter", "B…</span>
-<span class="co">#&gt; $ FullName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Adams, Keili Lyrics", "De Silva, Jeremiah", "Gomez Rivas, Ligia E…</span>
-<span class="co">#&gt; $ WeekNumber           [3m[38;5;246m&lt;chr&gt;[39m[23m "11", "11", "11", "11", "12", "12", "12", "12", "12", "13", "13", …</span>
-<span class="co">#&gt; $ DateNumber           [3m[38;5;246m&lt;int&gt;[39m[23m 52, 52, 52, 52, 54, 54, 54, 54, 54, 61, 61, 60, 60, 60, 60, 60, 60…</span>
-<span class="co">#&gt; $ AttDate              [3m[38;5;246m&lt;date&gt;[39m[23m 2019-10-18, 2019-10-18, 2019-10-18, 2019-10-18, 2019-10-22, 2019-…</span>
-<span class="co">#&gt; $ Membership           [3m[38;5;246m&lt;dbl&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span>
-<span class="co">#&gt; $ Absences             [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ VAbsences            [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ SPED                 [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ ELL                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ LEP                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ Farm                 [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ CSI                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …</span>
-<span class="co">#&gt; $ NonSpedEllCsi        [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, …</span>
-<span class="co">#&gt; $ Ethnicity            [3m[38;5;246m&lt;chr&gt;[39m[23m "Black-African-American", "Black-African-American", "White", "Blac…</span>
-<span class="co">#&gt; $ Hispanic             [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ ContinuouslyEnrolled [3m[38;5;246m&lt;chr&gt;[39m[23m "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "…</span>
-<span class="co">#&gt; $ AtRisk               [3m[38;5;246m&lt;int&gt;[39m[23m 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, …</span>
-<span class="co">#&gt; $ PersistenceType      [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span>
-<span class="co">#&gt; $ SchoolYear           [3m[38;5;246m&lt;chr&gt;[39m[23m "1", "1", "2+", "1", "2+", "2+", "2+", "1", "1", "2+", "2+", "2+",…</span>
-<span class="co">#&gt; $ DayAfterEvent        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ EventDate            [3m[38;5;246m&lt;date&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span>
-<span class="co">#&gt; $ MaxTempinF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 75, 75, 75, 75, 77, 77, 77, 77, 77, 75, 75, 83, 83, 83, 83, 83, 83…</span>
-<span class="co">#&gt; $ AvgTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 63.5, 63.5, 63.5, 63.5, 61.2, 61.2, 61.2, 61.2, 61.2, 53.8, 53.8, …</span>
-<span class="co">#&gt; $ MinTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 58, 58, 58, 58, 0, 0, 0, 0, 0, 42, 42, 68, 68, 68, 68, 68, 68, 68,…</span>
-<span class="co">#&gt; $ CompareKey           [3m[38;5;246m&lt;chr&gt;[39m[23m "7218|Kathryn Patterson|6|Southern Louisiana|2900|19001|5|10100138…</span>
-<span class="co">#&gt; $ RdoEmployeeID        [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
-<span class="co">#&gt; $ RdoEmployeeName      [3m[38;5;246m&lt;chr&gt;[39m[23m "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""…</span>
-<span class="co">#&gt; $ SchoolTypeOperation  [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ Enroll               [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span>
-<span class="co">#&gt; $ Area                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ SubRegionID          [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ SubRegionDescription [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
-<span class="co">#&gt; $ Instance             [3m[38;5;246m&lt;chr&gt;[39m[23m "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", …</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Loading ideadata</span></span>
+<span><span class="co">#&gt; ── Gathering warehouse metadata ─────────────────────────────────────────────── ideadata 3.0.1 ──</span></span>
+<span><span class="co">#&gt; ℹ Checking credentials ...</span></span>
+<span><span class="co">#&gt; christopher.haid's Kereberos TGT is current</span></span>
+<span><span class="co">#&gt; ✓ Success: Warehouse metadata gathered!</span></span>
+<span><span class="co">#&gt; ℹ The warehouse currently houses:</span></span>
+<span><span class="co">#&gt;      2,226 tables</span></span>
+<span><span class="co">#&gt;   in 134 databases</span></span>
+<span><span class="co">#&gt;   on 17 servers</span></span>
+<span><span class="co">#&gt; YOW! ideadata and you are honestly polished!</span></span>
+<span><span class="co">#library(ideadata)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">stu_attendance</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_student_daily_attendance.html">get_student_daily_attendance</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">stu_attendance</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: ??</span></span>
+<span><span class="co">#&gt; Columns: 50</span></span>
+<span><span class="co">#&gt; Database: Microsoft SQL Server 15.00.4153[IPS\christopher.haid@REDACTED-SQLSERVER/PROD1]</span></span>
+<span><span class="co">#&gt; $ AcademicYear         [3m[38;5;246m&lt;chr&gt;[39m[23m "2019-2020", "2019-2020", "2019-2020", "2019-2020", "2019-2020", "…</span></span>
+<span><span class="co">#&gt; $ SchoolTermID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, 2900, …</span></span>
+<span><span class="co">#&gt; $ SchoolName           [3m[38;5;246m&lt;chr&gt;[39m[23m "IDEA Oscar Dunn Academy", "IDEA Oscar Dunn Academy", "IDEA Bridge…</span></span>
+<span><span class="co">#&gt; $ schoolnumber         [3m[38;5;246m&lt;dbl&gt;[39m[23m 19001, 19001, 917002, 19001, 917004, 917004, 917005, 19001, 19001,…</span></span>
+<span><span class="co">#&gt; $ StateSchoolNumber    [3m[38;5;246m&lt;dbl&gt;[39m[23m 19001, 19001, 17048, 19001, 17049, 17049, 17049, 19001, 19001, 170…</span></span>
+<span><span class="co">#&gt; $ SchoolShortName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Oscar Dunn", "Oscar Dunn", "Bridge", "Oscar Dunn", "Innovation", …</span></span>
+<span><span class="co">#&gt; $ SchoolType           [3m[38;5;246m&lt;chr&gt;[39m[23m "Academy", "Academy", "College Prep", "Academy", "Academy", "Acade…</span></span>
+<span><span class="co">#&gt; $ VPofSchools          [3m[38;5;246m&lt;dbl&gt;[39m[23m 7218, 7218, 7218, 7218, 19402, 19402, 19402, 7218, 7218, 19402, 72…</span></span>
+<span><span class="co">#&gt; $ VPofSchoolsName      [3m[38;5;246m&lt;chr&gt;[39m[23m "Kathryn Patterson", "Kathryn Patterson", "Kathryn Patterson", "Ka…</span></span>
+<span><span class="co">#&gt; $ RegionID             [3m[38;5;246m&lt;dbl&gt;[39m[23m 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, …</span></span>
+<span><span class="co">#&gt; $ RegionDescription    [3m[38;5;246m&lt;chr&gt;[39m[23m "Southern Louisiana", "Southern Louisiana", "Southern Louisiana", …</span></span>
+<span><span class="co">#&gt; $ GradeLevelID         [3m[38;5;246m&lt;dbl&gt;[39m[23m 5, 1, 7, 5, 1, 2, 6, 0, 0, 0, 3, 0, 7, 1, 0, 1, 3, 0, 4, 0, 7, 6, …</span></span>
+<span><span class="co">#&gt; $ GradeLevel           [3m[38;5;246m&lt;chr&gt;[39m[23m "5", "1", "7", "5", "1", "2", "6", "K", "K", "K", "3", "K", "7", "…</span></span>
+<span><span class="co">#&gt; $ AttStudentKey        [3m[38;5;246m&lt;dbl&gt;[39m[23m 25763666, 25763718, 25763742, 25763770, 25853496, 25853514, 258535…</span></span>
+<span><span class="co">#&gt; $ StudentNumber        [3m[38;5;246m&lt;dbl&gt;[39m[23m 101001386, 101002376, 101001981, 101001340, 101001899, 101000944, …</span></span>
+<span><span class="co">#&gt; $ FirstName            [3m[38;5;246m&lt;chr&gt;[39m[23m "Keili", "Jeremiah", "Ligia", "Riheem", "Kylie", "Tarr", "Nikolas"…</span></span>
+<span><span class="co">#&gt; $ LastName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Adams", "De Silva", "Gomez Rivas", "Westerfield", "Carpenter", "B…</span></span>
+<span><span class="co">#&gt; $ FullName             [3m[38;5;246m&lt;chr&gt;[39m[23m "Adams, Keili Lyrics", "De Silva, Jeremiah", "Gomez Rivas, Ligia E…</span></span>
+<span><span class="co">#&gt; $ WeekNumber           [3m[38;5;246m&lt;chr&gt;[39m[23m "11", "11", "11", "11", "12", "12", "12", "12", "12", "13", "13", …</span></span>
+<span><span class="co">#&gt; $ DateNumber           [3m[38;5;246m&lt;int&gt;[39m[23m 52, 52, 52, 52, 54, 54, 54, 54, 54, 61, 61, 60, 60, 60, 60, 60, 60…</span></span>
+<span><span class="co">#&gt; $ AttDate              [3m[38;5;246m&lt;date&gt;[39m[23m 2019-10-18, 2019-10-18, 2019-10-18, 2019-10-18, 2019-10-22, 2019-…</span></span>
+<span><span class="co">#&gt; $ Membership           [3m[38;5;246m&lt;dbl&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ Absences             [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ VAbsences            [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ SPED                 [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ ELL                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ LEP                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ Farm                 [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ CSI                  [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …</span></span>
+<span><span class="co">#&gt; $ NonSpedEllCsi        [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, …</span></span>
+<span><span class="co">#&gt; $ Ethnicity            [3m[38;5;246m&lt;chr&gt;[39m[23m "Black-African-American", "Black-African-American", "White", "Blac…</span></span>
+<span><span class="co">#&gt; $ Hispanic             [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ ContinuouslyEnrolled [3m[38;5;246m&lt;chr&gt;[39m[23m "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "…</span></span>
+<span><span class="co">#&gt; $ AtRisk               [3m[38;5;246m&lt;int&gt;[39m[23m 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ PersistenceType      [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ SchoolYear           [3m[38;5;246m&lt;chr&gt;[39m[23m "1", "1", "2+", "1", "2+", "2+", "2+", "1", "1", "2+", "2+", "2+",…</span></span>
+<span><span class="co">#&gt; $ DayAfterEvent        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ EventDate            [3m[38;5;246m&lt;date&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
+<span><span class="co">#&gt; $ MaxTempinF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 75, 75, 75, 75, 77, 77, 77, 77, 77, 75, 75, 83, 83, 83, 83, 83, 83…</span></span>
+<span><span class="co">#&gt; $ AvgTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 63.5, 63.5, 63.5, 63.5, 61.2, 61.2, 61.2, 61.2, 61.2, 53.8, 53.8, …</span></span>
+<span><span class="co">#&gt; $ MinTempInF           [3m[38;5;246m&lt;dbl&gt;[39m[23m 58, 58, 58, 58, 0, 0, 0, 0, 0, 42, 42, 68, 68, 68, 68, 68, 68, 68,…</span></span>
+<span><span class="co">#&gt; $ CompareKey           [3m[38;5;246m&lt;chr&gt;[39m[23m "7218|Kathryn Patterson|6|Southern Louisiana|2900|19001|5|10100138…</span></span>
+<span><span class="co">#&gt; $ RdoEmployeeID        [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">#&gt; $ RdoEmployeeName      [3m[38;5;246m&lt;chr&gt;[39m[23m "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""…</span></span>
+<span><span class="co">#&gt; $ SchoolTypeOperation  [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ Enroll               [3m[38;5;246m&lt;int&gt;[39m[23m 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span><span class="co">#&gt; $ Area                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ SubRegionID          [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ SubRegionDescription [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ Instance             [3m[38;5;246m&lt;chr&gt;[39m[23m "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", …</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co">#school years are stored as characters, which is inefficient for filtering</span>
-<span class="co"># TermIDs are doubles (thought they really ought be integers), but are </span>
-<span class="co"># much faster for filtering. </span>
-
-<span class="va">term_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_ps_termid.html">calc_ps_termid</a></span><span class="op">(</span><span class="fl">2022</span><span class="op">)</span>
-
-
-<span class="va">stu_attend_2021</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SchoolTermID</span> <span class="op">==</span> <span class="va">term_id</span><span class="op">)</span>
-
-<span class="va">n_rows</span> <span class="op">&lt;-</span> <span class="va">stu_attend_2021</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">n_rows</span>
-<span class="co">#&gt; [1] 0</span></code></pre></div>
-<p>So as of the June 02, 2022 there are 0 student attendance records. That will be a tall order for <code>collect</code> so instead lets use <code>collector</code>.</p>
-<p><code>collector</code> takes column names, uses thosecolumns to get all combinations of variables that appear in the data, and then uses those combinations to pull your data down in smaller chunks defined be each combination (e.g., for each school and data, as shown below).</p>
+<code class="sourceCode R"><span></span>
+<span><span class="co">#school years are stored as characters, which is inefficient for filtering</span></span>
+<span><span class="co"># TermIDs are doubles (thought they really ought be integers), but are </span></span>
+<span><span class="co"># much faster for filtering. </span></span>
+<span></span>
+<span><span class="va">term_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_ps_termid.html">calc_ps_termid</a></span><span class="op">(</span><span class="fl">2022</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">stu_attend_2021</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SchoolTermID</span> <span class="op">==</span> <span class="va">term_id</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n_rows</span> <span class="op">&lt;-</span> <span class="va">stu_attend_2021</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n_rows</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>So as of the June 02, 2022 there are 0 student attendance records.
+That will be a tall order for <code>collect</code> so instead lets use
+<code>collector</code>.</p>
+<p><code>collector</code> takes column names, uses thosecolumns to get
+all combinations of variables that appear in the data, and then uses
+those combinations to pull your data down in smaller chunks defined be
+each combination (e.g., for each school and data, as shown below).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">collection_data_start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">days</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>
-
-<span class="va">stu_attend_2021_temp</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">StudentNumber</span>, <span class="va">AttDate</span>, <span class="va">schoolnumber</span> , <span class="va">Membership</span>, <span class="va">Absences</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">AttDate</span> <span class="op">&gt;=</span> <span class="st">'2021-10-08'</span>, 
-         <span class="va">SchoolNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'108807186'</span>, <span class="st">'108807187'</span>, <span class="st">'108807302'</span>, <span class="st">'109907024'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>  
-
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Created a temporary table named #dbplyr_005</span>
-
- 
-<span class="va">stu_attend_2021_collected</span> <span class="op">&lt;-</span>  <span class="va">stu_attend_2021_temp</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="../reference/collector.html">collector</a></span><span class="op">(</span><span class="va">AttDate</span>, <span class="va">schoolnumber</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Collecting data</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807186' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807187' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807302' ...</span>
-<span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '109907024' ...</span>
-<span class="co">#&gt; Data collection complete</span></code></pre></div>
-<p>Note the call to <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::compute()</a></code> in the code above (highlighted).</p>
+<code class="sourceCode R"><span><span class="va">collection_data_start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">days</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">stu_attend_2021_temp</span> <span class="op">&lt;-</span> <span class="va">stu_attendance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">StudentNumber</span>, <span class="va">AttDate</span>, <span class="va">schoolnumber</span> , <span class="va">Membership</span>, <span class="va">Absences</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">AttDate</span> <span class="op">&gt;=</span> <span class="st">'2021-10-08'</span>, </span>
+<span>         <span class="va">SchoolNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'108807186'</span>, <span class="st">'108807187'</span>, <span class="st">'108807302'</span>, <span class="st">'109907024'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>  </span>
+<span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Created a temporary table named #dbplyr_005</span></span>
+<span></span>
+<span> </span>
+<span><span class="va">stu_attend_2021_collected</span> <span class="op">&lt;-</span>  <span class="va">stu_attend_2021_temp</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/collector.html">collector</a></span><span class="op">(</span><span class="va">AttDate</span>, <span class="va">schoolnumber</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Collecting data</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-12', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-13', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-14', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-18', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-19', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-20', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-21', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-22', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-25', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-26', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-27', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-28', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-10-29', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-01', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-02', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-03', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-04', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-05', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-09', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-10', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-11', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-12', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-15', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-16', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-17', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-18', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-19', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-29', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-11-30', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-01', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-02', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-03', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-06', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-07', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-09', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-10', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-13', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-14', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-15', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-16', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2021-12-17', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-04', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-05', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-06', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-07', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-10', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-11', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-12', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-13', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-14', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-18', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-19', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-20', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-21', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-24', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-25', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-26', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-27', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-28', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-01-31', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-01', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-02', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-07', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-09', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-10', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-11', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-14', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-15', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-16', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-17', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-18', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-22', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-23', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-02-28', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-01', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-02', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-03', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-04', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-07', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-09', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-10', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-21', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-22', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-23', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-24', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-25', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-28', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-29', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-30', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-03-31', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-01', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-04', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-05', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-06', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-07', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-08', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-11', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-12', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-13', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-14', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-18', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-19', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-20', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-21', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-22', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-25', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-26', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-27', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-28', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-04-29', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-02', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-03', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-04', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-05', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807186' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807187' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '108807302' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: AttDate == '2022-05-06', schoolnumber == '109907024' ...</span></span>
+<span><span class="co">#&gt; Data collection complete</span></span></code></pre></div>
+<p>Note the call to <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::compute()</a></code> in the code above
+(highlighted).</p>
 <p>What is that <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute()</a></code> call doing?</p>
-<p><code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute()</a></code> forces the database to evaluate all the prior steps (i.e. a filter, a select, and another filter), after which the will create a temporary table there (i.e., a table which get’s deleted when your conenction closes.</p>
-<p>Wihout this step each iteration created by <code><a href="../reference/collector.html">collector()</a></code> (via <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map_df()</a></code>) will re run the the magrittr pipeline, of which the tw filter steps are computationally expensive. A caveat with this desing pattern is you need to have permissions to write temporary tables to the database. If you can’t do that, then you’ll have to suffer the pain of waiting for the DB to run all of your <code>magrittr</code> pipeline (i.e., all the stuff following each <code>%&gt;%</code>) for each iteration.</p>
-<p>In any case, here are the results of the call, witht eh student numbers masked by an sha1 cryptohash:</p>
+<p><code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute()</a></code> forces the database to evaluate all the prior
+steps (i.e. a filter, a select, and another filter), after which the
+will create a temporary table there (i.e., a table which get’s deleted
+when your conenction closes.</p>
+<p>Wihout this step each iteration created by <code><a href="../reference/collector.html">collector()</a></code>
+(via <code><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">purrr::map_df()</a></code>) will re run the the magrittr
+pipeline, of which the tw filter steps are computationally expensive. A
+caveat with this desing pattern is you need to have permissions to write
+temporary tables to the database. If you can’t do that, then you’ll have
+to suffer the pain of waiting for the DB to run all of your
+<code>magrittr</code> pipeline (i.e., all the stuff following each
+<code>%&gt;%</code>) for each iteration.</p>
+<p>In any case, here are the results of the call, witht eh student
+numbers masked by an sha1 cryptohash:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">stu_attend_2021_feb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>student_number <span class="op">=</span> <span class="fu">openssl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openssl/man/hash.html" class="external-link">sha1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">student_number</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#crypto hash</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error in head(., 20): object 'stu_attend_2021_feb' not found</span></code></pre></div>
-<p>Notice that the table <code>stu_attendance</code> (i.e, <code>STudentDailyAttendance</code> on <code>PROD1</code>) has 50 columns. A trick used above is to reduce the columns to only those you need to use later with a <code>select</code> statement early in the data pipeline; doing so greatly reduces the amount of data you are requesting from the database.</p>
-<div class="footnotes">
+<code class="sourceCode R"><span><span class="va">stu_attend_2021_feb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>student_number <span class="op">=</span> <span class="fu">openssl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openssl/man/hash.html" class="external-link">sha1</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">student_number</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co">#crypto hash</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in head(., 20): object 'stu_attend_2021_feb' not found</span></span></code></pre></div>
+<p>Notice that the table <code>stu_attendance</code> (i.e,
+<code>STudentDailyAttendance</code> on <code>PROD1</code>) has 50
+columns. A trick used above is to reduce the columns to only those you
+need to use later with a <code>select</code> statement early in the data
+pipeline; doing so greatly reduces the amount of data you are requesting
+from the database.</p>
+<div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
 <li id="fn1"><p>I don’t really understand why this happens<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
@@ -722,7 +754,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
