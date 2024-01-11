@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ideadata</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">4.0.0</span>
       </span>
     </div>
 
@@ -86,7 +86,9 @@
 <div class="section level1">
 <div class="page-header"><h1 id="ideadata-">ideadata <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#ideadata-"></a>
 </h1></div>
-<!-- badges: start --><!-- badges: end --><p><code>ideadata</code> helps data analysts at IDEA Public Schools access and use data stored in IDEA’s data warehouse. <code>ideadata</code> does so in a <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a> friendly way.</p>
+<!-- badges: start -->
+<!-- badges: end -->
+<p><code>ideadata</code> helps data analysts at IDEA Public Schools access and use data stored in IDEA’s data warehouse. <code>ideadata</code> does so in a <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a> friendly way.</p>
 <p><code>ideadata</code> is an anagram for “data aide”. Hench the logo. Ooooh Yeah!</p>
 <p><img src="https://media3.giphy.com/media/Zx0BgEPhIevlAVEbnq/giphy.gif" align="center" height="200"></p>
 <div class="section level2">
@@ -94,95 +96,95 @@
 </h2>
 <p>Since <code>ideadata</code> is an internal IDEA package there is only a development version, which is installed from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#install.pacakges("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"idea-analytics/ideadata"</span><span class="op">)</span>
-
-<span class="co">#renv::install("idea-analytics/ideadata@main") also works</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#install.pacakges("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"idea-analytics/ideadata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#renv::install("idea-analytics/ideadata@main") also works</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>Here’s how you connect to a table in the warehouse.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'dplyr' was built under R version 4.0.2</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://idea-analytics.github.io/ideadata">ideadata</a></span><span class="op">)</span>
-
-<span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_schools.html">get_schools</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; christopher.haid's Kereberos TGT is current</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>
-<span class="co">#&gt; # Source:   lazy query [?? x 25]</span>
-<span class="co">#&gt; # Database: Microsoft SQL Server</span>
-<span class="co">#&gt; #   13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span>
-<span class="co">#&gt;   SchoolNumber SchoolName      SchoolShortName StateSchoolNumb… SchoolAbbreviat…</span>
-<span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;                      &lt;int&gt; &lt;chr&gt;           </span>
-<span class="co">#&gt; 1         -101 "Unknown\r\n"    &lt;NA&gt;                       -101 "Unknown\r\n"   </span>
-<span class="co">#&gt; 2            2 "IDEA College … "Donna"                108807001 "ICP"           </span>
-<span class="co">#&gt; 3            3 "IDEA Academy … "Donna"                108807101 "IA"            </span>
-<span class="co">#&gt; 4           41 "IDEA Academy"  "Donna"                108807001 "IMS"           </span>
-<span class="co">#&gt; 5           50 "IDEA Academy … "Donna"                108807101 "IPK"           </span>
-<span class="co">#&gt; 6           99 "Example High … ""                             0 "EXHS"          </span>
-<span class="co">#&gt; # … with 20 more variables: SchoolLowestGrade &lt;int&gt;, SchoolHighestGrade &lt;int&gt;,</span>
-<span class="co">#&gt; #   SchoolStreet &lt;chr&gt;, SchoolCity &lt;chr&gt;, SchoolState &lt;chr&gt;,</span>
-<span class="co">#&gt; #   SchoolZipCode &lt;dbl&gt;, SchoolPhone &lt;chr&gt;, SchoolFax &lt;chr&gt;,</span>
-<span class="co">#&gt; #   PrincipalName &lt;chr&gt;, PrincipalPhone &lt;chr&gt;, PrincipalEmail &lt;chr&gt;,</span>
-<span class="co">#&gt; #   CountyNumber &lt;int&gt;, CountyName &lt;chr&gt;, RegionID &lt;dbl&gt;, VPofSchools &lt;dbl&gt;,</span>
-<span class="co">#&gt; #   ExecutiveDirector &lt;dbl&gt;, RegionDirectorOfOperations &lt;dbl&gt;,</span>
-<span class="co">#&gt; #   CollegeSuccessDirector &lt;dbl&gt;, Area &lt;chr&gt;, RegionAltID &lt;dbl&gt;</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'dplyr' was built under R version 4.0.2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://idea-analytics.github.io/ideadata">ideadata</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_schools.html">get_schools</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; christopher.haid's Kereberos TGT is current</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # Source:   lazy query [?? x 25]</span></span>
+<span><span class="co">#&gt; # Database: Microsoft SQL Server</span></span>
+<span><span class="co">#&gt; #   13.00.5888[IPS\christopher.haid@1065574-SQLPRD1/PROD1]</span></span>
+<span><span class="co">#&gt;   SchoolNumber SchoolName      SchoolShortName StateSchoolNumb… SchoolAbbreviat…</span></span>
+<span><span class="co">#&gt;          &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;                      &lt;int&gt; &lt;chr&gt;           </span></span>
+<span><span class="co">#&gt; 1         -101 "Unknown\r\n"    &lt;NA&gt;                       -101 "Unknown\r\n"   </span></span>
+<span><span class="co">#&gt; 2            2 "IDEA College … "Donna"                108807001 "ICP"           </span></span>
+<span><span class="co">#&gt; 3            3 "IDEA Academy … "Donna"                108807101 "IA"            </span></span>
+<span><span class="co">#&gt; 4           41 "IDEA Academy"  "Donna"                108807001 "IMS"           </span></span>
+<span><span class="co">#&gt; 5           50 "IDEA Academy … "Donna"                108807101 "IPK"           </span></span>
+<span><span class="co">#&gt; 6           99 "Example High … ""                             0 "EXHS"          </span></span>
+<span><span class="co">#&gt; # … with 20 more variables: SchoolLowestGrade &lt;int&gt;, SchoolHighestGrade &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   SchoolStreet &lt;chr&gt;, SchoolCity &lt;chr&gt;, SchoolState &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   SchoolZipCode &lt;dbl&gt;, SchoolPhone &lt;chr&gt;, SchoolFax &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   PrincipalName &lt;chr&gt;, PrincipalPhone &lt;chr&gt;, PrincipalEmail &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   CountyNumber &lt;int&gt;, CountyName &lt;chr&gt;, RegionID &lt;dbl&gt;, VPofSchools &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   ExecutiveDirector &lt;dbl&gt;, RegionDirectorOfOperations &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   CollegeSuccessDirector &lt;dbl&gt;, Area &lt;chr&gt;, RegionAltID &lt;dbl&gt;</span></span></code></pre></div>
 <p>The <code>schools</code> object above is <code>tbl</code> object. That means it works with <code>dplyr</code> verbs and functions, but what happens in the background is that <code>dplyr</code> and <code>dbplyr</code> generate SQL that is sent to the database you are connected to and that all computation (e.g., filtering, selecting, joining, calculations, aggregation) are completed on the remote SQL Server instance and <strong>not</strong> on your computer.</p>
 <p>Nevertheless, you will eventually want to pull that data down onto your machine when you want to use R or Python do what they can do (like modeling or graphics) that the database can’t do.</p>
 <p>Pulling that data down is easy with [dplyr::collect()]</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-
-<span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>(Here <code><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">janitor::clean_names()</a></code> snake_cases all the column names).</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>(Here <code><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">janitor::clean_names()</a></code> snake_cases all the column names).</p>
 <div class="section level3">
 <h3 id="what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows">What if I am pulling down lots fo data (say, millions of rows)?<a class="anchor" aria-label="anchor" href="#what-if-i-am-pulling-down-lots-fo-data-say-millions-of-rows"></a>
 </h3>
 <p>In this instance the database connection may fail. It’s not ideal, but it happens. One way to deal with this is to pull down the data piecemeal. The <code><a href="reference/collector.html">collector()</a></code> function in <code>ideadata</code> makes this task trivial. It takes one argument, which is a column name form the table you want to pull down, which is used to break up the data into smaller sets of data that are pulled down from the database onto your computer and then recombined into a single table.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">SchoolState</span>, <span class="va">CountyName</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/janitor/man/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Collecting data</span>
-<span class="co">#&gt; Pulling data filtered to: is.na(SchoolState), is.na(CountyName) ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'FL', is.na(CountyName) ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', is.na(CountyName) ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', CountyName == 'Orleans Parish' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar ' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Ector' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Harris' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hays' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hildalgo' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'MIDLAND' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'STARR' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis County' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Williamson' ...</span>
-<span class="co">#&gt; Pulling data filtered to: SchoolState == 'Unknown\r\n', CountyName == 'Unknown\r\n' ...</span>
-<span class="co">#&gt; Data collection complete</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">schools_df</span> <span class="op">&lt;-</span> <span class="va">schools</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="reference/collector.html">collector</a></span><span class="op">(</span><span class="va">SchoolState</span>, <span class="va">CountyName</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html" class="external-link">clean_names</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Collecting data</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: is.na(SchoolState), is.na(CountyName) ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'FL', is.na(CountyName) ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', is.na(CountyName) ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'LA', CountyName == 'Orleans Parish' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Bexar ' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Cameron County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Ector' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'El Paso County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Harris' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hays' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hidalgo County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Hildalgo' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'MIDLAND' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'STARR' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Tarrant County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Travis County' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'TX', CountyName == 'Williamson' ...</span></span>
+<span><span class="co">#&gt; Pulling data filtered to: SchoolState == 'Unknown\r\n', CountyName == 'Unknown\r\n' ...</span></span>
+<span><span class="co">#&gt; Data collection complete</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -225,7 +227,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
