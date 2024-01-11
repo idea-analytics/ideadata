@@ -19,8 +19,9 @@ reference:
   - starts_with("get_iabwa")
   - starts_with("get_renstar")
 
-- subtitle: Great Places to Work Data
+- subtitle: Annual Employee Experience Survey (AEES) and Great Places to Work (GPTW) Data
 - contents:
+  - starts_with("get_aees")
   - starts_with("get_gptw")
 
 - subtitle: Learning location data (i.e, remote vs in-school)
@@ -44,6 +45,7 @@ reference:
 - title: Data about databases
 - contents:
   - view_warehouse_metadata
+  - warehouse_meta_data
 
 - title: Not very useful functions
   desc: >
