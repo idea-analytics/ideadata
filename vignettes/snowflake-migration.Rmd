@@ -1,0 +1,1053 @@
+---
+title: "Snowflake Migration Plan"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Snowflake Migration Plan}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+> **Purpose**: Roadmap for migrating ideadata from SQL Server to Snowflake
+> **Status**: Planning Phase
+> **Target**: Support both SQL Server and Snowflake during transition period
+
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Technical Comparison](#technical-comparison)
+3. [Migration Strategy](#migration-strategy)
+4. [Phased Implementation Plan](#phased-implementation-plan)
+5. [Technical Implementation](#technical-implementation)
+6. [Testing Strategy](#testing-strategy)
+7. [User Communication Plan](#user-communication-plan)
+8. [Rollback Plan](#rollback-plan)
+9. [Timeline and Milestones](#timeline-and-milestones)
+
+---
+
+## Executive Summary
+
+### Current State
+- **ideadata v4.0.0** connects exclusively to IDEA's SQL Server data warehouse
+- Uses **Kerberos authentication** with ODBC connections
+- Supports **Windows, macOS, and Linux**
+- Serves data analysts across IDEA network
+
+### Target State
+- Support **both SQL Server and Snowflake** connections during transition
+- Seamless user experience with automatic backend detection
+- **Zero breaking changes** for existing user code
+- Gradual migration as warehouse tables move to Snowflake
+
+### Key Challenges
+
+| Challenge | Impact | Mitigation |
+|-----------|--------|------------|
+| Different authentication (Kerberos → Snowflake) | High | Dual credential system |
+| Different SQL dialects | Medium | dbplyr handles most differences |
+| Different connection patterns | Medium | Abstraction layer |
+| Two systems during migration | High | Metadata-driven routing |
+| User retraining | Low | Maintain same R interface |
+
+---
+
+## Technical Comparison
+
+### SQL Server vs Snowflake
+
+| Aspect | SQL Server | Snowflake | Impact |
+|--------|-----------|-----------|--------|
+| **Authentication** | Kerberos TGT | Username/Password, SSO, Key Pair | **HIGH** - New auth flow needed |
+| **ODBC Driver** | "ODBC Driver 17 for SQL Server" | "SnowflakeDSIIDriver" | **MEDIUM** - New driver setup |
+| **Connection String** | `Server=X.IPS.ORG;Database=Y` | `Server=account.snowflakecomputing.com` | **MEDIUM** - New format |
+| **Database Hierarchy** | Server → Database → Schema → Table | Account → Database → Schema → Table | **LOW** - Similar structure |
+| **SQL Dialect** | T-SQL | ANSI SQL (mostly compatible) | **LOW** - dbplyr handles translation |
+| **Case Sensitivity** | Case-insensitive | Case-sensitive for identifiers | **MEDIUM** - May affect queries |
+| **Data Types** | SQL Server types | Snowflake types | **LOW** - Mostly compatible |
+| **Lazy Evaluation** | Supported via dbplyr | Supported via dbplyr | **NONE** - Same pattern |
+
+### R Package Dependencies
+
+#### Current Dependencies
+```r
+DBI          # Database interface (supports both)
+odbc         # ODBC connections (supports both)
+dbplyr       # SQL translation (supports both)
+```
+
+#### Additional Dependencies Needed
+```r
+# No new packages required!
+# odbc package supports Snowflake via Snowflake ODBC driver
+```
+
+---
+
+## Migration Strategy
+
+### Approach: **Dual-Backend Support with Metadata Routing**
+
+#### Core Principle
+**Users don't need to know which backend hosts their data.**
+
+```r
+# User code remains unchanged
+students <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  collect()
+
+# Package automatically:
+# 1. Checks metadata for table location
+# 2. Connects to correct backend (SQL Server or Snowflake)
+# 3. Returns data transparently
+```
+
+### Architecture
+
+```
+User's R Code
+     ↓
+get_students()
+     ↓
+get_table("Students")
+     ↓
+Check warehouse_metadata
+     ↓
+   ┌─────────────┐
+   │ Is table in │
+   │ Snowflake?  │
+   └─────────────┘
+     ↓         ↓
+   YES        NO
+     ↓         ↓
+Snowflake   SQL Server
+Connection  Connection
+     ↓         ↓
+   Return data
+```
+
+### Key Design Decisions
+
+1. **Maintain Single API**: Users call same functions regardless of backend
+2. **Metadata-Driven**: Metadata indicates which backend hosts each table
+3. **Connection Pooling**: Maintain separate connection pools for each backend
+4. **Gradual Migration**: Support both backends until SQL Server fully deprecated
+5. **Backwards Compatibility**: Existing scripts continue to work unchanged
+
+---
+
+## Phased Implementation Plan
+
+### Phase 0: Preparation (4-6 weeks)
+
+**Goal**: Understand Snowflake environment and prepare infrastructure
+
+#### Tasks
+- [ ] Get Snowflake account details from IT
+  - Account name
+  - Warehouse name
+  - Database naming conventions
+  - Schema structure
+- [ ] Obtain Snowflake credentials for testing
+  - Username/password
+  - Role and permissions needed
+- [ ] Install Snowflake ODBC driver on development machines
+  - Windows
+  - macOS
+  - Linux
+- [ ] Test basic Snowflake connectivity from R
+- [ ] Understand Snowflake metadata structure
+- [ ] Create test Snowflake database with sample tables
+
+**Deliverables**:
+- Snowflake connection documentation
+- Test environment setup guide
+- ODBC driver installation instructions
+
+---
+
+### Phase 1: Core Infrastructure (6-8 weeks)
+
+**Goal**: Add Snowflake support to package core without breaking SQL Server
+
+#### 1.1 Enhanced Credential Management
+
+**File**: `R/utils.R`
+
+```r
+#' Setup Snowflake Credentials
+#'
+#' @export
+setup_snowflake_creds <- function() {
+  cli::cli_h1("Snowflake Credential Setup")
+
+  account <- readline("Snowflake account (e.g., 'xy12345.us-east-1'): ")
+  warehouse <- readline("Snowflake warehouse (e.g., 'COMPUTE_WH'): ")
+  username <- readline("Snowflake username: ")
+  password <- readline("Snowflake password: ")
+
+  # Option: use keyring for secure storage
+  keyring::key_set_with_value(
+    service = "snowflake_ideadata",
+    username = username,
+    password = password
+  )
+
+  # Also store in .Renviron for backwards compatibility
+  usethis::edit_r_environ()
+  cli::cli_alert_info("Add these lines to .Renviron:")
+  cli::cli_code(glue::glue("
+    SNOWFLAKE_ACCOUNT={account}
+    SNOWFLAKE_WAREHOUSE={warehouse}
+    SNOWFLAKE_USER={username}
+    SNOWFLAKE_PASSWORD={password}
+  "))
+}
+
+#' Get Snowflake Credentials
+#'
+#' @keywords internal
+get_snowflake_creds <- function() {
+  list(
+    account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+    warehouse = Sys.getenv("SNOWFLAKE_WAREHOUSE"),
+    user = Sys.getenv("SNOWFLAKE_USER"),
+    password = Sys.getenv("SNOWFLAKE_PASSWORD")
+  )
+}
+```
+
+#### 1.2 Dual Connection Management
+
+**File**: `R/connections.R`
+
+```r
+#' Create Snowflake Connection
+#'
+#' @param .database_name Database name
+#' @param .schema_name Schema name (optional)
+#'
+#' @return DBI connection object
+#' @keywords internal
+create_snowflake_connection <- function(.database_name, .schema_name = "PUBLIC") {
+  creds <- get_snowflake_creds()
+
+  if (any(creds == "")) {
+    stop("Snowflake credentials not configured. Run setup_snowflake_creds()")
+  }
+
+  connection_string <- glue::glue(
+    "Driver={{SnowflakeDSIIDriver}};",
+    "Server={creds$account}.snowflakecomputing.com;",
+    "Database={.database_name};",
+    "Schema={.schema_name};",
+    "Warehouse={creds$warehouse};",
+    "UID={creds$user};",
+    "PWD={creds$password}"
+  )
+
+  con <- DBI::dbConnect(
+    odbc::odbc(),
+    .connection_string = connection_string
+  )
+
+  con
+}
+
+#' Create SQL Server Connection (refactored existing function)
+#'
+#' @keywords internal
+create_sqlserver_connection <- function(.database_name, .server_name) {
+  # Existing create_connection() logic
+  # Renamed for clarity
+}
+
+#' Check and Get Connection (enhanced)
+#'
+#' @param .database_name Database name
+#' @param .server_name Server name (for SQL Server)
+#' @param .backend Backend type: "sqlserver" or "snowflake"
+#'
+#' @return DBI connection object
+#' @keywords internal
+check_get_connection <- function(.database_name,
+                                  .server_name = NULL,
+                                  .backend = "sqlserver") {
+
+  # Generate connection name
+  if (.backend == "snowflake") {
+    con_name <- glue::glue("conn_snowflake_{.database_name}")
+  } else {
+    con_name <- glue::glue("conn_{.database_name}")
+  }
+
+  # Check if connection exists and is valid
+  if (exists(con_name, envir = .GlobalEnv)) {
+    con <- get(con_name, envir = .GlobalEnv)
+    if (DBI::dbIsValid(con)) {
+      return(con)
+    }
+  }
+
+  # Create new connection
+  if (.backend == "snowflake") {
+    con <- create_snowflake_connection(.database_name)
+  } else {
+    con <- create_sqlserver_connection(.database_name, .server_name)
+  }
+
+  # Store in global environment
+  assign(con_name, con, envir = .GlobalEnv)
+
+  con
+}
+```
+
+#### 1.3 Enhanced Metadata System
+
+**File**: `R/warehouse_meta_data.R`
+
+```r
+#' Enhanced Warehouse Metadata
+#'
+#' Metadata now includes backend type (sqlserver or snowflake)
+#'
+#' @format tibble with columns:
+#' \describe{
+#'   \item{table_name}{Table name}
+#'   \item{database_name}{Database name}
+#'   \item{schema_name}{Schema name}
+#'   \item{server_name}{Server name (for SQL Server)}
+#'   \item{backend}{Backend type: "sqlserver" or "snowflake"}
+#'   \item{account}{Snowflake account (for Snowflake tables)}
+#' }
+"warehouse_meta_data"
+
+#' Get Warehouse Metadata (enhanced)
+#'
+#' Fetches metadata from both SQL Server and Snowflake
+#'
+#' @keywords internal
+get_warehouse_meta_data <- function() {
+  # Get SQL Server metadata (existing logic)
+  sqlserver_meta <- get_sqlserver_metadata()
+
+  # Get Snowflake metadata (new)
+  snowflake_meta <- tryCatch(
+    get_snowflake_metadata(),
+    error = function(e) {
+      # If Snowflake not configured, return empty tibble
+      tibble::tibble(
+        table_name = character(),
+        database_name = character(),
+        schema_name = character(),
+        backend = character()
+      )
+    }
+  )
+
+  # Combine
+  dplyr::bind_rows(sqlserver_meta, snowflake_meta)
+}
+
+#' Get Snowflake Metadata
+#'
+#' @keywords internal
+get_snowflake_metadata <- function() {
+  # Connect to Snowflake INFORMATION_SCHEMA
+  con <- create_snowflake_connection("INFORMATION_SCHEMA")
+
+  # Query metadata
+  meta <- DBI::dbGetQuery(con, "
+    SELECT
+      table_name,
+      table_schema AS schema_name,
+      table_catalog AS database_name,
+      'snowflake' AS backend
+    FROM information_schema.tables
+    WHERE table_type = 'BASE TABLE'
+  ")
+
+  DBI::dbDisconnect(con)
+
+  tibble::as_tibble(meta)
+}
+```
+
+#### 1.4 Enhanced `get_table()`
+
+**File**: `R/get_table.R`
+
+```r
+#' Get Table (enhanced for dual backend)
+#'
+#' @param .table_name Table name
+#' @param .database_name Database name (optional)
+#' @param .schema Schema name (optional)
+#' @param .server_name Server name (for SQL Server, optional)
+#'
+#' @return Lazy tbl_sql object
+#' @export
+get_table <- function(.table_name,
+                      .database_name = NULL,
+                      .schema = "dbo",
+                      .server_name = NULL) {
+
+  # Look up table in metadata
+  matches <- warehouse_meta_data %>%
+    filter(table_name == .table_name)
+
+  # Apply filters if provided
+  if (!is.null(.database_name)) {
+    matches <- matches %>% filter(database_name == .database_name)
+  }
+  if (!is.null(.server_name)) {
+    matches <- matches %>% filter(server_name == .server_name)
+  }
+
+  # Handle multiple/no matches (existing logic)
+  if (nrow(matches) == 0) {
+    stop(glue::glue("No table named '{.table_name}' found"))
+  }
+
+  if (nrow(matches) > 1) {
+    # Show options (existing logic)
+    stop("Multiple tables found. Please specify .database_name and/or .server_name")
+  }
+
+  # Single match - get connection
+  match <- matches[1, ]
+
+  if (match$backend == "snowflake") {
+    con <- check_get_connection(
+      .database_name = match$database_name,
+      .backend = "snowflake"
+    )
+    schema <- match$schema_name
+  } else {
+    con <- check_get_connection(
+      .database_name = match$database_name,
+      .server_name = match$server_name,
+      .backend = "sqlserver"
+    )
+    schema <- .schema
+  }
+
+  # Return lazy table
+  dplyr::tbl(con, dbplyr::in_schema(schema, .table_name))
+}
+```
+
+#### 1.5 Testing Infrastructure
+
+**File**: `tests/testthat/test-snowflake.R`
+
+```r
+test_that("Snowflake credentials can be retrieved", {
+  skip_if(Sys.getenv("SNOWFLAKE_ACCOUNT") == "")
+
+  creds <- get_snowflake_creds()
+
+  expect_type(creds, "list")
+  expect_true(all(c("account", "warehouse", "user", "password") %in% names(creds)))
+})
+
+test_that("Can create Snowflake connection", {
+  skip_if(Sys.getenv("SNOWFLAKE_ACCOUNT") == "")
+
+  con <- create_snowflake_connection("TEST_DATABASE")
+
+  expect_s4_class(con, "OdbcConnection")
+  expect_true(DBI::dbIsValid(con))
+
+  DBI::dbDisconnect(con)
+})
+
+test_that("get_table() works with Snowflake backend", {
+  skip_if(Sys.getenv("SNOWFLAKE_ACCOUNT") == "")
+
+  # Assuming there's a test table in Snowflake
+  result <- get_table("TEST_TABLE", .database_name = "TEST_DATABASE")
+
+  expect_s3_class(result, "tbl_sql")
+  expect_true("tbl_lazy" %in% class(result))
+})
+```
+
+**Deliverables**:
+- Enhanced connection management supporting both backends
+- Metadata system that identifies backend for each table
+- Updated `get_table()` with automatic backend routing
+- Snowflake credential setup functions
+- Test suite for Snowflake functionality
+
+---
+
+### Phase 2: User-Facing Enhancements (3-4 weeks)
+
+**Goal**: Improve user experience and provide migration utilities
+
+#### 2.1 Status and Discovery Functions
+
+```r
+#' Check Which Backend Hosts a Table
+#'
+#' @param .table_name Table name
+#'
+#' @return Character: "sqlserver", "snowflake", or "both"
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' which_backend("Students")
+#' # [1] "sqlserver"
+#' }
+which_backend <- function(.table_name) {
+  matches <- warehouse_meta_data %>%
+    filter(table_name == .table_name)
+
+  if (nrow(matches) == 0) {
+    cli::cli_alert_warning("Table '{.table_name}' not found")
+    return(NULL)
+  }
+
+  backends <- unique(matches$backend)
+
+  if (length(backends) == 1) {
+    return(backends[1])
+  } else {
+    return("both")
+  }
+}
+
+#' Show Migration Status
+#'
+#' Shows which tables have been migrated to Snowflake
+#'
+#' @param .database_name Optional database to filter
+#'
+#' @return tibble with migration status
+#' @export
+show_migration_status <- function(.database_name = NULL) {
+  summary <- warehouse_meta_data %>%
+    {if (!is.null(.database_name)) filter(., database_name == .database_name) else .} %>%
+    count(database_name, backend) %>%
+    pivot_wider(names_from = backend, values_from = n, values_fill = 0)
+
+  summary %>%
+    mutate(
+      total = sqlserver + snowflake,
+      pct_migrated = round(100 * snowflake / total, 1)
+    )
+}
+```
+
+#### 2.2 Connection Diagnostics
+
+```r
+#' Diagnose Connection Issues
+#'
+#' Tests connections to both backends and reports status
+#'
+#' @export
+diagnose_connections <- function() {
+  cli::cli_h1("Connection Diagnostics")
+
+  # Test SQL Server
+  cli::cli_h2("SQL Server")
+  tryCatch({
+    con <- create_sqlserver_connection("PowerSchool", "RGVPDSD-DWPRD1")
+    cli::cli_alert_success("SQL Server connection: OK")
+    DBI::dbDisconnect(con)
+  }, error = function(e) {
+    cli::cli_alert_danger("SQL Server connection: FAILED")
+    cli::cli_alert_info(e$message)
+  })
+
+  # Test Snowflake
+  cli::cli_h2("Snowflake")
+  tryCatch({
+    creds <- get_snowflake_creds()
+    if (any(creds == "")) {
+      cli::cli_alert_warning("Snowflake credentials not configured")
+      cli::cli_alert_info("Run setup_snowflake_creds() to configure")
+    } else {
+      con <- create_snowflake_connection("INFORMATION_SCHEMA")
+      cli::cli_alert_success("Snowflake connection: OK")
+      DBI::dbDisconnect(con)
+    }
+  }, error = function(e) {
+    cli::cli_alert_danger("Snowflake connection: FAILED")
+    cli::cli_alert_info(e$message)
+  })
+}
+```
+
+#### 2.3 Updated Vignettes
+
+Create new vignette: **"Snowflake Migration Guide for Users"**
+
+```r
+usethis::use_vignette("snowflake-migration")
+```
+
+**Content**:
+- What's changing (backend, not interface)
+- How to set up Snowflake credentials
+- How to check which backend hosts data
+- Troubleshooting Snowflake connections
+- FAQ
+
+**Deliverables**:
+- User-facing status and discovery functions
+- Diagnostic utilities
+- User documentation and vignettes
+
+---
+
+### Phase 3: Gradual Data Migration (12-24 months)
+
+**Goal**: Migrate tables from SQL Server to Snowflake
+
+#### This is NOT a package development task
+
+This phase is handled by the **Data Warehouse Team**. The package automatically adapts as tables migrate.
+
+#### Package Requirements
+
+1. **Metadata stays current**: Metadata must accurately reflect table locations
+2. **Monitor migration**: Use `show_migration_status()` to track progress
+3. **Support users**: Help troubleshoot issues as they arise
+4. **No code changes needed**: Package automatically routes to correct backend
+
+#### Timeline Example
+
+| Quarter | Tables Migrated | Backend | Notes |
+|---------|-----------------|---------|-------|
+| Q1 2025 | 0% | 100% SQL Server | Package v5.0.0 released with dual support |
+| Q2 2025 | 10% | 90% SQL Server | Low-risk tables migrated first |
+| Q3 2025 | 30% | 70% SQL Server | Assessment data migrated |
+| Q4 2025 | 60% | 40% SQL Server | PowerSchool data migrated |
+| Q1 2026 | 90% | 10% SQL Server | Most tables migrated |
+| Q2 2026 | 100% | 0% SQL Server | Migration complete |
+
+**Deliverables**:
+- Communication plan for each migration wave
+- Support documentation for common issues
+- Monitoring dashboard for migration progress
+
+---
+
+### Phase 4: SQL Server Deprecation (After full migration)
+
+**Goal**: Remove SQL Server support after all tables migrated
+
+#### Tasks
+
+1. **Announce deprecation timeline**
+   - Email to all users
+   - Update documentation with deprecation notices
+   - 6-month warning period
+
+2. **Create package v6.0.0 (Snowflake-only)**
+   - Remove SQL Server connection code
+   - Remove Kerberos authentication
+   - Simplify metadata system
+   - Update all documentation
+
+3. **Maintain v5.x for legacy support**
+   - Critical bug fixes only
+   - For users still needing SQL Server access
+
+**Deliverables**:
+- ideadata v6.0.0 (Snowflake-only)
+- Deprecation announcement
+- Migration guide for updating code (minimal changes)
+
+---
+
+## Technical Implementation
+
+### Code Structure Changes
+
+```
+ideadata/
+├── R/
+│   ├── connections.R              # (MODIFIED) Dual backend support
+│   ├── connections_sqlserver.R    # (NEW) SQL Server-specific
+│   ├── connections_snowflake.R    # (NEW) Snowflake-specific
+│   ├── get_table.R                # (MODIFIED) Backend routing
+│   ├── warehouse_meta_data.R      # (MODIFIED) Enhanced metadata
+│   ├── utils.R                    # (MODIFIED) Credential setup for both
+│   ├── diagnostics.R              # (NEW) Connection diagnostics
+│   └── migration_utils.R          # (NEW) Migration status functions
+│
+├── vignettes/
+│   ├── snowflake-migration.Rmd    # (NEW) User migration guide
+│   └── snowflake-setup.Rmd        # (NEW) Snowflake credential setup
+│
+└── tests/testthat/
+    ├── test-snowflake.R           # (NEW) Snowflake tests
+    └── test-dual-backend.R        # (NEW) Integration tests
+```
+
+### Backward Compatibility
+
+**Guarantee**: All existing user code continues to work unchanged.
+
+```r
+# This code from 2024 still works in 2026
+library(ideadata)
+
+students <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  collect()
+
+# Package handles backend changes automatically
+```
+
+### Performance Considerations
+
+#### Connection Pooling
+
+```r
+# Maintain separate pools for each backend
+conn_PowerSchool           # SQL Server
+conn_snowflake_POWERSCHOOL # Snowflake
+```
+
+#### Query Performance
+
+- **Snowflake**: May be faster for large aggregations
+- **SQL Server**: May be faster for small, indexed queries
+- **Impact**: Minimal for typical queries; monitor performance
+
+---
+
+## Testing Strategy
+
+### Test Environments
+
+1. **Development**: Local machine with both backends
+2. **Staging**: Test Snowflake account
+3. **Production**: Production Snowflake account
+
+### Test Scenarios
+
+#### Unit Tests
+- [x] SQL Server connection creation
+- [ ] Snowflake connection creation
+- [ ] Metadata retrieval from both backends
+- [ ] Backend routing logic
+- [ ] Credential management
+
+#### Integration Tests
+- [ ] Get table from SQL Server
+- [ ] Get table from Snowflake
+- [ ] Join tables across backends (if needed)
+- [ ] Collector() with Snowflake
+- [ ] Connection pooling
+
+#### User Acceptance Tests
+- [ ] Analyst workflow with SQL Server tables
+- [ ] Analyst workflow with Snowflake tables
+- [ ] Analyst workflow with mixed backends
+- [ ] Setup credentials for new user
+- [ ] Troubleshoot connection issues
+
+### Continuous Testing
+
+```r
+# In tests/testthat/setup.R
+# Set up test environment for both backends
+
+# Create test connections
+if (Sys.getenv("SNOWFLAKE_ACCOUNT") != "") {
+  test_snowflake_con <- create_snowflake_connection("TEST_DB")
+  assign("test_snowflake_con", test_snowflake_con, envir = .GlobalEnv)
+}
+
+if (Sys.getenv("IDEA_RNA_DB_UID") != "") {
+  test_sqlserver_con <- create_sqlserver_connection("PowerSchool", "RGVPDSD-DWPRD1")
+  assign("test_sqlserver_con", test_sqlserver_con, envir = .GlobalEnv)
+}
+```
+
+---
+
+## User Communication Plan
+
+### Announcement Timeline
+
+| When | What | Audience | Medium |
+|------|------|----------|--------|
+| Phase 0 | "Snowflake migration coming in 2025" | All users | Email |
+| Phase 1 Start | "New package version supports Snowflake" | All users | Email + Training |
+| Phase 2 Complete | "How to check migration status" | Power users | Workshop |
+| Phase 3 Start | "First tables migrating to Snowflake" | All users | Email |
+| Each Migration | "These tables now on Snowflake" | All users | Email |
+| Phase 4 Start | "SQL Server deprecation timeline" | All users | Email + Meeting |
+
+### Training Materials
+
+1. **Quick Start Guide**: "Using ideadata with Snowflake"
+2. **Video Tutorial**: "Setting up Snowflake credentials"
+3. **FAQ Document**: Common questions and issues
+4. **Office Hours**: Weekly support sessions during migration
+
+### Support Channels
+
+- **Slack**: #ideadata-support channel
+- **Email**: analytics-team@ideapublicschools.org
+- **Documentation**: https://idea-analytics.github.io/ideadata
+
+---
+
+## Rollback Plan
+
+### Scenario: Critical Snowflake Issue
+
+If Snowflake becomes unavailable:
+
+1. **Immediate**: Users' code continues working with SQL Server tables
+2. **Short-term**: Temporarily halt table migrations
+3. **Medium-term**: Investigate and resolve Snowflake issue
+4. **Long-term**: Resume migration when stable
+
+### Scenario: Package Bug in Dual Backend
+
+If dual backend code has critical bug:
+
+1. **Hotfix**: Patch bug in v5.0.1
+2. **Rollback**: Users can install v4.0.0 (SQL Server only)
+   ```r
+   remotes::install_github("idea-analytics/ideadata@v4.0.0")
+   ```
+
+### Scenario: Table Migration Failure
+
+If migrated table has data issues:
+
+1. **Metadata update**: Point table back to SQL Server in metadata
+2. **Package adapts**: Next package load, users automatically use SQL Server
+3. **Data fix**: Resolve Snowflake data issue
+4. **Metadata update**: Point table back to Snowflake
+
+---
+
+## Timeline and Milestones
+
+### Overview
+
+| Phase | Duration | Start | End | Key Deliverable |
+|-------|----------|-------|-----|-----------------|
+| Phase 0 | 6 weeks | Jan 2025 | Feb 2025 | Snowflake test environment |
+| Phase 1 | 8 weeks | Mar 2025 | Apr 2025 | ideadata v5.0.0 (dual backend) |
+| Phase 2 | 4 weeks | May 2025 | May 2025 | User tools and documentation |
+| Phase 3 | 18 months | Jun 2025 | Nov 2026 | All tables migrated |
+| Phase 4 | 3 months | Dec 2026 | Feb 2027 | ideadata v6.0.0 (Snowflake only) |
+
+### Detailed Milestones
+
+#### Q1 2025
+- [x] Snowflake account provisioned
+- [ ] ODBC drivers installed on all platforms
+- [ ] Test Snowflake database created
+- [ ] Development environment ready
+
+#### Q2 2025
+- [ ] Phase 1 development complete
+- [ ] ideadata v5.0.0 released
+- [ ] User training completed
+- [ ] First 10% of tables migrated
+
+#### Q3 2025
+- [ ] Phase 2 enhancements released
+- [ ] 30% of tables migrated
+- [ ] User adoption at 80%+
+
+#### Q4 2025
+- [ ] 60% of tables migrated
+- [ ] Performance benchmarking complete
+- [ ] Optimization round 1 complete
+
+#### Q1-Q2 2026
+- [ ] 90% of tables migrated
+- [ ] SQL Server deprecation announced
+- [ ] Final migration wave
+
+#### Q3-Q4 2026
+- [ ] 100% migration complete
+- [ ] SQL Server decommissioned
+- [ ] ideadata v6.0.0 released
+- [ ] Migration project complete
+
+---
+
+## Risk Assessment
+
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Snowflake outage during migration | Medium | High | Maintain SQL Server during transition |
+| Authentication issues (SSO, MFA) | Medium | Medium | Clear credential setup process |
+| SQL dialect incompatibilities | Low | Medium | Extensive testing; dbplyr handles most |
+| User resistance to change | Low | Low | Transparent migration; no code changes |
+| Performance degradation | Low | Medium | Performance testing before migration |
+| Cost overruns (Snowflake compute) | Medium | Low | Monitor usage; optimize queries |
+
+---
+
+## Success Criteria
+
+### Technical Success
+- [ ] 100% of tables accessible via ideadata
+- [ ] No breaking changes to user code
+- [ ] <2% performance degradation on typical queries
+- [ ] 99.9% uptime during migration period
+
+### User Success
+- [ ] 90%+ user adoption of v5.0.0 within 3 months
+- [ ] <5 support tickets per month related to migration
+- [ ] Positive user feedback on transparency of migration
+
+### Business Success
+- [ ] Migration completed within timeline
+- [ ] No disruption to analytics workflows
+- [ ] Foundation for future Snowflake features (e.g., data sharing)
+
+---
+
+## Future Enhancements (Post-Migration)
+
+Once fully on Snowflake, consider:
+
+1. **Direct Snowflake features**
+   - Time travel queries
+   - Zero-copy cloning for test data
+   - Secure data sharing with partners
+
+2. **Performance optimizations**
+   - Materialized views
+   - Clustering keys for large tables
+   - Result caching
+
+3. **Advanced analytics**
+   - Snowflake-native ML functions
+   - Semi-structured data support (JSON, ARRAY)
+   - External data integration
+
+---
+
+## Resources
+
+### Snowflake Documentation
+- [Snowflake Connector for ODBC](https://docs.snowflake.com/en/user-guide/odbc)
+- [SQL Translation Reference](https://docs.snowflake.com/en/sql-reference)
+- [Security Best Practices](https://docs.snowflake.com/en/user-guide/security)
+
+### R/DBI Documentation
+- [DBI with Snowflake](https://solutions.posit.co/connections/db/databases/snowflake/)
+- [dbplyr SQL translation](https://dbplyr.tidyverse.org/articles/sql-translation.html)
+
+### Internal Resources
+- Warehouse migration project plan (from Data Warehouse team)
+- Snowflake account details (from IT)
+- ideadata GitHub repository
+
+---
+
+## Appendix A: Example Code Patterns
+
+### Current (SQL Server only)
+
+```r
+library(ideadata)
+
+# Setup (one time)
+setup_creds()
+
+# Usage
+students <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  collect()
+```
+
+### Future (Dual Backend)
+
+```r
+library(ideadata)
+
+# Setup (one time)
+setup_creds()              # For SQL Server
+setup_snowflake_creds()    # For Snowflake
+
+# Usage - IDENTICAL!
+students <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  collect()
+
+# Check backend (optional)
+which_backend("Students")
+# [1] "snowflake"
+```
+
+### Future (Snowflake only, v6.0.0)
+
+```r
+library(ideadata)
+
+# Setup (one time)
+setup_creds()              # Now sets up Snowflake creds
+
+# Usage - STILL IDENTICAL!
+students <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  collect()
+```
+
+---
+
+## Appendix B: SQL Dialect Differences
+
+### T-SQL (SQL Server) vs ANSI SQL (Snowflake)
+
+| Feature | SQL Server (T-SQL) | Snowflake (ANSI SQL) | dbplyr Handles? |
+|---------|-------------------|---------------------|-----------------|
+| String concatenation | `+` | `||` | Yes |
+| LIMIT | `TOP N` | `LIMIT N` | Yes |
+| Date functions | `DATEADD`, `DATEDIFF` | `DATEADD`, `DATEDIFF` | Yes |
+| ISNULL | `ISNULL(col, val)` | `IFNULL(col, val)` | Yes |
+| Case sensitivity | Case-insensitive | Case-sensitive | **User must handle** |
+| Boolean | No true boolean | TRUE/FALSE | Yes |
+
+### Handling Case Sensitivity
+
+```r
+# SQL Server (works regardless of case)
+get_table("students")     # OK
+get_table("Students")     # OK
+get_table("STUDENTS")     # OK
+
+# Snowflake (case-sensitive)
+get_table("STUDENTS")     # Must match exact case in database
+```
+
+**Solution**: Metadata stores exact case; `get_table()` uses exact match.
+
+---
+
+**Document Version**: 1.0
+**Last Updated**: 2024
+**Owner**: IDEA Analytics Team
+**Status**: Draft for Review
