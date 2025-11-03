@@ -1,0 +1,74 @@
+# GitHub Actions Workflow - Cloud CI (Unit Tests Only)
+#
+# This workflow runs on GitHub's cloud runners
+# Runs ONLY unit tests (skips database tests)
+#
+# To use:
+# 1. Move this file to .github/workflows/ (remove -examples)
+# 2. Commit and push
+#
+# Note: This provides limited coverage but requires no setup
+
+name: R-CMD-check (Unit Tests Only)
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        r-version: ['release']
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      # Force skip of database tests
+      IDEADATA_SKIP_DB_TESTS: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.r-version }}
+          use-public-rspm: true
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, any::covr
+          needs: check
+
+      - name: Check package
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+
+      - name: Run unit tests only
+        run: |
+          cat("Running unit tests only (database tests skipped)\n")
+          cat("IDEADATA_SKIP_DB_TESTS =", Sys.getenv("IDEADATA_SKIP_DB_TESTS"), "\n")
+          devtools::test()
+        shell: Rscript {0}
+
+      - name: Test coverage (unit tests)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          covr::codecov(type = "tests", quiet = FALSE)
+        shell: Rscript {0}

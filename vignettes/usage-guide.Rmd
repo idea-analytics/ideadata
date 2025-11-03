@@ -1,0 +1,706 @@
+---
+title: "Comprehensive Usage Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comprehensive Usage Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+> **Version:** 4.0.0
+> **Purpose:** Cross-platform R package for accessing IDEA Public Schools' SQL Server data warehouse
+
+---
+
+## Prerequisites
+
+Before using `ideadata`, ensure you have:
+
+### System Requirements
+- **R** >= 2.10
+- **Operating System**: Windows, macOS, or Linux
+- **VPN Connection**: Must be connected to IDEA network
+- **ODBC Driver**: Microsoft ODBC Driver 17+ for SQL Server
+  - Windows: Usually pre-installed
+  - macOS: Install via [Microsoft's download page](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
+  - Linux: Follow distribution-specific instructions
+
+### Kerberos (macOS/Linux only)
+- macOS: Kerberos utilities (`kinit`, `klist`) are pre-installed
+- Linux: Install with `sudo apt-get install krb5-user` (Ubuntu/Debian)
+
+### Network Access
+- Active IDEA employee account
+- VPN credentials and connection to IDEA network
+- Database access permissions granted by IT
+
+---
+
+## Installation
+
+```{r}
+# Install from GitHub using remotes
+install.packages("remotes")
+remotes::install_github("idea-analytics/ideadata")
+
+# Or using renv (recommended for project reproducibility)
+renv::install("idea-analytics/ideadata")
+```
+
+### Verifying Installation
+
+```{r}
+library(ideadata)
+# You should see startup message showing:
+# - Kerberos ticket status
+# - Number of tables/databases/servers available
+```
+
+---
+
+## Initial Setup
+
+### Step 1: Configure Credentials
+
+Run the interactive credential setup:
+
+```{r}
+setup_creds()
+```
+
+You'll be prompted for:
+
+1. **User ID**: Your IDEA email prefix (e.g., `firstname.lastname`)
+2. **Password**: Your IDEA network password
+3. **ODBC Driver**: Usually `ODBC Driver 17 for SQL Server`
+
+This creates/updates your `.Renviron` file with:
+```
+IDEA_RNA_DB_UID=firstname.lastname
+IDEA_RNA_DB_PWD=your_password
+IDEA_RNA_ODBC_DRIVER=ODBC Driver 17 for SQL Server
+```
+
+### Step 2: Restart R
+
+After setup, restart your R session to load the new credentials:
+
+```{r}
+# In RStudio: Session > Restart R
+# Or simply reload the package
+library(ideadata)
+```
+
+### Step 3: Verify Connection
+
+Test your connection with a simple query:
+
+```{r}
+schools <- get_schools() %>% collect()
+```
+
+If successful, you're ready to use the package!
+
+---
+
+## Understanding Lazy Evaluation
+
+**CRITICAL CONCEPT**: All `get_*()` functions return **lazy query objects**, not actual data.
+
+### What This Means
+
+```{r}
+# This does NOT pull data into R
+students <- get_students()
+class(students)
+# [1] "tbl_Microsoft SQL Server" "tbl_dbi" "tbl_sql" "tbl_lazy" "tbl"
+
+# The query is only executed when you call collect()
+students_data <- get_students() %>% collect()
+```
+
+### Benefits of Lazy Evaluation
+
+1. **Fast filtering**: Filters execute on the SQL Server, not in R
+2. **Memory efficient**: Only pull data you actually need
+3. **Preview capability**: Examine query structure before pulling
+
+### The Pattern
+
+```{r}
+# 1. Build your query (lazy, instant)
+query <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  select(student_number, first_name, last_name, schoolid)
+
+# 2. Preview the SQL (optional)
+show_query(query)
+
+# 3. Pull the data (this executes on SQL Server)
+data <- collect(query)
+```
+
+---
+
+## Basic Usage Patterns
+
+### Pattern 1: Simple Table Retrieval
+
+```{r}
+library(ideadata)
+library(dplyr)
+
+# Get current schools
+schools <- get_schools() %>%
+  collect()
+
+# Get current students (filters applied server-side)
+current_students <- get_currently_enrolled_students() %>%
+  filter(grade_level %in% c(9, 10, 11, 12)) %>%
+  collect()
+```
+
+### Pattern 2: Using `get_table()` for Any Table
+
+```{r}
+# If you know the exact table name
+my_table <- get_table(.table_name = "Students")
+
+# If table name is ambiguous, you'll get helpful error with options:
+# Error: Found 3 tables named 'Students':
+# [Copy-paste code for each option shown]
+
+# Specify database to disambiguate
+students <- get_table(
+  .table_name = "Students",
+  .database_name = "PowerSchool"
+)
+```
+
+### Pattern 3: Exploring Available Tables
+
+```{r}
+# Browse all available tables in a viewer
+view_warehouse_metadata()
+
+# Search for tables containing a keyword
+warehouse_meta_data %>%
+  filter(str_detect(table_name, "attendance"))
+```
+
+### Pattern 4: Joining Data from Multiple Sources
+
+```{r}
+# Students with attendance
+student_attendance <- get_students() %>%
+  left_join(
+    get_student_daily_attendance(),
+    by = c("id" = "studentid")
+  ) %>%
+  filter(att_date >= "2024-01-01") %>%
+  collect()
+```
+
+---
+
+## Core Functions
+
+### Connection Management
+
+#### `create_connection(.database_name, .server_name)`
+Creates a new database connection.
+
+```{r}
+# Usually not needed - connections are created automatically
+# But useful for custom database access
+con <- create_connection(
+  .database_name = "PowerSchool",
+  .server_name = "REDACTED-SQLSERVER"
+)
+```
+
+#### `check_get_connection(.database_name, .server_name)`
+Checks for existing valid connection, creates if needed.
+
+```{r}
+# This is called internally by all get_* functions
+# Returns connection object
+con <- check_get_connection(.database_name = "PowerSchool")
+```
+
+### PowerSchool Data Functions
+
+#### Student Data
+
+```{r}
+# All students
+students <- get_students() %>% collect()
+
+# Only currently enrolled
+current <- get_currently_enrolled_students() %>% collect()
+
+# Academic summary
+academic <- get_students_academic_summary() %>% collect()
+
+# Continuous enrollment tracking
+enrollment <- get_students_continuous_enrollment() %>% collect()
+```
+
+#### School Data
+
+```{r}
+# All schools
+schools <- get_schools() %>% collect()
+
+# Regions
+regions <- get_regions() %>% collect()
+```
+
+#### Attendance Data
+
+```{r}
+# Daily attendance
+attendance <- get_student_daily_attendance() %>%
+  filter(att_date >= "2024-01-01") %>%
+  collect()
+
+# Engagement attendance (remote vs in-person)
+engagement <- get_student_engagement_attendance() %>%
+  collect()
+```
+
+### Assessment Data Functions
+
+#### Interim Assessments
+
+```{r}
+# IAB/WA assessments
+iabwa <- get_iabwa() %>%
+  filter(test_year == 2024) %>%
+  collect()
+```
+
+#### Renaissance STAR
+
+```{r}
+# Math assessments
+star_math <- get_renstar_math() %>%
+  filter(school_year == 2024) %>%
+  collect()
+
+# Reading assessments
+star_reading <- get_renstar_reading() %>%
+  filter(school_year == 2024) %>%
+  collect()
+```
+
+### Survey Data Functions
+
+#### Employee Survey (AEES)
+
+```{r}
+# Survey questions
+questions <- get_aees_questions() %>% collect()
+
+# Survey results
+results <- get_aees_results() %>% collect()
+
+# Open-ended responses
+oe_responses <- get_aees_oe_responses() %>% collect()
+
+# All AEES data (convenience wrapper)
+all_aees <- get_aees() %>% collect()
+```
+
+#### Great Place to Work (GPTW)
+
+```{r}
+# Survey questions
+questions <- get_gptw_questions() %>% collect()
+
+# Survey results
+results <- get_gptw_results() %>% collect()
+
+# Open-ended responses
+oe_responses <- get_gptw_oe_responses() %>% collect()
+```
+
+### Student Services Functions
+
+#### Persistence Data
+
+```{r}
+# Historical persistence data
+persistence <- get_persistence_historical() %>%
+  filter(school_year >= 2020) %>%
+  collect()
+
+# Persistence codes
+codes <- get_persistence_code() %>% collect()
+
+# Persistence reason codes
+reasons <- get_persistence_reasons_codes() %>% collect()
+```
+
+#### Learning Location
+
+```{r}
+# Daily learning location (remote vs in-person)
+location <- get_learning_location() %>%
+  filter(date >= "2024-01-01") %>%
+  collect()
+```
+
+---
+
+## Working with Large Datasets
+
+### Problem: Connection Failures on Large Pulls
+
+When pulling large datasets, SQL Server connections may timeout or fail.
+
+### Solution: Use `collector()`
+
+The `collector()` function breaks large queries into chunks and combines them.
+
+#### Basic Usage
+
+```{r}
+# Instead of this (may fail):
+# big_data <- get_student_daily_attendance() %>% collect()
+
+# Use collector to pull in chunks by schoolid
+big_data <- get_student_daily_attendance() %>%
+  collector(schoolid, verbose = TRUE)
+```
+
+#### Multiple Grouping Variables
+
+```{r}
+# Chunk by both schoolid and yearid
+very_big_data <- get_student_daily_attendance() %>%
+  collector(schoolid, yearid, verbose = TRUE)
+```
+
+#### What It Does
+
+1. Identifies unique values of grouping columns
+2. Filters data for each unique combination
+3. Pulls data in manageable chunks
+4. Combines all chunks into single tibble
+5. Shows progress with encouraging messages (if `verbose = TRUE`)
+
+#### When to Use `collector()`
+
+- Pulling multiple years of daily attendance
+- Large student-level datasets spanning all schools
+- Historical data spanning many years
+- Any query that previously caused connection failures
+
+---
+
+## Best Practices
+
+### 1. Always Filter on the Server
+
+```{r}
+# GOOD: Filter before collect()
+students_2024 <- get_students() %>%
+  filter(schoolid == 12345, enroll_status == 0) %>%
+  collect()
+
+# BAD: Pulls ALL students first, then filters in R
+students_2024 <- get_students() %>%
+  collect() %>%
+  filter(schoolid == 12345, enroll_status == 0)
+```
+
+### 2. Select Only Needed Columns
+
+```{r}
+# GOOD: Select columns on server
+students_subset <- get_students() %>%
+  select(student_number, first_name, last_name, grade_level) %>%
+  collect()
+
+# AVOID: Pulling all 50+ columns when you only need 4
+students_all <- get_students() %>% collect()
+```
+
+### 3. Preview Before Pulling
+
+```{r}
+# Build your query
+query <- get_students() %>%
+  filter(grade_level >= 9) %>%
+  select(student_number, first_name, last_name)
+
+# Check the SQL that will be generated
+show_query(query)
+
+# Preview first few rows (fast)
+head(query)
+
+# Count rows (fast)
+tally(query)
+
+# Pull when satisfied
+data <- collect(query)
+```
+
+### 4. Use Joins on the Server
+
+```{r}
+# GOOD: Join lazy objects before collect()
+combined <- get_students() %>%
+  inner_join(get_schools(), by = "schoolid") %>%
+  collect()
+
+# LESS EFFICIENT: Pull both tables, then join in R
+students <- get_students() %>% collect()
+schools <- get_schools() %>% collect()
+combined <- inner_join(students, schools, by = "schoolid")
+```
+
+### 5. Reuse Connections
+
+```{r}
+# Connections are automatically reused
+# No need to manually manage connections in normal usage
+
+# If you need to close a connection:
+disconnect(conn_PowerSchool)
+```
+
+### 6. Handle Dates Properly
+
+```{r}
+# SQL Server dates work with standard R date filtering
+recent_attendance <- get_student_daily_attendance() %>%
+  filter(att_date >= "2024-01-01", att_date < "2024-07-01") %>%
+  collect()
+
+# Can also use lubridate functions (may vary in SQL translation)
+recent_attendance <- get_student_daily_attendance() %>%
+  filter(att_date >= lubridate::ymd("2024-01-01")) %>%
+  collect()
+```
+
+---
+
+## Troubleshooting
+
+### "Kerberos ticket expired" Error
+
+**Problem**: Kerberos tickets expire after ~10 hours.
+
+**Solution**:
+```{r}
+# Reload package to renew ticket
+detach("package:ideadata", unload = TRUE)
+library(ideadata)
+```
+
+### "Could not find table" Error
+
+**Problem**: Table name is ambiguous or doesn't exist.
+
+**Solution**:
+```{r}
+# Search for the table
+view_warehouse_metadata()
+
+# Or search programmatically
+warehouse_meta_data %>%
+  filter(str_detect(table_name, "your_table_name"))
+
+# Use full specification
+data <- get_table(
+  .table_name = "exact_table_name",
+  .database_name = "database_name",
+  .server_name = "server_name"
+)
+```
+
+### "Connection failed" Error
+
+**Checklist**:
+
+1. Are you connected to VPN?
+2. Have you run `setup_creds()` and restarted R?
+3. Is your ODBC driver installed?
+4. Is your password correct? (Run `setup_creds()` again)
+
+### "Cannot allocate vector of size..." Error
+
+**Problem**: Trying to pull too much data at once.
+
+**Solution**: Use `collector()` to pull in chunks:
+```{r}
+data <- get_table("large_table") %>%
+  collector(grouping_column)
+```
+
+### RStudio Hangs on Large Query
+
+**Problem**: Pulling too much data at once.
+
+**Solutions**:
+
+1. Use `collector()` for large datasets
+2. Add more filters before `collect()`
+3. Limit columns with `select()`
+4. Pull a sample first: `slice_sample(n = 1000) %>% collect()`
+
+---
+
+## Common Use Cases
+
+### Use Case 1: End of Year Student Roster
+
+```{r}
+library(ideadata)
+library(dplyr)
+
+# Get 2023-24 school year students with school info
+sy_2024_roster <- get_students() %>%
+  filter(
+    entrydate <= "2024-08-31",
+    exitdate >= "2024-05-31" | is.na(exitdate)
+  ) %>%
+  left_join(get_schools(), by = "schoolid") %>%
+  select(
+    student_number,
+    first_name,
+    last_name,
+    grade_level,
+    school_name = name,
+    region
+  ) %>%
+  collect()
+```
+
+### Use Case 2: YTD Attendance Analysis
+
+```{r}
+# Current year attendance rates by student
+ytd_attendance <- get_student_daily_attendance() %>%
+  filter(att_date >= "2024-08-01", att_date <= Sys.Date()) %>%
+  group_by(studentid) %>%
+  summarize(
+    days_possible = n(),
+    days_present = sum(attendancevalue == 1, na.rm = TRUE),
+    attendance_rate = days_present / days_possible
+  ) %>%
+  collect() %>%
+  left_join(
+    get_students() %>% collect(),
+    by = c("studentid" = "id")
+  )
+```
+
+### Use Case 3: Assessment Score Trends
+
+```{r}
+# STAR Math growth over time
+star_trends <- get_renstar_math() %>%
+  filter(school_year %in% c(2023, 2024), !is.na(unified_score)) %>%
+  select(
+    student_id,
+    school_year,
+    test_period,
+    unified_score,
+    percentile_rank
+  ) %>%
+  collect() %>%
+  arrange(student_id, school_year, test_period)
+```
+
+### Use Case 4: Survey Response Rates
+
+```{r}
+# AEES response rates by region
+aees_responses <- get_aees_results() %>%
+  collect()
+
+# Calculate response rates
+library(tidyr)
+response_summary <- aees_responses %>%
+  group_by(region) %>%
+  summarize(
+    total_invited = n_distinct(employee_id),
+    total_responded = n_distinct(employee_id[!is.na(response)]),
+    response_rate = total_responded / total_invited
+  )
+```
+
+### Use Case 5: Multi-Year Data Pull
+
+```{r}
+# Five years of persistence data
+# This is large - use collector!
+persistence_5yr <- get_persistence_historical() %>%
+  filter(school_year >= 2019) %>%
+  collector(school_year, verbose = TRUE)
+```
+
+---
+
+## Additional Resources
+
+- **Vignettes**: Run `browseVignettes("ideadata")` for detailed guides
+- **Function Reference**: https://idea-analytics.github.io/ideadata
+- **Package Help**: `?ideadata` or `help(package = "ideadata")`
+- **Warehouse Metadata**: `view_warehouse_metadata()` to explore available tables
+
+---
+
+## Quick Reference
+
+### Essential Commands
+
+```{r}
+# Setup (first time only)
+setup_creds() # Configure credentials
+.rs.restartR() # Restart R session
+
+# Loading
+library(ideadata) # Load package
+
+# Exploring
+view_warehouse_metadata() # Browse available tables
+warehouse_meta_data # View metadata tibble
+
+# Getting Data
+get_table("table_name") # Generic table access
+get_students() # Student data
+get_schools() # School data
+get_student_daily_attendance() # Attendance data
+
+# Working with Queries
+query %>% show_query() # Preview SQL
+query %>% head() # Preview first rows
+query %>% tally() # Count rows
+query %>% collect() # Pull data into R
+
+# Large Datasets
+query %>% collector(grouping_var) # Chunked data pull
+
+# Troubleshooting
+setup_creds() # Reset credentials
+detach("package:ideadata", unload = TRUE)
+library(ideadata) # Renew Kerberos
+```
+
+---
+
+**Package Version**: 4.0.0
+**Maintained by**: IDEA Analytics Team
