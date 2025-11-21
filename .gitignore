@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+./claude
 docs
 inst/doc
