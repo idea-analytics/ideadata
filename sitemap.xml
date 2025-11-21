@@ -1,147 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/404.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/setting-up-your-credentials.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/using-collector.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/articles/using-get_table.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/index.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/calc_elapsed_weeks.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/calc_ps_termid.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/check_get_connection.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/check_get_hidden_connection.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/check_macos_linux.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/collector.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/create_connection.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/disconnect.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/generate_schema.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_aees.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_creds.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_currently_enrolled_students.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_db_url.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_gptw.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_iabwa.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_learning_location.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code_historical.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_historical.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_reasons_codes.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_regions.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_renstar_math.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_schools.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_student_daily_attendance.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_student_engagement_attendance.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_students.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_students_academic_summary.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_students_continuous_enrollment.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_table.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/get_warehouse_meta_data.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/id_tables_in_dbs.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/setup_creds.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/update_uid.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/view_warehouse_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://idea-analytics.github.io/ideadata/reference/warehouse_meta_data.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://idea-analytics.github.io/ideadata/404.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/LICENSE-text.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/LICENSE.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/index.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/maintenance-guide.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/setting-up-your-credentials.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/snowflake-migration.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/usage-guide.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/using-collector.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/articles/using-get_table.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/authors.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/index.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/news/index.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/calc_elapsed_weeks.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/calc_ps_termid.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/check_get_connection.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/check_get_hidden_connection.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/check_macos_linux.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/collector.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/create_connection.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/disconnect.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/generate_schema.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_aees.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_creds.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_currently_enrolled_students.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_db_url.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_gptw.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_iabwa.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_learning_location.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_code_historical.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_historical.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_persistence_reasons_codes.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_regions.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_renstar_math.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_schools.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_student_daily_attendance.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_student_engagement_attendance.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_students.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_students_academic_summary.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_students_continuous_enrollment.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_table.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/get_warehouse_meta_data.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/id_tables_in_dbs.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/index.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/kinit.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/pipe.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/setup_creds.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/update_uid.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/view_warehouse_metadata.html</loc></url>
+<url><loc>https://idea-analytics.github.io/ideadata/reference/warehouse_meta_data.html</loc></url>
 </urlset>
+
