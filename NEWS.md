@@ -1,3 +1,5 @@
+# ideadata 4.0.1
+
 # ideadata 4.0.0
 
 * updated workhorse functions to avoid dependency problem with `dbplyr 2.4.0`. 
