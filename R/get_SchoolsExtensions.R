@@ -14,10 +14,10 @@ utils::globalVariables("conn_lk_Schools")
 #' @examples
 #' # This attaches to the school db with \code{conn_lk_Schools} connection
 #' \dontrun{
-#' schools_regions <- get_schools_regions()
+#' schools_extensions <- get_schools_extensions()
 #' }
 #'
-get_schools_regions <- function(){
+get_schools_extensions <- function(){
 
   out <- get_table(.table_name = "SchoolsExtensions",
                    .schema = "dbo",

@@ -174,8 +174,12 @@ calc_ps_termid <- function(sy,
 #' calc_elapsed_weeks(today())
 #' }
 calc_elapsed_weeks <- function(ref_date, first_day = '2020-07-01') {
-  (lubridate::floor_date(lubridate::ymd(ref_date), unit="week") -
+  result <- (lubridate::floor_date(lubridate::ymd(ref_date), unit="week") -
      lubridate::floor_date(lubridate::ymd(first_day), unit="week"))/lubridate::dweeks(1)+1
+
+  warning("Please verify the accuracy of these results. Use with caution.")
+
+  return(result)
 }
 
 

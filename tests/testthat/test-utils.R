@@ -36,25 +36,25 @@ test_that("get_creds reads from environment variables", {
 # PowerSchool utility function tests
 test_that("calc_ps_termid calculates correctly for school year", {
   # Quarter 0 (whole year)
-  expect_equal(calc_ps_termid(2024, 0), 2324)
-  expect_equal(calc_ps_termid(2023, 0), 2223)
+  expect_equal(calc_ps_termid(2024, 0), 3400)
+  expect_equal(calc_ps_termid(2023, 0), 3300)
 
   # Individual quarters
-  expect_equal(calc_ps_termid(2024, 1), 2301)
-  expect_equal(calc_ps_termid(2024, 2), 2302)
-  expect_equal(calc_ps_termid(2024, 3), 2303)
-  expect_equal(calc_ps_termid(2024, 4), 2304)
+  expect_equal(calc_ps_termid(2024, 1), 3401)
+  expect_equal(calc_ps_termid(2024, 2), 3402)
+  expect_equal(calc_ps_termid(2024, 3), 3403)
+  expect_equal(calc_ps_termid(2024, 4), 3404)
 })
 
 test_that("calc_ps_termid handles edge cases", {
   # Year 2000
-  expect_equal(calc_ps_termid(2000, 0), 1900)
+  expect_equal(calc_ps_termid(2000, 0), 1000)
 
   # Future year
-  expect_equal(calc_ps_termid(2030, 0), 2930)
+  expect_equal(calc_ps_termid(2030, 0), 4000)
 
   # Past year
-  expect_equal(calc_ps_termid(2010, 0), 1910)
+  expect_equal(calc_ps_termid(2010, 0), 2000)
 })
 
 test_that("calc_elapsed_weeks calculates correctly", {
