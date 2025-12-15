@@ -1,3 +1,9 @@
+# ideadata 4.1.0
+
+* added get_schools_extensions function
+* fixed calc_ps_termid function tests
+* added warning to calc_elapsed_weeks function
+
 # ideadata 4.0.1
 
 * Added some new vignettes
