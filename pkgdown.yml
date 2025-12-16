@@ -1,12 +1,14 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
+  maintenance-guide: maintenance-guide.html
   setting-up-your-credentials: setting-up-your-credentials.html
+  snowflake-migration: snowflake-migration.html
+  usage-guide: usage-guide.html
   using-collector: using-collector.html
   using-get_table: using-get_table.html
-last_built: 2024-01-11T14:29Z
+last_built: 2025-12-16T23:39Z
 urls:
   reference: https://idea-analytics.github.io/ideadata/reference
   article: https://idea-analytics.github.io/ideadata/articles
-
